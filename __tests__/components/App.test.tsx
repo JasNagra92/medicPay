@@ -8,4 +8,8 @@ describe("<App />", () => {
     const tree = renderer.create(<App />).toJSON() as ReactTestRendererJSON;
     expect(tree.children?.length).toBe(1);
   });
+  it("renders correctly", () => {
+    const tree = renderer.create(<App />).toJSON() as ReactTestRendererJSON;
+    expect(tree).toMatchSnapshot();
+  });
 });
