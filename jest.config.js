@@ -18,6 +18,7 @@ module.exports = {
     "!**/node_modules/**",
     "!**/babel.config.js",
     "!**/jest.setup.js",
+    "!**/utils/utilfunctions.ts",
   ],
   moduleFileExtensions: ["js", "ts", "tsx"],
   transformIgnorePatterns: [
