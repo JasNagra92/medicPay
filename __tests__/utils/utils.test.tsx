@@ -3,7 +3,12 @@ import {
   isWithinFridayNightOrMondayMorning,
   isWeekend,
   getHoursWorked,
+  calculateEarnings,
 } from "../../utils/utils.ts";
+
+const baseRate: number = 43.13;
+const nightShiftPremium: number = 5.6;
+const weekendPremium: number = 2.25;
 
 describe("isWIthinNightShiftHours", () => {
   it("returns true if given hour is after 6pm", () => {
@@ -73,5 +78,36 @@ describe("getHoursWorked", () => {
     const startTime: Date = new Date(2023, 9, 5, 22, 0, 0);
     const endTime: Date = new Date(2023, 9, 6, 6, 0, 0);
     expect(getHoursWorked(startTime, endTime)).toBe(8);
+  });
+});
+
+describe("calculateEarnings", () => {
+  it("returns 517.56 when given a base rate of 43.13 and a start and end time that is a weekday day shift", () => {
+    const startTime = new Date(2023, 9, 16, 6);
+    const endTime = new Date(2023, 9, 16, 18);
+
+    expect(
+      calculateEarnings(
+        startTime,
+        endTime,
+        baseRate,
+        nightShiftPremium,
+        weekendPremium
+      )
+    ).toBe("517.56");
+  });
+  it("returns 611.76 when given start and end times that fall on a weekend night shift", () => {
+    const startTime = new Date(2023, 9, 15, 18);
+    const endTime = new Date(2023, 9, 16, 6);
+
+    expect(
+      calculateEarnings(
+        startTime,
+        endTime,
+        baseRate,
+        nightShiftPremium,
+        weekendPremium
+      )
+    ).toBe("611.76");
   });
 });

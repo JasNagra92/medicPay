@@ -1,18 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`<App /> renders correctly 1`] = `
-<View
+<RCTSafeAreaView
   style={
     {
-      "alignItems": "center",
-      "backgroundColor": "#fff",
       "flex": 1,
-      "justifyContent": "center",
     }
   }
 >
-  <Text>
-    Open up App.tsx to start working on your app!
-  </Text>
-</View>
+  <View
+    style={
+      {
+        "alignItems": "center",
+        "backgroundColor": "#fff",
+        "flex": 1,
+        "justifyContent": "center",
+        "marginTop": 100,
+      }
+    }
+  />
+</RCTSafeAreaView>
 `;

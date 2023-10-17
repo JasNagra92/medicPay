@@ -49,12 +49,20 @@ export function calculateEarnings(
   weekendPremium: number
 ): string {
   let totalEarnings: number = 0;
+
   const hoursWorked = getHoursWorked(startTime, endTime);
+  const endOfShiftHour = endTime.getHours();
+
   for (let hour = 0; hour <= hoursWorked; hour++) {
     let hourlyRate: number = baseRate;
 
     let currentHour = (startTime.getHours() + hour) % 24;
     let currentDay = startTime.getDay();
+
+    // check if endOfShiftHour is equal to the current hour and then do not add anymore money because shift is over
+    if (endOfShiftHour === currentHour) {
+      return totalEarnings.toFixed(2);
+    }
 
     // check if current day flipped to the next day in the current hour
     if (currentHour < startTime.getHours()) {
@@ -74,6 +82,6 @@ export function calculateEarnings(
       }
     }
     totalEarnings += hourlyRate;
-    return totalEarnings.toFixed(2);
   }
+  return totalEarnings.toFixed(2);
 }
