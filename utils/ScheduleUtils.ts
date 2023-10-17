@@ -1,4 +1,5 @@
 import { IScheduleItem, IPlatoonStart } from "../interfaces/platoonStart";
+import { sub } from "date-fns";
 
 const commonPlatoonStart1: IPlatoonStart = {
   A: 6,
@@ -62,40 +63,50 @@ const rotation = [
   "day off",
 ];
 
-export function getSixWeekSchedule(
-  payPeriodStartMonth: number,
+export function getPayPeriodStart(payDay: Date): Date {
+  const payPeriodStart = sub(payDay, { days: 21 });
+  return payPeriodStart;
+}
+
+export function validatePlatoon(platoon: string) {
+  if (!["A", "B", "C", "D"].includes(platoon)) {
+    throw new Error("Platoon can only be A/B/C/D");
+  }
+}
+
+// this function will create a 6 week schedule when given a pay day that the user picks, it will start from the first month of the pay period start date for the given pay day, and go for 6 weeks. After that schedule is created, it will then only return the 2 weeks that will be paid out on the given payday
+export function getPayPeriodSchedule(
+  payPeriodStart: Date,
   platoon: string
 ): IScheduleItem[] {
   // make sure the platoon is one of the 4 accepted values
-  if (
-    platoon !== "A" &&
-    platoon !== "B" &&
-    platoon !== "C" &&
-    platoon !== "D"
-  ) {
-    throw new Error("Platoon can only be A/B/C/D");
-  }
+  validatePlatoon(platoon);
 
-  //   make sure the month is also between 0 and 11
-  if (payPeriodStartMonth < 0 || payPeriodStartMonth > 11) {
-    throw new Error("Pay period start month must be between 0 and 11");
-  }
+  const payPeriodStartMonth: number = payPeriodStart.getMonth();
 
   // initialize an empty schedule that will be filled in a for loop
-  const schedule = [];
+  let payPeriodSchedule = [];
   // get the starting index from the platoonStarts2023 object
   const startingIndex = platoonStarts2023[payPeriodStartMonth][platoon];
   // define the rotaiton index using the starting index
   let rotationIndex = startingIndex;
-  // loop for 45 days but have the first entry be the rotation index, which will be different based on the platoon and month provided by the user
-  for (let i = 0; i < 45; i++) {
+
+  // Use a while loop to collect 14 items
+  let i = 0;
+  while (payPeriodSchedule.length < 14) {
     let currentDay = new Date(2023, payPeriodStartMonth, 1 + i);
 
-    schedule.push({ date: currentDay, rotation: rotation[rotationIndex] });
+    if (currentDay >= payPeriodStart) {
+      payPeriodSchedule.push({
+        date: currentDay,
+        rotation: rotation[rotationIndex],
+      });
+    }
 
-    // increment the rotation index with a modulo operator to loop back to the start after reaching the 4th day off
+    // Increment the rotation index with a modulo operator to loop back to the start after reaching the 4th day off
     rotationIndex = (rotationIndex + 1) % rotation.length;
+    i++;
   }
 
-  return schedule;
+  return payPeriodSchedule;
 }
