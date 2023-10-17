@@ -1,23 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import UserForm from "./components/UserForm";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, ScrollView, SafeAreaView } from "react-native";
+import {
+  Text,
+  View,
+  ImageBackground,
+  KeyboardAvoidingView,
+} from "react-native";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+  SafeAreaView,
+} from "react-native-safe-area-context";
+import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
+
+const image = require("./assets/images/bgImage.png");
 
 export default function App() {
+  let [fontsLoaded, fontError] = useFonts({
+    OpenSans_800ExtraBold,
+  });
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-      </View>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <ImageBackground source={image} style={{ flex: 1 }}>
+        <SafeAreaView
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            alignItems: "center",
+            rowGap: 30,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "OpenSans_800ExtraBold",
+              fontSize: 30,
+              color: "white",
+              textAlign: "center",
+            }}
+          >
+            Work Shift
+          </Text>
+          <UserForm />
+          <StatusBar style="auto" />
+        </SafeAreaView>
+      </ImageBackground>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 100,
-  },
-});
