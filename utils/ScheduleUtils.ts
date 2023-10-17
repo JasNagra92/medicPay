@@ -66,6 +66,21 @@ export function getSixWeekSchedule(
   payPeriodStartMonth: number,
   platoon: string
 ): IScheduleItem[] {
+  // make sure the platoon is one of the 4 accepted values
+  if (
+    platoon !== "A" &&
+    platoon !== "B" &&
+    platoon !== "C" &&
+    platoon !== "D"
+  ) {
+    throw new Error("Platoon can only be A/B/C/D");
+  }
+
+  //   make sure the month is also between 0 and 11
+  if (payPeriodStartMonth < 0 || payPeriodStartMonth > 11) {
+    throw new Error("Pay period start month must be between 0 and 11");
+  }
+
   // initialize an empty schedule that will be filled in a for loop
   const schedule = [];
   // get the starting index from the platoonStarts2023 object

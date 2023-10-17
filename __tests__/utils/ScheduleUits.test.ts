@@ -2,7 +2,7 @@ import { getSixWeekSchedule } from "../../utils/ScheduleUtils";
 import { getPayPeriodStart } from "../../utils/HourAndMoneyUtils";
 import { IScheduleItem } from "../../interfaces/platoonStart";
 
-describe("a function", () => {
+describe("getSixWeekSchedule", () => {
   it("When given a pay day and a platoon by the user, it finds the start of the pay period for that pay day, finds the month that it is in, and then creates a 45 day schedule for the given platoon, in the format of an array filled with 45 objects, 1 object per day, {date: Date object, rotation: day 1/day 2/night 1/night 2/day off}", () => {
     // user input
     const payDay: Date = new Date(2023, 10, 3);
@@ -14,11 +14,22 @@ describe("a function", () => {
       payPeriodStartMonth,
       platoon
     );
-    console.log(schedule);
 
     expect(payPeriodStartMonth).toBe(9);
     expect(schedule).toHaveLength(45);
     expect(schedule[0].rotation).toBe("day off");
     expect(schedule[2].rotation).toBe("day 1");
+  });
+
+  it("should throw an error if the platoon given is any letter other than A/B/C/D", () => {
+    expect(() => getSixWeekSchedule(3, "F")).toThrowError(
+      "Platoon can only be A/B/C/D"
+    );
+  });
+
+  it("should thrown an error if the given month is not between 0 and 11", () => {
+    expect(() => getSixWeekSchedule(13, "A")).toThrowError(
+      "Pay period start month must be between 0 and 11"
+    );
   });
 });
