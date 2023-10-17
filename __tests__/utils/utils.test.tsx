@@ -4,6 +4,7 @@ import {
   isWeekend,
   getHoursWorked,
   calculateEarnings,
+  getPayPeriodStart,
 } from "../../utils/utils.ts";
 
 const baseRate: number = 43.13;
@@ -109,5 +110,14 @@ describe("calculateEarnings", () => {
         weekendPremium
       )
     ).toBe("611.76");
+  });
+});
+
+describe("getPayPeriodStart", () => {
+  it("function returns Oct 13,2023, when given a pay day date of Nov 3rd, 2023", () => {
+    const payDay = new Date(2023, 10, 3);
+    const expectedDate = new Date(2023, 9, 13);
+
+    expect(getPayPeriodStart(payDay)).toEqual(expectedDate);
   });
 });

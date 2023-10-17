@@ -1,3 +1,5 @@
+import { sub } from "date-fns";
+
 const nightShiftStartHour: number = 18;
 const nightShiftEndHour: number = 6;
 
@@ -84,4 +86,9 @@ export function calculateEarnings(
     totalEarnings += hourlyRate;
   }
   return totalEarnings.toFixed(2);
+}
+
+export function getPayPeriodStart(payDay: Date): Date {
+  const payPeriodStart = sub(payDay, { days: 21 });
+  return payPeriodStart;
 }
