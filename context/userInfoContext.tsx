@@ -6,7 +6,7 @@ const initialUserInfo: IUserInfo = {
   hourlyWage: "",
   payDay: undefined,
   shiftPattern: "",
-  platoon: "",
+  platoon: "A",
   dayShiftStartTime: 0,
   dayShiftEndTime: 0,
   nightShiftStartTime: 0,

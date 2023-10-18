@@ -10,6 +10,15 @@ export default function userInfoReducer(state: IUserInfo, action: Action) {
     case "setPayday": {
       return { ...state, payDay: action.payload };
     }
+    case "setShiftPattern": {
+      return { ...state, shiftPattern: action.payload };
+    }
+    case "setPlatoon": {
+      return { ...state, platoon: action.payload };
+    }
+    case "setRotation": {
+      return { ...state, rotation: action.payload };
+    }
     default:
       return state;
   }

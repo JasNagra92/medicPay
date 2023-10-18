@@ -1,29 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 
-export default function UserRadioInput() {
-  const [checked, setChecked] = useState("A");
+interface IUserRadioInputProps {
+  label: string;
+}
+
+export default function UserRadioInput({ label }: IUserRadioInputProps) {
   const color = "#379D9F";
-  const platoons = ["A", "B", "C", "D"];
+  let platoons;
+  let rotation;
+
+  label === "Select Platoon"
+    ? (platoons = ["A", "B", "C", "D"])
+    : (rotation = ["R1", "R2", "R3", "R4"]);
+
+  const userInfo = useUserInfo();
+  const dispatch = useUserInfoDispatch();
+
+  const handlePress = (data: string) => {
+    if (dispatch) {
+      data.length === 1
+        ? dispatch({ type: "setPlatoon", payload: data })
+        : dispatch({ type: "setRotation", payload: data });
+    }
+  };
+
   return (
     <View className="flex flex-col ml-3">
       <Text className="font-bold">Select Platoon</Text>
       <View className="flex flex-row right-2">
-        {platoons.map((platoon, i) => {
-          return (
-            <View key={i} className="flex flex-row items-center">
-              <RadioButton.Android
-                value={platoon}
-                status={checked === `${platoon}` ? "checked" : "unchecked"}
-                onPress={() => setChecked(platoon)}
-                color={color}
-                uncheckedColor="black"
-              />
-              <Text className="text-[#808080]">{platoon}</Text>
-            </View>
-          );
-        })}
+        {platoons &&
+          platoons.map((platoon, i) => {
+            return (
+              <View key={i} className="flex flex-row items-center">
+                <RadioButton.Android
+                  value={platoon}
+                  status={
+                    userInfo?.platoon === `${platoon}` ? "checked" : "unchecked"
+                  }
+                  onPress={() => handlePress(platoon)}
+                  color={color}
+                  uncheckedColor="black"
+                />
+                <Text className="text-[#808080]">{platoon}</Text>
+              </View>
+            );
+          })}
+        {rotation &&
+          rotation.map((r, i) => {
+            return (
+              <View key={i} className="flex flex-row items-center">
+                <RadioButton.Android
+                  value={r}
+                  status={
+                    userInfo?.rotation === `${r}` ? "checked" : "unchecked"
+                  }
+                  onPress={() => handlePress(r)}
+                  color={color}
+                  uncheckedColor="black"
+                />
+                <Text className="text-[#808080]">{r}</Text>
+              </View>
+            );
+          })}
       </View>
     </View>
   );

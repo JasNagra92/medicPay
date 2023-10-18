@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
 import UserInputField from "./UserInputField";
 import UserButtonInput from "./UserButtonInput";
 import UserRadioInput from "./UserRadioInput";
 import UserShiftTimeInput from "./UserShiftTimeInput";
+import { useUserInfo } from "../context/userInfoContext";
 
 export default function UserForm() {
-  const [shiftPattern, setShiftPattern] = useState("");
-  function handleShiftPattern(pattern: string) {
-    setShiftPattern(pattern);
-  }
+  const userInfo = useUserInfo();
   return (
     <View
       style={{
@@ -37,16 +35,11 @@ export default function UserForm() {
         text="Shift Pattern"
         button={{ key1: "Alpha", key2: "Bravo/Charlie" }}
         extraStyle="px-4"
-        handleChange={handleShiftPattern}
-        selected={shiftPattern}
       />
-      <UserRadioInput />
-      <UserButtonInput
-        text="If Alpha, R day this period"
-        button={{ key1: "Yes", key2: "No" }}
-        extraStyle="px-5"
-        handleChange={handleShiftPattern}
-      />
+      <UserRadioInput label={"Select Platoon"} />
+      {userInfo?.shiftPattern === "Alpha" ? (
+        <UserRadioInput label={"Select Rotation"} />
+      ) : null}
       <UserShiftTimeInput text={"Day"} />
       <UserShiftTimeInput text={"Night"} />
       <Button

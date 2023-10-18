@@ -2,6 +2,7 @@ export interface IUserInfo {
   hourlyWage: string;
   payDay: string | undefined;
   shiftPattern: string;
+  rotation?: string;
   platoon: string;
   dayShiftStartTime: number;
   dayShiftEndTime: number;
@@ -9,14 +10,9 @@ export interface IUserInfo {
   nightShiftEndTime: number;
 }
 
-export interface ISetHourlyWageAction {
-  type: string;
-  payload: {
-    hourlyWage: string;
-  };
-}
-
 export type Action =
   | { type: "setHourlyWage"; payload: string }
   | { type: "setPayday"; payload: string }
-  | { type: "setAnotherAction"; payload: boolean };
+  | { type: "setShiftPattern"; payload: string }
+  | { type: "setPlatoon"; payload: string }
+  | { type: "setRotation"; payload: string };
