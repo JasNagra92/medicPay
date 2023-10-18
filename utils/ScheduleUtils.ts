@@ -1,4 +1,4 @@
-import { IScheduleItem, IPlatoonStart } from "../interfaces/platoonStart";
+import { IScheduleItem, IPlatoonStart } from "../interfaces/IPlatoonStart";
 import { sub } from "date-fns";
 
 const commonPlatoonStart1: IPlatoonStart = {

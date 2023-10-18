@@ -5,6 +5,7 @@ import { Text, ImageBackground } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
 import { PaperProvider } from "react-native-paper";
+import { UserInfoProvider } from "./context/userInfoContext";
 
 const image = require("./assets/images/bgImage.png");
 
@@ -20,29 +21,31 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <PaperProvider>
-        <ImageBackground source={image} style={{ flex: 1 }}>
-          <SafeAreaView
-            style={{
-              flex: 1,
-              flexDirection: "column",
-              alignItems: "center",
-              rowGap: 30,
-            }}
-          >
-            <Text
+        <UserInfoProvider>
+          <ImageBackground source={image} style={{ flex: 1 }}>
+            <SafeAreaView
               style={{
-                fontFamily: "OpenSans_800ExtraBold",
-                fontSize: 30,
-                color: "white",
-                textAlign: "center",
+                flex: 1,
+                flexDirection: "column",
+                alignItems: "center",
+                rowGap: 30,
               }}
             >
-              Work Shift
-            </Text>
-            <UserForm />
-            <StatusBar style="auto" />
-          </SafeAreaView>
-        </ImageBackground>
+              <Text
+                style={{
+                  fontFamily: "OpenSans_800ExtraBold",
+                  fontSize: 30,
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                Work Shift
+              </Text>
+              <UserForm />
+              <StatusBar style="auto" />
+            </SafeAreaView>
+          </ImageBackground>
+        </UserInfoProvider>
       </PaperProvider>
     </SafeAreaProvider>
   );

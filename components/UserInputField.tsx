@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TextInput } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 
 interface IUserInputFieldProps {
   text: string;
@@ -13,6 +14,17 @@ export default function UserInputField({
   placeholderText,
   icon,
 }: IUserInputFieldProps) {
+  const userInfo = useUserInfo();
+  const dispatch = useUserInfoDispatch();
+
+  const handleChange = (newValue: string) => {
+    if (dispatch && text === "Hourly Wage") {
+      dispatch({ type: "setHourlyWage", payload: newValue });
+    } else if (dispatch && text === "Payday") {
+      dispatch({ type: "setPayday", payload: newValue });
+    }
+  };
+
   return (
     <View className="flex flex-col">
       <Text className="ml-3 font-bold">{text}</Text>
@@ -21,6 +33,10 @@ export default function UserInputField({
           placeholder={placeholderText}
           placeholderTextColor={"#808080"}
           className="flex-1"
+          value={
+            text === "Hourly Wage" ? userInfo?.hourlyWage : userInfo?.payDay
+          }
+          onChangeText={(text) => handleChange(text)}
         />
         {icon ? <AntDesign name="calendar" size={20} color="gray" /> : null}
       </View>

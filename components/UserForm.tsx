@@ -29,7 +29,7 @@ export default function UserForm() {
         placeholderText={"Enter Hourly Wage"}
       />
       <UserInputField
-        text={"Pay Period Start"}
+        text={"Payday"}
         placeholderText={"MM/DD/YYY"}
         icon={true}
       />

@@ -6,7 +6,7 @@ import {
   calculateEarnings,
 } from "../../utils/HourAndMoneyUtils.ts";
 
-import { IScheduleItem } from "../../interfaces/platoonStart.ts";
+import { IScheduleItem } from "../../interfaces/IPlatoonStart.ts";
 
 const baseRate: number = 43.13;
 const nightShiftPremium: number = 5.6;

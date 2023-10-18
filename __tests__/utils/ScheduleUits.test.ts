@@ -1,6 +1,6 @@
 import { getPayPeriodSchedule } from "../../utils/ScheduleUtils";
 import { getPayPeriodStart } from "../../utils/ScheduleUtils";
-import { IScheduleItem } from "../../interfaces/platoonStart";
+import { IScheduleItem } from "../../interfaces/IPlatoonStart";
 
 describe("getPayPeriodStart", () => {
   it("function returns Oct 13,2023, when given a pay day date of Nov 3rd, 2023, pay periods always start 21 days before pay day and run for 14 days", () => {
