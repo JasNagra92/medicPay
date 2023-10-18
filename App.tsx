@@ -1,18 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import UserForm from "./components/UserForm";
 import { StatusBar } from "expo-status-bar";
-import {
-  Text,
-  View,
-  ImageBackground,
-  KeyboardAvoidingView,
-} from "react-native";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-  SafeAreaView,
-} from "react-native-safe-area-context";
+import { Text, ImageBackground } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
+import { PaperProvider } from "react-native-paper";
 
 const image = require("./assets/images/bgImage.png");
 
@@ -27,29 +19,31 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ImageBackground source={image} style={{ flex: 1 }}>
-        <SafeAreaView
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            alignItems: "center",
-            rowGap: 30,
-          }}
-        >
-          <Text
+      <PaperProvider>
+        <ImageBackground source={image} style={{ flex: 1 }}>
+          <SafeAreaView
             style={{
-              fontFamily: "OpenSans_800ExtraBold",
-              fontSize: 30,
-              color: "white",
-              textAlign: "center",
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              rowGap: 30,
             }}
           >
-            Work Shift
-          </Text>
-          <UserForm />
-          <StatusBar style="auto" />
-        </SafeAreaView>
-      </ImageBackground>
+            <Text
+              style={{
+                fontFamily: "OpenSans_800ExtraBold",
+                fontSize: 30,
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              Work Shift
+            </Text>
+            <UserForm />
+            <StatusBar style="auto" />
+          </SafeAreaView>
+        </ImageBackground>
+      </PaperProvider>
     </SafeAreaProvider>
   );
 }
