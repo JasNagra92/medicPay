@@ -6,6 +6,7 @@ import UserButtonInput from "./UserButtonInput";
 import UserRadioInput from "./UserRadioInput";
 import UserShiftTimeInput from "./UserShiftTimeInput";
 import { useUserInfo } from "../context/userInfoContext";
+import UserPaydayInput from "./UserPaydayInput";
 
 export default function UserForm() {
   const userInfo = useUserInfo();
@@ -26,11 +27,7 @@ export default function UserForm() {
         text={"Hourly Wage"}
         placeholderText={"Enter Hourly Wage"}
       />
-      <UserInputField
-        text={"Payday"}
-        placeholderText={"MM/DD/YYY"}
-        icon={true}
-      />
+      <UserPaydayInput />
       <UserButtonInput
         text="Shift Pattern"
         button={{ key1: "Alpha", key2: "Bravo/Charlie" }}
