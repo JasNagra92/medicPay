@@ -7,6 +7,7 @@ import UserRadioInput from "./UserRadioInput";
 import UserShiftTimeInput from "./UserShiftTimeInput";
 import { useUserInfo } from "../context/userInfoContext";
 import UserPaydayInput from "./UserPaydayInput";
+import { Link } from "expo-router";
 
 export default function UserForm() {
   const userInfo = useUserInfo();
@@ -23,10 +24,7 @@ export default function UserForm() {
       }}
       className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 pt-3 pb-3 flex flex-col justify-around"
     >
-      <UserInputField
-        text={"Hourly Wage"}
-        placeholderText={"Enter Hourly Wage"}
-      />
+      <UserInputField />
       <UserPaydayInput />
       <UserButtonInput
         text="Shift Pattern"

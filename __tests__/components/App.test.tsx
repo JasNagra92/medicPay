@@ -1,13 +1,23 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import renderer, { ReactTestRendererJSON } from "react-test-renderer";
 
-import App from "../../App";
+import App from "../../app/index";
+
+jest.mock("@expo-google-fonts/open-sans", () => ({
+  useFonts: () => [true, null],
+}));
+
+jest.mock("expo-status-bar", () => ({
+  StatusBar: jest.fn(() => null),
+}));
+
+jest.mock("../../context/userInfoContext", () => ({
+  UserInfoProvider: ({ children }: { children: ReactNode }) => (
+    <div>{children}</div>
+  ),
+}));
 
 describe("<App />", () => {
-  it("has 1 child", () => {
-    const tree = renderer.create(<App />).toJSON() as ReactTestRendererJSON;
-    expect(tree.children?.length).toBe(1);
-  });
   it("renders correctly", () => {
     const tree = renderer.create(<App />).toJSON() as ReactTestRendererJSON;
     expect(tree).toMatchSnapshot();

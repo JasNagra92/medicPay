@@ -4,6 +4,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { DatePickerModal } from "react-native-paper-dates";
 import { format } from "date-fns";
 import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import { validatePayday } from "../utils/ScheduleUtils";
 
 export default function UserPaydayInput() {
   const [open, setOpen] = useState(false);
@@ -15,10 +16,15 @@ export default function UserPaydayInput() {
   }, [setOpen]);
 
   const onConfirmSingle = useCallback(
-    (params) => {
+    (params: any) => {
       if (dispatch) {
-        setOpen(false);
-        dispatch({ type: "setPayday", payload: params.date });
+        if (validatePayday(params.date)) {
+          setOpen(false);
+          dispatch({ type: "setPayday", payload: params.date });
+          console.log(params.date);
+        } else {
+          alert("Must select a valid Pay Day(fridays only) ");
+        }
       }
     },
     [setOpen]

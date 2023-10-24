@@ -19,6 +19,42 @@ export default function userInfoReducer(state: IUserInfo, action: Action) {
     case "setRotation": {
       return { ...state, rotation: action.payload };
     }
+    case "setDayShiftStart": {
+      return {
+        ...state,
+        dayShiftStartTime: {
+          hours: action.payload.hours,
+          minutes: action.payload.minutes,
+        },
+      };
+    }
+    case "setDayShiftEnd": {
+      return {
+        ...state,
+        dayShiftEndTime: {
+          hours: action.payload.hours,
+          minutes: action.payload.minutes,
+        },
+      };
+    }
+    case "setNightShiftStart": {
+      return {
+        ...state,
+        nightShiftStartTime: {
+          hours: action.payload.hours,
+          minutes: action.payload.minutes,
+        },
+      };
+    }
+    case "setNightShiftEnd": {
+      return {
+        ...state,
+        nightShiftEndTime: {
+          hours: action.payload.hours,
+          minutes: action.payload.minutes,
+        },
+      };
+    }
     default:
       return state;
   }

@@ -1,5 +1,5 @@
 import { getPayPeriodSchedule } from "../../utils/ScheduleUtils";
-import { getPayPeriodStart } from "../../utils/ScheduleUtils";
+import { getPayPeriodStart, validatePayday } from "../../utils/ScheduleUtils";
 import { IScheduleItem } from "../../interfaces/IPlatoonStart";
 
 describe("getPayPeriodStart", () => {
@@ -12,7 +12,7 @@ describe("getPayPeriodStart", () => {
 });
 
 describe("getPayPeriodSchedule", () => {
-  it("When given a pay day and a platoon by the user, it finds the start of the pay period for that pay day, finds the month that it is in, and then creates a 45 day schedule for the given platoon, in the format of an array filled with 45 objects, 1 object per day, {date: Date object, rotation: day 1/day 2/night 1/night 2/day off}", () => {
+  it("When given a pay day and a platoon by the user, it finds the start of the pay period for that pay day, finds the month that it is in, and then creates a 45 day schedule for the given platoon, in the format of an array filled with 45 objects, 1 object per day, {date: Date object, rotation: day 1/day 2/night 1/night 2/day off}, but only returns the 14 days of the pay period", () => {
     // user input
     const payDay: Date = new Date(2023, 10, 3);
     const platoon: string = "A";
@@ -34,5 +34,13 @@ describe("getPayPeriodSchedule", () => {
     expect(() => getPayPeriodSchedule(payDay, "F")).toThrowError(
       "Platoon can only be A/B/C/D"
     );
+  });
+});
+
+describe("validatePayday", () => {
+  it("should return true if given date is a friday", () => {
+    const dateToTest = new Date(2023, 9, 20);
+
+    expect(validatePayday(dateToTest)).toBe(true);
   });
 });

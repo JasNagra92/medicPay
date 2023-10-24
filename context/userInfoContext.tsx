@@ -7,10 +7,10 @@ const initialUserInfo: IUserInfo = {
   payDay: undefined,
   shiftPattern: "",
   platoon: "A",
-  dayShiftStartTime: 0,
-  dayShiftEndTime: 0,
-  nightShiftStartTime: 0,
-  nightShiftEndTime: 0,
+  dayShiftStartTime: { hours: 0, minutes: 0 },
+  dayShiftEndTime: { hours: 0, minutes: 0 },
+  nightShiftStartTime: { hours: 0, minutes: 0 },
+  nightShiftEndTime: { hours: 0, minutes: 0 },
 };
 
 export const UserInfoContext = createContext<IUserInfo | null>(initialUserInfo);

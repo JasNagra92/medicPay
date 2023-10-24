@@ -21,6 +21,7 @@ export default function UserRadioInput({ label }: IUserRadioInputProps) {
 
   const handlePress = (data: string) => {
     if (dispatch) {
+      // if data is a platoon then it is a single string so set platoon, otherwise it would be the rotation so set rotation
       data.length === 1
         ? dispatch({ type: "setPlatoon", payload: data })
         : dispatch({ type: "setRotation", payload: data });

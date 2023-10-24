@@ -110,3 +110,8 @@ export function getPayPeriodSchedule(
 
   return payPeriodSchedule;
 }
+
+// function should take a date and return true only if the date given as a parameter is a friday
+export function validatePayday(date: Date): Boolean {
+  return date.getDay() === 5 ? true : false;
+}
