@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { TimePickerModal } from "react-native-paper-dates";
 import { Feather } from "@expo/vector-icons";
@@ -34,7 +34,10 @@ export default function UserShiftTimeInput({ text }: IUserShiftTimeInputProps) {
       if (dispatch) {
         switch (pressed) {
           case "Day Shift Start":
-            dispatch({ type: "setDayShiftStart", payload: { hours, minutes } });
+            dispatch({
+              type: "setDayShiftStart",
+              payload: { hours, minutes },
+            });
             break;
           case "Day Shift End Time":
             dispatch({ type: "setDayShiftEnd", payload: { hours, minutes } });

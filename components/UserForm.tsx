@@ -1,6 +1,5 @@
-import React from "react";
-import { View } from "react-native";
-import { Button } from "react-native-paper";
+import React, { forwardRef } from "react";
+import { View, TouchableOpacity, Text } from "react-native";
 import UserInputField from "./UserInputField";
 import UserButtonInput from "./UserButtonInput";
 import UserRadioInput from "./UserRadioInput";
@@ -37,13 +36,11 @@ export default function UserForm() {
       ) : null}
       <UserShiftTimeInput text={"Day"} />
       <UserShiftTimeInput text={"Night"} />
-      <Button
-        mode="contained"
-        buttonColor="#379D9F"
-        className="mx-3 rounded-lg"
-      >
-        Submit
-      </Button>
+      <Link href="/dashboard" asChild>
+        <TouchableOpacity className="mx-3 rounded-lg bg-[#379D9F] p-3">
+          <Text className="font-bold text-white text-center">Submit</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 }

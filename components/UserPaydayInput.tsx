@@ -21,7 +21,6 @@ export default function UserPaydayInput() {
         if (validatePayday(params.date)) {
           setOpen(false);
           dispatch({ type: "setPayday", payload: params.date });
-          console.log(params.date);
         } else {
           alert("Must select a valid Pay Day(fridays only) ");
         }

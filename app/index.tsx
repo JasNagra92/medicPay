@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import UserForm from "../components/UserForm";
 import { StatusBar } from "expo-status-bar";
-import { Text, ImageBackground } from "react-native";
+import { Text, ImageBackground, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
 import { PaperProvider } from "react-native-paper";
@@ -23,31 +23,29 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <PaperProvider>
-        <UserInfoProvider>
-          <ImageBackground source={image} style={{ flex: 1 }}>
-            <SafeAreaView
+        <ImageBackground source={image} style={{ flex: 1 }}>
+          <SafeAreaView
+            style={{
+              flex: 1,
+              flexDirection: "column",
+              alignItems: "center",
+              rowGap: 30,
+            }}
+          >
+            <Text
               style={{
-                flex: 1,
-                flexDirection: "column",
-                alignItems: "center",
-                rowGap: 30,
+                fontFamily: "OpenSans_800ExtraBold",
+                fontSize: 30,
+                color: "white",
+                textAlign: "center",
               }}
             >
-              <Text
-                style={{
-                  fontFamily: "OpenSans_800ExtraBold",
-                  fontSize: 30,
-                  color: "white",
-                  textAlign: "center",
-                }}
-              >
-                Work Shift
-              </Text>
-              <UserForm />
-              <StatusBar style="auto" />
-            </SafeAreaView>
-          </ImageBackground>
-        </UserInfoProvider>
+              Work Shift
+            </Text>
+            <UserForm />
+            <StatusBar style="auto" />
+          </SafeAreaView>
+        </ImageBackground>
       </PaperProvider>
     </SafeAreaProvider>
   );

@@ -1,3 +1,6 @@
+import { IUserInfo } from "../interfaces/IAppState";
+import { IScheduleItem } from "../interfaces/IPlatoonStart";
+
 const nightShiftStartHour: number = 18;
 const nightShiftEndHour: number = 6;
 
@@ -84,4 +87,55 @@ export function calculateEarnings(
     totalEarnings += hourlyRate;
   }
   return totalEarnings.toFixed(2);
+}
+
+// function to return a start time as date object when given a schedule item and a user info object. Schedule item will decide if a start date is to be generated using the day shift start times or the night shift start times from the user info object
+export function generateStartTimeDate(
+  scheduleItem: IScheduleItem,
+  userInfo: IUserInfo
+): Date {
+  const { date, rotation } = scheduleItem;
+  const { dayShiftStartTime, nightShiftStartTime } = userInfo;
+
+  const [hours, minutes] =
+    rotation === "day 1" || rotation === "day 2"
+      ? [dayShiftStartTime.hours, dayShiftStartTime.minutes]
+      : [nightShiftStartTime.hours, nightShiftStartTime.minutes];
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  );
+}
+
+// function to return a end time as date object when given a schedule item and a user info object. Schedule item will decide if a start date is to be generated using the day shift start times or the night shift start times from the user info object
+export function generateEndTimeDate(
+  scheduleItem: IScheduleItem,
+  userInfo: IUserInfo
+): Date {
+  const { date, rotation } = scheduleItem;
+  const { dayShiftEndTime, nightShiftEndTime } = userInfo;
+
+  let hours, minutes;
+
+  if (rotation === "day 1" || rotation === "day 2") {
+    hours = dayShiftEndTime.hours;
+    minutes = dayShiftEndTime.minutes;
+  } else {
+    hours = nightShiftEndTime.hours;
+    minutes = nightShiftEndTime.minutes;
+    // adjust the date to the next day because all night shifts end after midnight
+    date.setDate(date.getDate() + 1);
+  }
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  );
 }

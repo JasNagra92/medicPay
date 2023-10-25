@@ -4,7 +4,10 @@ import {
   isWeekend,
   getHoursWorked,
   calculateEarnings,
+  generateStartTimeDate,
+  generateEndTimeDate,
 } from "../../utils/HourAndMoneyUtils.ts";
+import { IUserInfo } from "../../interfaces/IAppState.ts";
 
 import { IScheduleItem } from "../../interfaces/IPlatoonStart.ts";
 
@@ -111,5 +114,88 @@ describe("calculateEarnings", () => {
         weekendPremium
       )
     ).toBe("611.76");
+  });
+});
+
+describe("generateStartTimeDate", () => {
+  it("should return a date object with the correct start time using the info from the userinfo object as well as a schedule item", () => {
+    let userInfoTest: IUserInfo = {
+      hourlyWage: "",
+      payDay: new Date(),
+      shiftPattern: "",
+      platoon: "A",
+      dayShiftStartTime: { hours: 6, minutes: 0 },
+      dayShiftEndTime: { hours: 0, minutes: 0 },
+      nightShiftStartTime: { hours: 0, minutes: 0 },
+      nightShiftEndTime: { hours: 0, minutes: 0 },
+    };
+
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "day 1" };
+
+    let expectedDate = new Date(2023, 9, 27, 6, 0);
+
+    let result = generateStartTimeDate(scheduleItem, userInfoTest);
+    expect(result).toEqual(expectedDate);
+  });
+
+  it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a night shift", () => {
+    let userInfoTest: IUserInfo = {
+      hourlyWage: "",
+      payDay: new Date(),
+      shiftPattern: "",
+      platoon: "A",
+      dayShiftStartTime: { hours: 0, minutes: 0 },
+      dayShiftEndTime: { hours: 0, minutes: 0 },
+      nightShiftStartTime: { hours: 18, minutes: 0 },
+      nightShiftEndTime: { hours: 0, minutes: 0 },
+    };
+
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "night 1" };
+
+    let expectedDate = new Date(2023, 9, 27, 18, 0);
+
+    let result = generateStartTimeDate(scheduleItem, userInfoTest);
+    expect(result).toEqual(expectedDate);
+  });
+});
+
+describe("generateEndTimeDate", () => {
+  it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a day shift", () => {
+    let userInfoTest: IUserInfo = {
+      hourlyWage: "",
+      payDay: new Date(),
+      shiftPattern: "",
+      platoon: "A",
+      dayShiftStartTime: { hours: 0, minutes: 0 },
+      dayShiftEndTime: { hours: 18, minutes: 0 },
+      nightShiftStartTime: { hours: 0, minutes: 0 },
+      nightShiftEndTime: { hours: 0, minutes: 0 },
+    };
+
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "day 1" };
+
+    let expectedDate = new Date(2023, 9, 27, 18, 0);
+
+    let result = generateEndTimeDate(scheduleItem, userInfoTest);
+    expect(result).toEqual(expectedDate);
+  });
+  it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a night shift, should be the next day ", () => {
+    let userInfoTest: IUserInfo = {
+      hourlyWage: "",
+      payDay: new Date(),
+      shiftPattern: "",
+      platoon: "A",
+      dayShiftStartTime: { hours: 0, minutes: 0 },
+      dayShiftEndTime: { hours: 18, minutes: 0 },
+      nightShiftStartTime: { hours: 0, minutes: 0 },
+      nightShiftEndTime: { hours: 6, minutes: 0 },
+    };
+
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "night 1" };
+
+    let expectedDate = new Date(2023, 9, 28, 6, 0);
+
+    let result = generateEndTimeDate(scheduleItem, userInfoTest);
+    expect(result).toEqual(expectedDate);
   });
 });
