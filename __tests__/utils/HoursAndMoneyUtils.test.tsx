@@ -6,6 +6,7 @@ import {
   calculateEarnings,
   generateStartTimeDate,
   generateEndTimeDate,
+  getNightShiftPremiumHoursWorked,
 } from "../../utils/HourAndMoneyUtils.ts";
 import { IUserInfo } from "../../interfaces/IAppState.ts";
 
@@ -197,5 +198,20 @@ describe("generateEndTimeDate", () => {
 
     let result = generateEndTimeDate(scheduleItem, userInfoTest);
     expect(result).toEqual(expectedDate);
+  });
+});
+
+describe("getNightShiftPremiumHoursWorked", () => {
+  it("should return 12 if hours worked all fall between 1800 and 0600", () => {
+    let shiftStart: Date = new Date(2023, 9, 15, 18);
+    let shiftEnd: Date = new Date(2023, 9, 16, 6);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(12);
+  });
+  it("should return 0 if the start and end times are both during the day", () => {
+    let shiftStart: Date = new Date(2023, 9, 15, 6);
+    let shiftEnd: Date = new Date(2023, 9, 15, 18);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(0);
   });
 });

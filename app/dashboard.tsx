@@ -12,6 +12,7 @@ import {
   calculateEarnings,
   generateStartTimeDate,
   generateEndTimeDate,
+  getHoursWorked,
 } from "../utils/HourAndMoneyUtils";
 import { IScheduleItem } from "../interfaces/IPlatoonStart";
 import DaySummary from "../components/DashboardComponents/DaySummary";
@@ -60,6 +61,7 @@ export default function Dashboard() {
             payPeriodSchedule.map((item, i) => {
               const shiftStart = generateStartTimeDate(item, userInfo!);
               const shiftEnd = generateEndTimeDate(item, userInfo!);
+              let baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
               let baseRate = 43.13;
               let nightShiftPremium = 5.25;
               let weekendPremium = 2.5;
@@ -79,7 +81,7 @@ export default function Dashboard() {
                     DayOrNight="Day"
                     Date={item.date}
                     TotalForDay={total}
-                    BaseHoursWorked={12}
+                    BaseHoursWorked={baseHoursWorked}
                   />
                 </View>
               );

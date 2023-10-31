@@ -12,6 +12,24 @@ export function isWithinNightShiftHours(currentHour: number): Boolean {
     : false;
 }
 
+export function getNightShiftPremiumHoursWorked(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let premiumHours = 0;
+
+  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
+
+  for (let hour = 0; hour <= hoursWorked; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+
+    if (isWithinNightShiftHours(currentHour)) {
+      premiumHours += 1;
+    }
+  }
+  return premiumHours;
+}
+
 // function to check specifically if the given hour is between
 // 6pm on a friday night and midnight on friday night
 // or if it is on Monday morning between 0000 hours and 0600
