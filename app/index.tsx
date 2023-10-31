@@ -1,52 +1,40 @@
-import React, { useState, useEffect, useCallback } from "react";
-import UserForm from "../components/UserForm";
-import { StatusBar } from "expo-status-bar";
-import { Text, ImageBackground, View } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
-import { PaperProvider } from "react-native-paper";
-import { UserInfoProvider } from "../context/userInfoContext";
-import { en, registerTranslation } from "react-native-paper-dates";
-registerTranslation("en", en);
-
+import { Link } from "expo-router";
+import React from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ImageBackground } from "react-native";
+import MainPageInput from "../components/MainPageInput";
+import { Button } from "react-native-paper";
 const image = require("../assets/images/bgImage.png");
 
-export default function App() {
-  let [fontsLoaded, fontError] = useFonts({
-    OpenSans_800ExtraBold,
-  });
-
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
-
+export default function HomeScreen() {
   return (
-    <SafeAreaProvider>
-      <PaperProvider>
-        <ImageBackground source={image} style={{ flex: 1 }}>
-          <SafeAreaView
-            style={{
-              flex: 1,
-              flexDirection: "column",
-              alignItems: "center",
-              rowGap: 30,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "OpenSans_800ExtraBold",
-                fontSize: 30,
-                color: "white",
-                textAlign: "center",
-              }}
-            >
-              Work Shift
-            </Text>
-            <UserForm />
-            <StatusBar style="auto" />
-          </SafeAreaView>
-        </ImageBackground>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <ImageBackground source={image} style={{ flex: 1 }}>
+      <SafeAreaView
+        style={{ flex: 1, flexDirection: "column", alignItems: "center" }}
+      >
+        <View
+          style={{
+            shadowColor: "rgba(0, 0, 0, 0.25)",
+            shadowOffset: {
+              width: 0,
+              height: 4,
+            },
+            shadowRadius: 25,
+            shadowOpacity: 1,
+          }}
+          className="rounded-2xl bg-white shadow-sm w-5/6 border-0 pt-3 pb-3 flex flex-col justify-center mt-10"
+        >
+          <MainPageInput icon="mail" placeholder="email" />
+          <MainPageInput icon="lock" placeholder="password" />
+
+          <Link href={"/workShift"}>
+            <Button icon="camera" mode="contained">
+              Press me
+            </Button>
+          </Link>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }

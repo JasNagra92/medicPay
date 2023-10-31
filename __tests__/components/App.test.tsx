@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import renderer, { ReactTestRendererJSON } from "react-test-renderer";
 
-import App from "../../app/index";
+import App from "../../app";
 
 jest.mock("@expo-google-fonts/open-sans", () => ({
   useFonts: () => [true, null],
