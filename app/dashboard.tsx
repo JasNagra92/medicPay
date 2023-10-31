@@ -54,7 +54,7 @@ export default function Dashboard() {
             flexDirection: "column",
           }}
           contentContainerStyle={{ alignItems: "center" }}
-          className="space-y-3 mt-4"
+          className="space-y-3 pt-4"
         >
           {payPeriodSchedule &&
             payPeriodSchedule.map((item, i) => {
@@ -74,7 +74,7 @@ export default function Dashboard() {
                 total = "0";
               }
               return (
-                <View className="flex w-5/6">
+                <View className="flex w-5/6" key={i}>
                   <DaySummary
                     DayOrNight="Day"
                     Date={item.date}
