@@ -12,6 +12,7 @@ export function isWithinNightShiftHours(currentHour: number): Boolean {
     : false;
 }
 
+// function to return how many hours between 2 date objects fall within night shift premium hours
 export function getNightShiftPremiumHoursWorked(
   shiftStart: Date,
   shiftEnd: Date
@@ -19,12 +20,18 @@ export function getNightShiftPremiumHoursWorked(
   let premiumHours = 0;
 
   const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
+  const isFractional = hoursWorked % 1 !== 0;
 
-  for (let hour = 0; hour <= hoursWorked; hour++) {
+  for (let hour = 0; hour < hoursWorked; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
 
+    // checks if the hours worked was a fraction first, and then if it was, further checks if the hour that its checking is === the last hour in the loop, if it is, instead of adding 1 full hour to the premium, it just adds whatever the fraction was from the hoursWorked variable
     if (isWithinNightShiftHours(currentHour)) {
-      premiumHours += 1;
+      if (isFractional && hour === Math.floor(hoursWorked) - 1) {
+        premiumHours += hoursWorked - Math.floor(hoursWorked);
+      } else {
+        premiumHours += 1;
+      }
     }
   }
   return premiumHours;
@@ -50,6 +57,40 @@ export function isWithinFridayNightOrMondayMorning(
 // function to check if given hour takes place on a saturday or sunday
 export function isWeekend(currentDay: number): Boolean {
   return currentDay === 6 || currentDay === 0 ? true : false;
+}
+
+// function to return how many hours between 2 date objects fall within weekend shift premium hours
+export function getWeekendPremiumHoursWorked(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let weekendPremiumHours = 0;
+
+  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
+  const isFractional = hoursWorked % 1 !== 0;
+
+  for (let hour = 0; hour < hoursWorked; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+    let currentDay = shiftStart.getDay();
+
+    // check if current day flipped to the next day in the current hour
+    if (currentHour < shiftStart.getHours()) {
+      currentDay = (currentDay + 1) % 7;
+    }
+
+    if (
+      isWeekend(currentDay) ||
+      isWithinFridayNightOrMondayMorning(currentHour, currentDay)
+    ) {
+      if (isFractional && hour === Math.floor(hoursWorked) - 1) {
+        weekendPremiumHours += hoursWorked - Math.floor(hoursWorked);
+      } else {
+        weekendPremiumHours += 1;
+      }
+    }
+  }
+
+  return weekendPremiumHours;
 }
 
 // function to return total hours worked between 2 date objects

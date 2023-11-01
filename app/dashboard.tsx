@@ -13,6 +13,7 @@ import {
   generateStartTimeDate,
   generateEndTimeDate,
   getHoursWorked,
+  getNightShiftPremiumHoursWorked,
 } from "../utils/HourAndMoneyUtils";
 import { IScheduleItem } from "../interfaces/IPlatoonStart";
 import DaySummary from "../components/DashboardComponents/DaySummary";
@@ -62,6 +63,11 @@ export default function Dashboard() {
               const shiftStart = generateStartTimeDate(item, userInfo!);
               const shiftEnd = generateEndTimeDate(item, userInfo!);
               let baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+              let nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+                shiftStart,
+                shiftEnd
+              );
+
               let baseRate = 43.13;
               let nightShiftPremium = 5.25;
               let weekendPremium = 2.5;
