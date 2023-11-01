@@ -68,12 +68,13 @@ export function getWeekendPremiumHoursWorked(
 
   const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
   const isFractional = hoursWorked % 1 !== 0;
+  const startHoursFraction = shiftStart.getMinutes() / 60;
+  const isStartFraction = startHoursFraction > 0;
 
   for (let hour = 0; hour < hoursWorked; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
     let currentDay = shiftStart.getDay();
 
-    // check if current day flipped to the next day in the current hour
     if (currentHour < shiftStart.getHours()) {
       currentDay = (currentDay + 1) % 7;
     }
@@ -82,7 +83,13 @@ export function getWeekendPremiumHoursWorked(
       isWeekend(currentDay) ||
       isWithinFridayNightOrMondayMorning(currentHour, currentDay)
     ) {
-      if (isFractional && hour === Math.floor(hoursWorked) - 1) {
+      if (isStartFraction && hour === 0) {
+        weekendPremiumHours += startHoursFraction;
+      } else if (
+        isFractional &&
+        hour === Math.floor(hoursWorked) - 1 &&
+        !isStartFraction // This is modified to address shiftEnd time
+      ) {
         weekendPremiumHours += hoursWorked - Math.floor(hoursWorked);
       } else {
         weekendPremiumHours += 1;

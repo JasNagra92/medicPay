@@ -227,6 +227,15 @@ describe("getNightShiftPremiumHoursWorked", () => {
 
     expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
   });
+  it("should return 6.5 if start time is sunday night at 2330 and end time is monday morning at 0600", () => {
+    let shiftStart: Date = new Date(2023, 9, 22, 23, 30);
+    let shiftEnd: Date = new Date(2023, 9, 23, 6);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
+  it(
+    "should return  if start time is friday night at 1830 and end time is saturday morning at "
+  );
 });
 
 describe("getWeekendPremiumHoursWorked", () => {
@@ -248,5 +257,23 @@ describe("getWeekendPremiumHoursWorked", () => {
     let shiftEnd: Date = new Date(2023, 9, 28, 0, 30);
 
     expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
+  it("should return 6.5 if start time is sunday night at 2330 and end time is monday morning at 0630", () => {
+    let shiftStart: Date = new Date(2023, 9, 22, 23, 30);
+    let shiftEnd: Date = new Date(2023, 9, 23, 6, 30);
+
+    expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
+  it("should return 6.5 if start time is sunday night at 2330 and end time is monday morning at 0600", () => {
+    let shiftStart: Date = new Date(2023, 9, 22, 23, 30);
+    let shiftEnd: Date = new Date(2023, 9, 23, 6);
+
+    expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
+  it("should return 6 if start time is friday day at 1730 and end time is saturday morning at 0600", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 17, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0);
+
+    expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
   });
 });
