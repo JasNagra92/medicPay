@@ -4,6 +4,150 @@ import { IScheduleItem } from "../interfaces/IPlatoonStart";
 const nightShiftStartHour: number = 18;
 const nightShiftEndHour: number = 6;
 
+// function to check if shift start and end are both fractions
+export function bothFractions(shiftStart: Date, shiftEnd: Date): boolean {
+  return shiftStart.getMinutes() !== 0 && shiftEnd.getMinutes() !== 0;
+}
+
+// function to check if both times are whole start times
+export function bothWholeTimes(shiftStart: Date, shiftEnd: Date): boolean {
+  return shiftStart.getMinutes() === 0 && shiftEnd.getMinutes() === 0;
+}
+
+// function to check if start time is a fraction and end is a whole
+export function startFractionEndWhole(
+  shiftStart: Date,
+  shiftEnd: Date
+): boolean {
+  return shiftStart.getMinutes() !== 0 && shiftEnd.getMinutes() === 0;
+}
+
+// function to check if start is a whole and end is a fraction
+export function endFractionStartWhole(
+  shiftStart: Date,
+  shiftEnd: Date
+): boolean {
+  return shiftStart.getMinutes() === 0 && shiftEnd.getMinutes() !== 0;
+}
+
+// function to return premium hours worked when both start/end times are whole
+export function getNightShiftHoursBothWhole(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let premiumHours = 0;
+
+  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
+
+  for (let hour = 0; hour < hoursWorked; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+
+    if (isWithinNightShiftHours(currentHour)) {
+      premiumHours += 1;
+    }
+  }
+
+  return premiumHours;
+}
+
+// function to return premium hours when start time is a fraction but end time is whole
+export function handleFractionalStart(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let premiumHours = 0;
+  const startHour = shiftStart.getHours();
+  const startMinute = shiftStart.getMinutes();
+
+  // Check if the hour part of the start time is within night shift hours
+  if (isWithinNightShiftHours(startHour)) {
+    // Calculate fraction of the start hour
+    const fraction = startMinute / 60;
+    premiumHours += fraction;
+  }
+
+  // Start looping from the next hour
+  for (let hour = 1; hour <= getHoursWorked(shiftStart, shiftEnd); hour++) {
+    let currentHour = (startHour + hour) % 24;
+
+    if (isWithinNightShiftHours(currentHour)) {
+      premiumHours += 1;
+    }
+  }
+
+  return premiumHours;
+}
+
+// function to return premium hours with a whole start time but a fractional end
+export function handleFractionalEnd(shiftStart: Date, shiftEnd: Date): number {
+  let premiumHours = 0;
+  const endHour = shiftEnd.getHours();
+  const endMinute = shiftEnd.getMinutes();
+
+  // Check if the hour part of the end time is within night shift hours
+  if (isWithinNightShiftHours(endHour)) {
+    // Calculate fraction of the end hour
+    const fraction = endMinute / 60;
+    premiumHours += fraction;
+  }
+
+  // Start looping from the start hour until the second-to-last whole hour
+  for (let hour = 0; hour < getHoursWorked(shiftStart, shiftEnd) - 1; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+
+    if (isWithinNightShiftHours(currentHour)) {
+      premiumHours += 1;
+    }
+  }
+
+  return premiumHours;
+}
+
+// function to return premium hours with a fractional start time and fractional end
+export function handleBothFractions(shiftStart: Date, shiftEnd: Date): number {
+  let premiumHours = 0;
+  const startHour = shiftStart.getHours();
+  const endHour = shiftEnd.getHours();
+  const startMinute = shiftStart.getMinutes();
+  const endMinute = shiftEnd.getMinutes();
+
+  if (endHour === 0) {
+    // If the shift ends around midnight, calculate hours from startHour to 24 (end of the day)
+    for (let hour = startHour + 1; hour < 24; hour++) {
+      if (isWithinNightShiftHours(hour)) {
+        premiumHours += 1;
+      }
+    }
+    // Then, consider the hours from midnight (0) to the endHour
+    for (let hour = 0; hour < endHour; hour++) {
+      if (isWithinNightShiftHours(hour)) {
+        premiumHours += 1;
+      }
+    }
+  } else {
+    // Otherwise, use the regular loop
+    for (let hour = startHour + 1; hour < endHour; hour++) {
+      if (isWithinNightShiftHours(hour)) {
+        premiumHours += 1;
+      }
+    }
+  }
+
+  // Calculate fraction for the start hour
+  if (isWithinNightShiftHours(startHour)) {
+    const startFraction = 1 - startMinute / 60;
+    premiumHours += startFraction;
+  }
+
+  // Calculate fraction for the end hour
+  if (isWithinNightShiftHours(endHour)) {
+    const endFraction = endMinute / 60;
+    premiumHours += endFraction;
+  }
+
+  return premiumHours;
+}
+
 // function to check if the given hour is between night shift
 // premium hours
 export function isWithinNightShiftHours(currentHour: number): Boolean {
@@ -20,20 +164,20 @@ export function getNightShiftPremiumHoursWorked(
   let premiumHours = 0;
 
   const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
-  const isFractional = hoursWorked % 1 !== 0;
 
-  for (let hour = 0; hour < hoursWorked; hour++) {
-    let currentHour = (shiftStart.getHours() + hour) % 24;
-
-    // checks if the hours worked was a fraction first, and then if it was, further checks if the hour that its checking is === the last hour in the loop, if it is, instead of adding 1 full hour to the premium, it just adds whatever the fraction was from the hoursWorked variable
-    if (isWithinNightShiftHours(currentHour)) {
-      if (isFractional && hour === Math.floor(hoursWorked) - 1) {
-        premiumHours += hoursWorked - Math.floor(hoursWorked);
-      } else {
-        premiumHours += 1;
-      }
-    }
+  if (bothWholeTimes(shiftStart, shiftEnd)) {
+    premiumHours = getNightShiftHoursBothWhole(shiftStart, shiftEnd);
   }
+  if (startFractionEndWhole(shiftStart, shiftEnd)) {
+    premiumHours = handleFractionalStart(shiftStart, shiftEnd);
+  }
+  if (endFractionStartWhole(shiftStart, shiftEnd)) {
+    premiumHours = handleFractionalEnd(shiftStart, shiftEnd);
+  }
+  if (bothFractions(shiftStart, shiftEnd)) {
+    premiumHours = handleBothFractions(shiftStart, shiftEnd);
+  }
+
   return premiumHours;
 }
 

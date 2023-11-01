@@ -233,9 +233,30 @@ describe("getNightShiftPremiumHoursWorked", () => {
 
     expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
   });
-  it(
-    "should return  if start time is friday night at 1830 and end time is saturday morning at "
-  );
+  it("should return 5.5 if start time is friday night at 1830 and end time is saturday night at 0000", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 18, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(5.5);
+  });
+  it("should return 6 if start time is friday night at 1730 and end time is saturday night at 0000", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 17, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
+  });
+  it("should return 5.5 if start time is friday night at 1830 and end time is saturday night at 0030", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 18, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
+  });
+  it("should return 6.5 if start time is friday night at 1730 and end time is saturday night at 0030", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 17, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
 });
 
 describe("getWeekendPremiumHoursWorked", () => {
@@ -276,4 +297,10 @@ describe("getWeekendPremiumHoursWorked", () => {
 
     expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
   });
+  // it("should return 6.5 if start time is friday day at 1230 and end time is saturday morning at 0030", () => {
+  //   let shiftStart: Date = new Date(2023, 9, 20, 12, 30);
+  //   let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
+
+  //   expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  // });
 });
