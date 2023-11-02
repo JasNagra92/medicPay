@@ -64,7 +64,7 @@ const rotation = [
 ];
 
 export function getPayPeriodStart(payDay: Date): Date {
-  const payPeriodStart = sub(payDay, { days: 21 });
+  const payPeriodStart = sub(payDay, { days: 23 });
   return payPeriodStart;
 }
 
@@ -94,7 +94,7 @@ export function getPayPeriodSchedule(
   // Use a while loop to collect 14 items
   let i = 0;
   while (payPeriodSchedule.length < 14) {
-    let currentDay = new Date(2023, payPeriodStartMonth, 1 + i);
+    let currentDay = new Date(2023, payPeriodStartMonth, i);
 
     if (currentDay >= payPeriodStart) {
       payPeriodSchedule.push({

@@ -25,8 +25,21 @@ describe("getPayPeriodSchedule", () => {
     );
 
     expect(schedule).toHaveLength(14);
-    expect(schedule[0].rotation).toBe("night 1");
+    expect(schedule[0].rotation).toBe("Night 1");
     expect(schedule[2].rotation).toBe("day off");
+  });
+  it("Day 1's date should be December 8th when given a payday of Dec 29th", () => {
+    const payDay: Date = new Date(2023, 11, 29);
+    const platoon: string = "C";
+
+    const payPeriodStart: Date = getPayPeriodStart(payDay);
+
+    const schedule: IScheduleItem[] = getPayPeriodSchedule(
+      payPeriodStart,
+      platoon
+    );
+
+    expect(schedule[0].date).toEqual(new Date(2023, 11, 8));
   });
 
   it("should throw an error if the platoon given is any letter other than A/B/C/D", () => {
@@ -34,6 +47,33 @@ describe("getPayPeriodSchedule", () => {
     expect(() => getPayPeriodSchedule(payDay, "F")).toThrowError(
       "Platoon can only be A/B/C/D"
     );
+  });
+  it("first schedule item when given a payday of Dec 1st and C platoon, should be Nov 10th which is a Night 1", () => {
+    const payDay: Date = new Date(2023, 11, 1);
+    const platoon: string = "C";
+
+    const payPeriodStart: Date = getPayPeriodStart(payDay);
+
+    const schedule: IScheduleItem[] = getPayPeriodSchedule(
+      payPeriodStart,
+      platoon
+    );
+
+    expect(schedule[0].rotation).toEqual("Night 1");
+  });
+  it("first schedule item when given a payday of Dec 1st and A platoon, should be Nov 10th which is a day off", () => {
+    const payDay: Date = new Date(2023, 11, 1);
+    const platoon: string = "A";
+
+    const payPeriodStart: Date = getPayPeriodStart(payDay);
+
+    const schedule: IScheduleItem[] = getPayPeriodSchedule(
+      payPeriodStart,
+      platoon
+    );
+
+    expect(schedule[0].rotation).toEqual("day off");
+    expect(schedule[0].date).toEqual(new Date(2023, 10, 10));
   });
 });
 

@@ -17,6 +17,7 @@ interface IDaySummaryProps {
   baseRate: string;
   shiftStart: Date;
   shiftEnd: Date;
+  index: number;
 }
 
 export default function DaySummary({
@@ -29,6 +30,7 @@ export default function DaySummary({
   baseRate,
   shiftStart,
   shiftEnd,
+  index,
 }: IDaySummaryProps) {
   const userInfo = useUserInfo();
   return (
@@ -99,7 +101,7 @@ export default function DaySummary({
           <Text className="flex-2">{WeekendHoursWorked} Hrs x $2.50</Text>
           <Text className="flex-1 text-right">
             {" "}
-            ${(WeekendHoursWorked! * 2.5).toFixed(2)}
+            ${(WeekendHoursWorked! * 2.25).toFixed(2)}
           </Text>
         </View>
         <View className="flex flex-row justify-between rounded-lg py-2 px-1 bg-[#e1f1f1]">

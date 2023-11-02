@@ -3,7 +3,6 @@ import {
   isWithinFridayNightOrMondayMorning,
   isWeekend,
   getHoursWorked,
-  calculateEarnings,
   generateStartTimeDate,
   generateEndTimeDate,
   getNightShiftPremiumHoursWorked,
@@ -86,50 +85,10 @@ describe("getHoursWorked", () => {
     const endTime: Date = new Date(2023, 9, 6, 6, 0, 0);
     expect(getHoursWorked(startTime, endTime)).toBe(8);
   });
-});
-
-describe("calculateEarnings", () => {
-  it("returns 517.56 when given a base rate of 43.13 and a start and end time that is a weekday day shift", () => {
-    const startTime = new Date(2023, 9, 16, 6);
-    const endTime = new Date(2023, 9, 16, 18);
-
-    expect(
-      calculateEarnings(
-        startTime,
-        endTime,
-        baseRate,
-        nightShiftPremium,
-        weekendPremium
-      )
-    ).toBe("517.56");
-  });
-  it("returns 547.56 when given start and end times that fall on a weekend day shift", () => {
-    const startTime = new Date(2023, 10, 4, 6);
-    const endTime = new Date(2023, 10, 4, 18);
-
-    expect(
-      calculateEarnings(
-        startTime,
-        endTime,
-        baseRate,
-        nightShiftPremium,
-        weekendPremium
-      )
-    ).toBe("547.56");
-  });
-  it("returns 611.76 when given start and end times that fall on a weekend night shift", () => {
-    const startTime = new Date(2023, 9, 15, 18);
-    const endTime = new Date(2023, 9, 16, 6);
-
-    expect(
-      calculateEarnings(
-        startTime,
-        endTime,
-        baseRate,
-        nightShiftPremium,
-        weekendPremium
-      )
-    ).toBe("611.76");
+  it("returns 12 when given Nov5th 6pm to 6am", () => {
+    const startTime: Date = new Date(2023, 10, 5, 6, 0, 0);
+    const endTime: Date = new Date(2023, 10, 5, 18, 0, 0);
+    expect(getHoursWorked(startTime, endTime)).toBe(12);
   });
 });
 
@@ -146,7 +105,7 @@ describe("generateStartTimeDate", () => {
       nightShiftEndTime: { hours: 0, minutes: 0 },
     };
 
-    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "day 1" };
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "Day 1" };
 
     let expectedDate = new Date(2023, 9, 27, 6, 0);
 
@@ -166,7 +125,7 @@ describe("generateStartTimeDate", () => {
       nightShiftEndTime: { hours: 0, minutes: 0 },
     };
 
-    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "night 1" };
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "Night 1" };
 
     let expectedDate = new Date(2023, 9, 27, 18, 0);
 
@@ -188,7 +147,7 @@ describe("generateEndTimeDate", () => {
       nightShiftEndTime: { hours: 0, minutes: 0 },
     };
 
-    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "day 1" };
+    let scheduleItem = { date: new Date(2023, 9, 27), rotation: "Day 1" };
 
     let expectedDate = new Date(2023, 9, 27, 18, 0);
 

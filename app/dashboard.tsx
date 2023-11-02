@@ -77,7 +77,7 @@ export default function Dashboard() {
               let baseRate = userInfo?.hourlyWage;
               let nightShiftPremium =
                 userInfo!.shiftPattern === "Alpha" ? 5.6 : 2.0;
-              let weekendPremium = 2.5;
+              let weekendPremium = 2.25;
               let total =
                 parseInt(baseRate!) * baseHoursWorked +
                 nightShiftHoursWorked * nightShiftPremium +
@@ -85,6 +85,7 @@ export default function Dashboard() {
               if (item.rotation === "day off") {
                 total = 0;
               }
+              console.log("rotation: " + item.rotation + " Date: " + item.date);
               return (
                 <View className="flex w-5/6" key={i}>
                   {item.rotation === "day off" ? (
@@ -100,6 +101,7 @@ export default function Dashboard() {
                       baseRate={baseRate!}
                       shiftStart={shiftStart}
                       shiftEnd={shiftEnd}
+                      index={i}
                     />
                   )}
                 </View>

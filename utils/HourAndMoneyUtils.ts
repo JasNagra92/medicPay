@@ -377,53 +377,6 @@ export function getHoursWorked(startTime: Date, endTime: Date): number {
   return hoursWorked;
 }
 
-// function to return the earnings from a shift given 2 Date object representing
-// shift start and shift end times
-export function calculateEarnings(
-  startTime: Date,
-  endTime: Date,
-  baseRate: number,
-  nightShiftPremium: number,
-  weekendPremium: number
-): string {
-  let totalEarnings: number = 0;
-
-  const hoursWorked = getHoursWorked(startTime, endTime);
-  const endOfShiftHour = endTime.getHours();
-
-  for (let hour = 0; hour <= hoursWorked; hour++) {
-    let hourlyRate: number = baseRate;
-
-    let currentHour = (startTime.getHours() + hour) % 24;
-    let currentDay = startTime.getDay();
-
-    // check if endOfShiftHour is equal to the current hour and then do not add anymore money because shift is over
-    if (endOfShiftHour === currentHour) {
-      return totalEarnings.toFixed(2);
-    }
-
-    // check if current day flipped to the next day in the current hour
-    if (currentHour < startTime.getHours()) {
-      (currentDay + 1) % 7;
-    }
-
-    // check if current hour is a night shift
-    if (isWithinNightShiftHours(currentHour)) {
-      hourlyRate += nightShiftPremium;
-
-      // check if current hour is also a weekend or friday night/monday morning
-      if (
-        isWeekend(currentDay) ||
-        isWithinFridayNightOrMondayMorning(currentHour, currentDay)
-      ) {
-        hourlyRate += weekendPremium;
-      }
-    }
-    totalEarnings += hourlyRate;
-  }
-  return totalEarnings.toFixed(2);
-}
-
 // function to return a start time as date object when given a schedule item and a user info object. Schedule item will decide if a start date is to be generated using the day shift start times or the night shift start times from the user info object
 export function generateStartTimeDate(
   scheduleItem: IScheduleItem,
@@ -433,7 +386,7 @@ export function generateStartTimeDate(
   const { dayShiftStartTime, nightShiftStartTime } = userInfo;
 
   const [hours, minutes] =
-    rotation === "day 1" || rotation === "day 2"
+    rotation === "Day 1" || rotation === "Day 2"
       ? [dayShiftStartTime.hours, dayShiftStartTime.minutes]
       : [nightShiftStartTime.hours, nightShiftStartTime.minutes];
 
@@ -456,7 +409,7 @@ export function generateEndTimeDate(
 
   let hours, minutes;
 
-  if (rotation === "day 1" || rotation === "day 2") {
+  if (rotation === "Day 1" || rotation === "Day 2") {
     hours = dayShiftEndTime.hours;
     minutes = dayShiftEndTime.minutes;
   } else {

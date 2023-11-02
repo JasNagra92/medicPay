@@ -29,9 +29,6 @@ export default function UserPaydayInput() {
     [setOpen]
   );
 
-  const buttonStyle =
-    "px-4 border rounded-xl border-gray-300 p-2 mt-1 flex-1 mx-3 flex flex-row justify-between items-center";
-
   return (
     <View className="flex flex-col">
       <Text className="ml-3 font-bold">Payday</Text>
