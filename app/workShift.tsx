@@ -19,6 +19,7 @@ export default function WorkShift() {
               flex: 1,
               flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
               rowGap: 30,
             }}
           >

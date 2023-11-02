@@ -103,6 +103,20 @@ describe("calculateEarnings", () => {
       )
     ).toBe("517.56");
   });
+  it("returns 547.56 when given start and end times that fall on a weekend day shift", () => {
+    const startTime = new Date(2023, 10, 4, 6);
+    const endTime = new Date(2023, 10, 4, 18);
+
+    expect(
+      calculateEarnings(
+        startTime,
+        endTime,
+        baseRate,
+        nightShiftPremium,
+        weekendPremium
+      )
+    ).toBe("547.56");
+  });
   it("returns 611.76 when given start and end times that fall on a weekend night shift", () => {
     const startTime = new Date(2023, 9, 15, 18);
     const endTime = new Date(2023, 9, 16, 6);
@@ -251,6 +265,12 @@ describe("getNightShiftPremiumHoursWorked", () => {
 
     expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
   });
+  it("should return 12 if start time is friday night at 1730 and end time is saturday morning at 0530", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 17, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 5, 30);
+
+    expect(getNightShiftPremiumHoursWorked(shiftStart, shiftEnd)).toBe(11.5);
+  });
   it("should return 6.5 if start time is friday night at 1730 and end time is saturday night at 0030", () => {
     let shiftStart: Date = new Date(2023, 9, 20, 17, 30);
     let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
@@ -297,10 +317,10 @@ describe("getWeekendPremiumHoursWorked", () => {
 
     expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
   });
-  // it("should return 6.5 if start time is friday day at 1230 and end time is saturday morning at 0030", () => {
-  //   let shiftStart: Date = new Date(2023, 9, 20, 12, 30);
-  //   let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
+  it("should return 6.5 if start time is friday day at 1230 and end time is saturday morning at 0030", () => {
+    let shiftStart: Date = new Date(2023, 9, 20, 12, 30);
+    let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);
 
-  //   expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
-  // });
+    expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6.5);
+  });
 });

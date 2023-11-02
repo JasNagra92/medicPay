@@ -51,7 +51,7 @@ export function getNightShiftHoursBothWhole(
 }
 
 // function to return premium hours when start time is a fraction but end time is whole
-export function handleFractionalStart(
+export function handleFractionalStartNightShift(
   shiftStart: Date,
   shiftEnd: Date
 ): number {
@@ -79,7 +79,10 @@ export function handleFractionalStart(
 }
 
 // function to return premium hours with a whole start time but a fractional end
-export function handleFractionalEnd(shiftStart: Date, shiftEnd: Date): number {
+export function handleFractionalEndNightShift(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
   let premiumHours = 0;
   const endHour = shiftEnd.getHours();
   const endMinute = shiftEnd.getMinutes();
@@ -104,32 +107,22 @@ export function handleFractionalEnd(shiftStart: Date, shiftEnd: Date): number {
 }
 
 // function to return premium hours with a fractional start time and fractional end
-export function handleBothFractions(shiftStart: Date, shiftEnd: Date): number {
+export function handleBothFractionsNightShift(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
   let premiumHours = 0;
+  const hoursWorked = getHoursWorked(shiftStart, shiftEnd);
   const startHour = shiftStart.getHours();
   const endHour = shiftEnd.getHours();
   const startMinute = shiftStart.getMinutes();
   const endMinute = shiftEnd.getMinutes();
 
-  if (endHour === 0) {
-    // If the shift ends around midnight, calculate hours from startHour to 24 (end of the day)
-    for (let hour = startHour + 1; hour < 24; hour++) {
-      if (isWithinNightShiftHours(hour)) {
-        premiumHours += 1;
-      }
-    }
-    // Then, consider the hours from midnight (0) to the endHour
-    for (let hour = 0; hour < endHour; hour++) {
-      if (isWithinNightShiftHours(hour)) {
-        premiumHours += 1;
-      }
-    }
-  } else {
-    // Otherwise, use the regular loop
-    for (let hour = startHour + 1; hour < endHour; hour++) {
-      if (isWithinNightShiftHours(hour)) {
-        premiumHours += 1;
-      }
+  // the regular loop
+  for (let hour = 1; hour < hoursWorked; hour++) {
+    let currentHour = (hour + shiftStart.getHours()) % 24;
+    if (isWithinNightShiftHours(currentHour)) {
+      premiumHours += 1;
     }
   }
 
@@ -163,19 +156,17 @@ export function getNightShiftPremiumHoursWorked(
 ): number {
   let premiumHours = 0;
 
-  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
-
   if (bothWholeTimes(shiftStart, shiftEnd)) {
     premiumHours = getNightShiftHoursBothWhole(shiftStart, shiftEnd);
   }
   if (startFractionEndWhole(shiftStart, shiftEnd)) {
-    premiumHours = handleFractionalStart(shiftStart, shiftEnd);
+    premiumHours = handleFractionalStartNightShift(shiftStart, shiftEnd);
   }
   if (endFractionStartWhole(shiftStart, shiftEnd)) {
-    premiumHours = handleFractionalEnd(shiftStart, shiftEnd);
+    premiumHours = handleFractionalEndNightShift(shiftStart, shiftEnd);
   }
   if (bothFractions(shiftStart, shiftEnd)) {
-    premiumHours = handleBothFractions(shiftStart, shiftEnd);
+    premiumHours = handleBothFractionsNightShift(shiftStart, shiftEnd);
   }
 
   return premiumHours;
@@ -210,34 +201,168 @@ export function getWeekendPremiumHoursWorked(
 ): number {
   let weekendPremiumHours = 0;
 
-  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
-  const isFractional = hoursWorked % 1 !== 0;
+  if (bothWholeTimes(shiftStart, shiftEnd)) {
+    weekendPremiumHours = getWeekendPremiumHoursBothWhole(shiftStart, shiftEnd);
+  }
+  if (startFractionEndWhole(shiftStart, shiftEnd)) {
+    weekendPremiumHours = handleFractionalStartWeekend(shiftStart, shiftEnd);
+  }
+  if (endFractionStartWhole(shiftStart, shiftEnd)) {
+    weekendPremiumHours = handleFractionalEndWeekend(shiftStart, shiftEnd);
+  }
+  if (bothFractions(shiftStart, shiftEnd)) {
+    weekendPremiumHours = handleBothFractionsWeekend(shiftStart, shiftEnd);
+  }
+  return weekendPremiumHours;
+}
+
+// function to return hours worked within the weekend premium hours with fractional start time and fractional end time
+export function handleBothFractionsWeekend(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let weekendPremiumHours = 0;
+  const hoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  const startHour = shiftStart.getHours();
+  const startHoursFraction = 1 - shiftStart.getMinutes() / 60;
+  const endHoursFraction = shiftEnd.getMinutes() / 60;
+
+  // check if shift end time hour is within premium hours
+  if (
+    isWeekend(shiftEnd.getDay()) ||
+    isWithinFridayNightOrMondayMorning(shiftEnd.getHours(), shiftEnd.getDay())
+  ) {
+    // add fraction to premium first
+    weekendPremiumHours += endHoursFraction;
+  }
+  // check if shift start hour is within premium hours then add fraction
+  if (
+    isWeekend(shiftStart.getDay()) ||
+    isWithinFridayNightOrMondayMorning(
+      shiftStart.getHours(),
+      shiftStart.getDay()
+    )
+  ) {
+    weekendPremiumHours += startHoursFraction;
+  }
+
+  for (let hour = 1; hour < hoursWorked; hour++) {
+    const currentHour = (hour + shiftStart.getHours()) % 24;
+    let currentDay = shiftStart.getDay();
+
+    if (
+      isWeekend(currentDay) ||
+      isWithinFridayNightOrMondayMorning(currentHour, currentDay)
+    ) {
+      weekendPremiumHours += 1;
+    }
+    if (currentHour === 23) {
+      currentDay = (currentDay + 1) & 7;
+    }
+  }
+
+  return weekendPremiumHours;
+}
+
+// function to return hours worked within the weekend premium hours with whole start time and fractional end time
+export function handleFractionalEndWeekend(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let weekendPremiumHours = 0;
+  const hoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  const endHour = shiftEnd.getHours();
+  const endHoursFraction = shiftEnd.getMinutes() / 60;
+
+  // check if shift end time hour is within premium hours
+  if (
+    isWeekend(shiftEnd.getDay()) ||
+    isWithinFridayNightOrMondayMorning(endHour, shiftEnd.getDay())
+  ) {
+    // add fraction to premium first
+    weekendPremiumHours += endHoursFraction;
+  }
+
+  for (let hour = 0; hour < hoursWorked; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+    let currentDay = shiftStart.getDay();
+
+    if (
+      isWeekend(currentDay) ||
+      isWithinFridayNightOrMondayMorning(currentHour, currentDay)
+    ) {
+      weekendPremiumHours += 1;
+    }
+
+    if (currentHour === 23) {
+      currentDay = (currentDay + 1) % 7;
+    }
+  }
+
+  return weekendPremiumHours;
+}
+
+// function to return hours worked within the weekend premium hours with fractional start time and whole end time
+export function handleFractionalStartWeekend(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let weekendPremiumHours = 0;
+  const hoursWorked = getHoursWorked(shiftStart, shiftEnd);
   const startHoursFraction = shiftStart.getMinutes() / 60;
+
   const isStartFraction = startHoursFraction > 0;
 
   for (let hour = 0; hour < hoursWorked; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
     let currentDay = shiftStart.getDay();
 
-    if (currentHour < shiftStart.getHours()) {
+    if (isStartFraction && hour === 0) {
+      if (
+        isWeekend(currentDay) ||
+        isWithinFridayNightOrMondayMorning(currentHour, currentDay)
+      ) {
+        weekendPremiumHours += startHoursFraction;
+      }
+    } else {
+      if (
+        isWeekend(currentDay) ||
+        isWithinFridayNightOrMondayMorning(currentHour, currentDay)
+      ) {
+        weekendPremiumHours += 1;
+      }
+    }
+
+    if (currentHour === 23) {
       currentDay = (currentDay + 1) % 7;
     }
+  }
+
+  return weekendPremiumHours;
+}
+
+// function to return hours worked within the weekend premium hours with whole start/end times
+export function getWeekendPremiumHoursBothWhole(
+  shiftStart: Date,
+  shiftEnd: Date
+): number {
+  let weekendPremiumHours = 0;
+
+  const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
+
+  for (let hour = 0; hour < hoursWorked; hour++) {
+    let currentHour = (shiftStart.getHours() + hour) % 24;
+    let currentDay = shiftStart.getDay();
 
     if (
       isWeekend(currentDay) ||
       isWithinFridayNightOrMondayMorning(currentHour, currentDay)
     ) {
-      if (isStartFraction && hour === 0) {
-        weekendPremiumHours += startHoursFraction;
-      } else if (
-        isFractional &&
-        hour === Math.floor(hoursWorked) - 1 &&
-        !isStartFraction // This is modified to address shiftEnd time
-      ) {
-        weekendPremiumHours += hoursWorked - Math.floor(hoursWorked);
-      } else {
-        weekendPremiumHours += 1;
-      }
+      weekendPremiumHours += 1;
+    }
+
+    if (currentDay === 23) {
+      currentDay = (currentDay + 1) % 7;
     }
   }
 

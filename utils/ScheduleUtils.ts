@@ -53,10 +53,10 @@ const platoonStarts2024: Record<number, IPlatoonStart> = {
 };
 // the 4 on 4 of schedule
 const rotation = [
-  "day 1",
-  "day 2",
-  "night 1",
-  "night 2",
+  "Day 1",
+  "Day 2",
+  "Night 1",
+  "Night 2",
   "day off",
   "day off",
   "day off",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { Button } from "react-native-paper";
 import { Stack, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,14 +9,15 @@ import {
   getPayPeriodSchedule,
 } from "../utils/ScheduleUtils";
 import {
-  calculateEarnings,
   generateStartTimeDate,
   generateEndTimeDate,
   getHoursWorked,
   getNightShiftPremiumHoursWorked,
+  getWeekendPremiumHoursWorked,
 } from "../utils/HourAndMoneyUtils";
 import { IScheduleItem } from "../interfaces/IPlatoonStart";
 import DaySummary from "../components/DashboardComponents/DaySummary";
+import DayOff from "../components/DashboardComponents/DayOff";
 
 export default function Dashboard() {
   const [payPeriodSchedule, setPayPeriodSchedule] = useState<IScheduleItem[]>();
@@ -62,33 +63,45 @@ export default function Dashboard() {
             payPeriodSchedule.map((item, i) => {
               const shiftStart = generateStartTimeDate(item, userInfo!);
               const shiftEnd = generateEndTimeDate(item, userInfo!);
-              let baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
-              let nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+
+              const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+              const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+                shiftStart,
+                shiftEnd
+              );
+              const weekendHoursWorked = getWeekendPremiumHoursWorked(
                 shiftStart,
                 shiftEnd
               );
 
-              let baseRate = 43.13;
-              let nightShiftPremium = 5.25;
+              let baseRate = userInfo?.hourlyWage;
+              let nightShiftPremium =
+                userInfo!.shiftPattern === "Alpha" ? 5.6 : 2.0;
               let weekendPremium = 2.5;
-              let total = calculateEarnings(
-                shiftStart,
-                shiftEnd,
-                baseRate,
-                nightShiftPremium,
-                weekendPremium
-              );
+              let total =
+                parseInt(baseRate!) * baseHoursWorked +
+                nightShiftHoursWorked * nightShiftPremium +
+                weekendPremium * weekendHoursWorked;
               if (item.rotation === "day off") {
-                total = "0";
+                total = 0;
               }
               return (
                 <View className="flex w-5/6" key={i}>
-                  <DaySummary
-                    DayOrNight="Day"
-                    Date={item.date}
-                    TotalForDay={total}
-                    BaseHoursWorked={baseHoursWorked}
-                  />
+                  {item.rotation === "day off" ? (
+                    <DayOff date={item.date} />
+                  ) : (
+                    <DaySummary
+                      DayOrNight={item.rotation}
+                      Date={item.date}
+                      TotalForDay={total.toString()}
+                      BaseHoursWorked={baseHoursWorked}
+                      NightHoursWorked={nightShiftHoursWorked}
+                      WeekendHoursWorked={weekendHoursWorked}
+                      baseRate={baseRate!}
+                      shiftStart={shiftStart}
+                      shiftEnd={shiftEnd}
+                    />
+                  )}
                 </View>
               );
             })}
