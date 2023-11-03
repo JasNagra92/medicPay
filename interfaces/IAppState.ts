@@ -17,6 +17,20 @@ export interface ISingleDaysPayData {
   dayTotal: number;
 }
 
+export interface ITwoWeekPayPeriod {
+  payDay: Date;
+  totalEarnings: number;
+  baseHoursWorkedInPayPeriod: number;
+  alphaHoursWorkedInPayPeriod: number;
+  nightHoursWorkedInPayPeriod: number;
+  weekendHoursWorkedInPayPeriod: number;
+  baseTotalEarnings: number;
+  alphaNightTotalEarnings: number;
+  nightShiftTotalEarnings: number;
+  weekendTotalEarnings: number;
+  payDaysInPayPeriod: ISingleDaysPayData[];
+}
+
 export interface IUserInfo {
   hourlyWage: string;
   payDay: Date | undefined;

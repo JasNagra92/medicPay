@@ -1,5 +1,11 @@
+import {
+  ITwoWeekPayPeriod,
+  IUserInfo,
+  ISingleDaysPayData,
+} from "../interfaces/IAppState";
 import { IScheduleItem, IPlatoonStart } from "../interfaces/IPlatoonStart";
 import { sub } from "date-fns";
+import { calculateFinalTotalProps, calculateTotal } from "./HourAndMoneyUtils";
 
 const commonPlatoonStart1: IPlatoonStart = {
   A: 6,
@@ -87,9 +93,33 @@ export function getPayPeriodSchedule(
   // initialize an empty schedule that will be filled in a for loop
   let payPeriodSchedule = [];
 
-  // get the starting index from the platoonStarts2023 or 2024 object
+  interface IPlatoonStarts {
+    [year: number]: Record<number, IPlatoonStart>;
+  }
 
-  const startingIndex = platoonStarts2023[payPeriodStartMonth][platoon];
+  // get the starting index from the platoonStarts2023 or 2024 object
+  const platoonStarts: IPlatoonStarts = {
+    2023: platoonStarts2023,
+    2024: platoonStarts2024,
+    // Add additional platoonStarts object for other years as needed
+  };
+
+  // Function to get starting index based on the year
+  const getStartingIndex = (
+    payPeriodStart: Date,
+    year: number,
+    platoon: string
+  ) => {
+    const payPeriodStartMonth = payPeriodStart.getMonth();
+    return platoonStarts[year][payPeriodStartMonth][platoon];
+  };
+
+  // Usage
+  let startingIndex = getStartingIndex(
+    payPeriodStart,
+    payPeriodStart.getFullYear(),
+    platoon
+  );
 
   // define the rotaiton index using the starting index
   let rotationIndex = startingIndex;
@@ -136,4 +166,75 @@ export function generatePaydaysForYear(
   }
 
   return paydays;
+}
+
+// function that will be used when looping through the array of paydays in a year, to return the 2 weeks pay period data along with the days in that pay period
+export function generateTwoWeekPayPeriodData(
+  payDay: Date,
+  userInfo: IUserInfo
+): ITwoWeekPayPeriod {
+  const payPeriodStart = getPayPeriodStart(payDay);
+  const payPeriodSchedule = getPayPeriodSchedule(
+    payPeriodStart,
+    userInfo.platoon
+  );
+
+  const payDaysInPayPeriod: ISingleDaysPayData[] = payPeriodSchedule.map(
+    (item) => {
+      const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
+        calculateFinalTotalProps(item, userInfo!);
+
+      const singleDayPayData: ISingleDaysPayData = {
+        day: item.date,
+        rotation: item.rotation, // Assuming 'rotation' is a property of IScheduleItem
+        baseHoursWorked: baseHoursWorked,
+        baseTotal: baseHoursWorked * parseFloat(userInfo.hourlyWage),
+        alphaHoursWorked: nightShiftHoursWorked, // Replace with actual calculation for alpha hours worked
+        alphaTotal: nightShiftHoursWorked * 3.6, // Replace with actual calculation for alpha total
+        nightHoursWorked: nightShiftHoursWorked,
+        nightTotal: nightShiftHoursWorked * 2.0, // Assuming night shift pay rate is $2.00
+        weekendHoursWorked: weekendHoursWorked,
+        weekendTotal: weekendHoursWorked * 2.25, // Assuming weekend pay rate is $2.25
+        dayTotal: 0, // Replace with total earnings for the day
+      };
+
+      singleDayPayData.dayTotal =
+        singleDayPayData.baseTotal +
+        singleDayPayData.alphaTotal +
+        singleDayPayData.nightTotal +
+        singleDayPayData.weekendTotal;
+
+      return singleDayPayData;
+    }
+  );
+
+  let totalEarnings: number = 0;
+  let totalBaseHours: number = 0;
+  let totalNightShiftHours: number = 0;
+  let totalWeekendHours: number = 0;
+  for (const item of payPeriodSchedule) {
+    const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
+      calculateFinalTotalProps(item, userInfo!);
+
+    totalBaseHours += baseHoursWorked;
+    totalNightShiftHours += nightShiftHoursWorked;
+    totalWeekendHours += weekendHoursWorked;
+    totalEarnings += calculateTotal(item, userInfo!);
+  }
+
+  const twoWeekPayPeriodData: ITwoWeekPayPeriod = {
+    payDay,
+    baseHoursWorkedInPayPeriod: totalBaseHours,
+    nightHoursWorkedInPayPeriod: totalNightShiftHours,
+    weekendHoursWorkedInPayPeriod: totalWeekendHours,
+    alphaHoursWorkedInPayPeriod: totalNightShiftHours,
+    totalEarnings,
+    baseTotalEarnings: totalBaseHours * parseInt(userInfo.hourlyWage),
+    nightShiftTotalEarnings: totalNightShiftHours * 2.0,
+    alphaNightTotalEarnings: totalNightShiftHours * 3.2,
+    weekendTotalEarnings: totalWeekendHours * 2.25,
+    payDaysInPayPeriod: payDaysInPayPeriod,
+  };
+
+  return twoWeekPayPeriodData;
 }

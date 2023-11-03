@@ -1,6 +1,16 @@
 import { getPayPeriodSchedule } from "../../utils/ScheduleUtils";
-import { getPayPeriodStart, validatePayday } from "../../utils/ScheduleUtils";
+import {
+  getPayPeriodStart,
+  validatePayday,
+  generatePaydaysForYear,
+  generateTwoWeekPayPeriodData,
+} from "../../utils/ScheduleUtils";
 import { IScheduleItem } from "../../interfaces/IPlatoonStart";
+import {
+  ISingleDaysPayData,
+  ITwoWeekPayPeriod,
+  IUserInfo,
+} from "../../interfaces/IAppState";
 
 describe("getPayPeriodStart", () => {
   it("function returns Oct 13,2023, when given a pay day date of Nov 3rd, 2023, pay periods always start 21 days before pay day and run for 14 days", () => {
@@ -82,5 +92,49 @@ describe("validatePayday", () => {
     const dateToTest = new Date(2023, 9, 20);
 
     expect(validatePayday(dateToTest)).toBe(true);
+  });
+});
+
+describe("generateAll2024", () => {
+  it("should return an array of 26 items when given a year of 2024, first payday of Jan 15th, and number of paydays 26", () => {
+    let payDaysFor2024: Date[] = generatePaydaysForYear(
+      2024,
+      new Date(2024, 0, 12),
+      26
+    );
+
+    expect(payDaysFor2024[0]).toEqual(new Date(2024, 0, 12));
+    expect(payDaysFor2024.length).toEqual(26);
+    expect(payDaysFor2024[25]).toEqual(new Date(2024, 11, 27));
+  });
+});
+
+describe("generateTwoWeekPayPeriodData", () => {
+  it("should be given a PayDay, and return a TwoWeekPayPeriod object with all the required fields from the interface", () => {
+    // November 3rd
+    const payDay = new Date(2023, 10, 3);
+    const sampleUserData: IUserInfo = {
+      hourlyWage: "43.13",
+      payDay,
+      shiftPattern: "Alpha",
+      platoon: "A",
+      dayShiftStartTime: { hours: 6, minutes: 0 },
+      dayShiftEndTime: { hours: 18, minutes: 0 },
+      nightShiftStartTime: { hours: 18, minutes: 0 },
+      nightShiftEndTime: { hours: 6, minutes: 0 },
+    };
+
+    const result: ITwoWeekPayPeriod = generateTwoWeekPayPeriodData(
+      payDay,
+      sampleUserData
+    );
+    console.log(result);
+    expect(result.payDay).toBeInstanceOf(Date);
+    expect(result).toHaveProperty("payDay");
+    expect(result).toHaveProperty("totalEarnings");
+    expect(result).toHaveProperty("baseTotalEarnings");
+
+    expect(Array.isArray(result.payDaysInPayPeriod)).toBe(true);
+    expect(result.payDaysInPayPeriod).toHaveLength(14); // Assuming it's 14 days in the pay period
   });
 });
