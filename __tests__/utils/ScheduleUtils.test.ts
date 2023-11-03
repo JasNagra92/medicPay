@@ -25,7 +25,6 @@ describe("getPayPeriodSchedule", () => {
     );
 
     expect(schedule).toHaveLength(14);
-    console.log(schedule[0].date);
     expect(schedule[0].rotation).toBe("Night 1");
     expect(schedule[2].rotation).toBe("day off");
   });

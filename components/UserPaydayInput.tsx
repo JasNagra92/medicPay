@@ -17,11 +17,25 @@ export default function UserPaydayInput() {
 
   const onConfirmSingle = useCallback(
     (params: any) => {
-      console.log(params.date + ": console.log from payday Input");
+      const localDate = new Date(params.date);
+
+      // Convert the local date to a UTC date by setting the UTC hours
+      const utcDate = new Date(
+        Date.UTC(
+          localDate.getFullYear(),
+          localDate.getMonth(),
+          localDate.getDate(),
+          0, // Hours
+          0, // Minutes
+          0 // Seconds
+        )
+      );
+      const selectedDate = new Date(params.date);
       if (dispatch) {
         if (validatePayday(params.date)) {
           setOpen(false);
-          dispatch({ type: "setPayday", payload: params.date });
+
+          dispatch({ type: "setPayday", payload: utcDate });
         } else {
           alert("Must select a valid Pay Day(fridays only) ");
         }

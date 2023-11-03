@@ -14,11 +14,6 @@ import {
   calculateDaySummaryProps,
   calculateTotal,
   calculateFinalTotalProps,
-  generateStartTimeDate,
-  generateEndTimeDate,
-  getHoursWorked,
-  getNightShiftPremiumHoursWorked,
-  getWeekendPremiumHoursWorked,
 } from "../utils/HourAndMoneyUtils";
 import { IScheduleItem } from "../interfaces/IPlatoonStart";
 import DaySummary from "../components/DashboardComponents/DaySummary";
@@ -30,20 +25,19 @@ export default function Dashboard() {
   const userInfo = useUserInfo();
 
   useEffect(() => {
+    console.log(userInfo?.payDay);
     const payPeriodStart = getPayPeriodStart(userInfo?.payDay!);
     const returnedSchedule = getPayPeriodSchedule(
       payPeriodStart,
       userInfo?.platoon!
     );
-    const clonedSchedule = returnedSchedule.map((item) => ({ ...item }));
-    console.log(returnedSchedule);
     setPayPeriodSchedule(returnedSchedule);
 
     let totalEarnings: number = 0;
     let totalBaseHours: number = 0;
     let totalNightShiftHours: number = 0;
     let totalWeekendHours: number = 0;
-    for (const item of clonedSchedule) {
+    for (const item of returnedSchedule) {
       const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
         calculateFinalTotalProps(item, userInfo!);
 
@@ -52,13 +46,8 @@ export default function Dashboard() {
       totalWeekendHours += weekendHoursWorked;
       totalEarnings += calculateTotal(item, userInfo!);
     }
-    console.log(JSON.stringify(returnedSchedule) + "after functions run");
     setGrossIncome(totalEarnings);
   }, []);
-
-  // useEffect(() => {
-  //   console.log("Updated payPeriodSchedule", payPeriodSchedule);
-  // }, [payPeriodSchedule]);
 
   return (
     <SafeAreaView
@@ -98,46 +87,11 @@ export default function Dashboard() {
                   </View>
                 );
               } else {
-                const shiftStart = generateStartTimeDate(item, userInfo!);
-                const shiftEnd = generateEndTimeDate(item, userInfo!);
-
-                const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
-                const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
-                  shiftStart,
-                  shiftEnd
-                );
-                const weekendHoursWorked = getWeekendPremiumHoursWorked(
-                  shiftStart,
-                  shiftEnd
-                );
-
-                let baseRate = userInfo?.hourlyWage;
-                let nightShiftPremium =
-                  userInfo!.shiftPattern === "Alpha" ? 5.6 : 2.0;
-                let weekendPremium = 2.25;
-
-                let total =
-                  parseInt(baseRate!) * baseHoursWorked +
-                  nightShiftHoursWorked * nightShiftPremium +
-                  weekendPremium * weekendHoursWorked;
-
-                if (item.rotation === "day off") {
-                  total = 0;
-                }
+                const props = calculateDaySummaryProps(item, userInfo!);
 
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DaySummary
-                      DayOrNight={item.rotation}
-                      Date={item.date}
-                      TotalForDay={total.toString()}
-                      BaseHoursWorked={baseHoursWorked}
-                      NightHoursWorked={nightShiftHoursWorked}
-                      WeekendHoursWorked={weekendHoursWorked}
-                      baseRate={baseRate!}
-                      shiftStart={shiftStart}
-                      shiftEnd={shiftEnd}
-                    />
+                    <DaySummary {...props} />
                   </View>
                 );
               }

@@ -246,9 +246,9 @@ export function handleBothFractionsWeekend(
     weekendPremiumHours += startHoursFraction;
   }
 
+  let currentDay = shiftStart.getDay();
   for (let hour = 1; hour < hoursWorked; hour++) {
-    const currentHour = (hour + shiftStart.getHours()) % 24;
-    let currentDay = shiftStart.getDay();
+    const currentHour = (hour + startHour) % 24;
 
     if (
       isWeekend(currentDay) ||
@@ -283,9 +283,10 @@ export function handleFractionalEndWeekend(
     weekendPremiumHours += endHoursFraction;
   }
 
-  for (let hour = 0; hour < hoursWorked; hour++) {
+  let currentDay = shiftStart.getDay();
+  // only loop to second to last hour because last hour has already been accounted for
+  for (let hour = 0; hour < hoursWorked - 1; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
-    let currentDay = shiftStart.getDay();
 
     if (
       isWeekend(currentDay) ||
@@ -313,9 +314,9 @@ export function handleFractionalStartWeekend(
 
   const isStartFraction = startHoursFraction > 0;
 
+  let currentDay = shiftStart.getDay();
   for (let hour = 0; hour < hoursWorked; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
-    let currentDay = shiftStart.getDay();
 
     if (isStartFraction && hour === 0) {
       if (
@@ -350,9 +351,9 @@ export function getWeekendPremiumHoursBothWhole(
 
   const hoursWorked: number = getHoursWorked(shiftStart, shiftEnd);
 
+  let currentDay = shiftStart.getDay();
   for (let hour = 0; hour < hoursWorked; hour++) {
     let currentHour = (shiftStart.getHours() + hour) % 24;
-    let currentDay = shiftStart.getDay();
 
     if (
       isWeekend(currentDay) ||
@@ -361,7 +362,7 @@ export function getWeekendPremiumHoursBothWhole(
       weekendPremiumHours += 1;
     }
 
-    if (currentDay === 23) {
+    if (currentHour === 23) {
       currentDay = (currentDay + 1) % 7;
     }
   }
