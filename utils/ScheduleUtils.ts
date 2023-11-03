@@ -168,6 +168,75 @@ export function generatePaydaysForYear(
   return paydays;
 }
 
+// function to create the days data if the day is a day off
+export function createDayOffData(item: IScheduleItem): ISingleDaysPayData {
+  const dayOffData: ISingleDaysPayData = {
+    day: item.date,
+    rotation: item.rotation,
+    baseHoursWorked: 0,
+    baseTotal: 0,
+    alphaHoursWorked: 0,
+    alphaTotal: 0,
+    nightHoursWorked: 0,
+    nightTotal: 0,
+    weekendHoursWorked: 0,
+    weekendTotal: 0,
+    dayTotal: 0,
+  };
+  return dayOffData;
+}
+
+export function createWorkDayData(
+  item: IScheduleItem,
+  userInfo: IUserInfo
+): ISingleDaysPayData {
+  const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
+    calculateFinalTotalProps(item, userInfo!);
+
+  const singleDayPayData: ISingleDaysPayData = {
+    day: item.date,
+    rotation: item.rotation, // Assuming 'rotation' is a property of IScheduleItem
+    baseHoursWorked: baseHoursWorked,
+    baseTotal: baseHoursWorked * parseFloat(userInfo.hourlyWage),
+    alphaHoursWorked: nightShiftHoursWorked, // Replace with actual calculation for alpha hours worked
+    alphaTotal: nightShiftHoursWorked * 3.6, // Replace with actual calculation for alpha total
+    nightHoursWorked: nightShiftHoursWorked,
+    nightTotal: nightShiftHoursWorked * 2.0, // Assuming night shift pay rate is $2.00
+    weekendHoursWorked: weekendHoursWorked,
+    weekendTotal: weekendHoursWorked * 2.25, // Assuming weekend pay rate is $2.25
+    dayTotal: 0, // Replace with total earnings for the day
+  };
+  singleDayPayData.dayTotal =
+    singleDayPayData.baseTotal +
+    singleDayPayData.alphaTotal +
+    singleDayPayData.nightTotal +
+    singleDayPayData.weekendTotal;
+
+  return singleDayPayData;
+}
+
+// function to return an array of days in a pay period when given a pay period schedule array of 14 days and a userInfo object with the required data
+export function getPayDaysInPayPeriod(
+  payPeriodSchedule: IScheduleItem[],
+  userInfo: IUserInfo
+): ISingleDaysPayData[] {
+  const payDaysInPayPeriod: ISingleDaysPayData[] = payPeriodSchedule.map(
+    (item) => {
+      if (item.rotation === "day off") {
+        const dayOffData: ISingleDaysPayData = createDayOffData(item);
+        return dayOffData;
+      } else {
+        const workDayData: ISingleDaysPayData = createWorkDayData(
+          item,
+          userInfo
+        );
+        return workDayData;
+      }
+    }
+  );
+  return payDaysInPayPeriod;
+}
+
 // function that will be used when looping through the array of paydays in a year, to return the 2 weeks pay period data along with the days in that pay period
 export function generateTwoWeekPayPeriodData(
   payDay: Date,
@@ -179,47 +248,27 @@ export function generateTwoWeekPayPeriodData(
     userInfo.platoon
   );
 
-  const payDaysInPayPeriod: ISingleDaysPayData[] = payPeriodSchedule.map(
-    (item) => {
-      const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
-        calculateFinalTotalProps(item, userInfo!);
-
-      const singleDayPayData: ISingleDaysPayData = {
-        day: item.date,
-        rotation: item.rotation, // Assuming 'rotation' is a property of IScheduleItem
-        baseHoursWorked: baseHoursWorked,
-        baseTotal: baseHoursWorked * parseFloat(userInfo.hourlyWage),
-        alphaHoursWorked: nightShiftHoursWorked, // Replace with actual calculation for alpha hours worked
-        alphaTotal: nightShiftHoursWorked * 3.6, // Replace with actual calculation for alpha total
-        nightHoursWorked: nightShiftHoursWorked,
-        nightTotal: nightShiftHoursWorked * 2.0, // Assuming night shift pay rate is $2.00
-        weekendHoursWorked: weekendHoursWorked,
-        weekendTotal: weekendHoursWorked * 2.25, // Assuming weekend pay rate is $2.25
-        dayTotal: 0, // Replace with total earnings for the day
-      };
-
-      singleDayPayData.dayTotal =
-        singleDayPayData.baseTotal +
-        singleDayPayData.alphaTotal +
-        singleDayPayData.nightTotal +
-        singleDayPayData.weekendTotal;
-
-      return singleDayPayData;
-    }
+  const payDaysInPayPeriod: ISingleDaysPayData[] = getPayDaysInPayPeriod(
+    payPeriodSchedule,
+    userInfo
   );
 
+  // calculate totals for the full 2 week pay period, initialize as 0 for days off
   let totalEarnings: number = 0;
   let totalBaseHours: number = 0;
   let totalNightShiftHours: number = 0;
   let totalWeekendHours: number = 0;
-  for (const item of payPeriodSchedule) {
-    const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
-      calculateFinalTotalProps(item, userInfo!);
 
-    totalBaseHours += baseHoursWorked;
-    totalNightShiftHours += nightShiftHoursWorked;
-    totalWeekendHours += weekendHoursWorked;
-    totalEarnings += calculateTotal(item, userInfo!);
+  for (const item of payPeriodSchedule) {
+    if (item.rotation !== "day off") {
+      const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
+        calculateFinalTotalProps(item, userInfo!);
+
+      totalBaseHours += baseHoursWorked;
+      totalNightShiftHours += nightShiftHoursWorked;
+      totalWeekendHours += weekendHoursWorked;
+      totalEarnings += calculateTotal(item, userInfo!);
+    }
   }
 
   const twoWeekPayPeriodData: ITwoWeekPayPeriod = {

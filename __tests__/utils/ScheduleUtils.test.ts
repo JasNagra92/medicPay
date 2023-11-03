@@ -138,3 +138,9 @@ describe("generateTwoWeekPayPeriodData", () => {
     expect(result.payDaysInPayPeriod).toHaveLength(14); // Assuming it's 14 days in the pay period
   });
 });
+
+describe("createDayOffData", () => {});
+
+describe("createWorkDayData", () => {});
+
+describe("getPayDaysInPayPeriod", () => {});
