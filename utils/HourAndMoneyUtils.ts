@@ -408,6 +408,8 @@ export function generateEndTimeDate(
   const { dayShiftEndTime, nightShiftEndTime } = userInfo;
 
   let hours, minutes;
+  // create a new date object to prevent mutating the original date from the scheduleItem that is passed into this function by reference
+  let modifiedDate = new Date(date.getTime());
 
   if (rotation === "Day 1" || rotation === "Day 2") {
     hours = dayShiftEndTime.hours;
@@ -416,14 +418,101 @@ export function generateEndTimeDate(
     hours = nightShiftEndTime.hours;
     minutes = nightShiftEndTime.minutes;
     // adjust the date to the next day because all night shifts end after midnight
-    date.setDate(date.getDate() + 1);
+    modifiedDate.setDate(modifiedDate.getDate() + 1);
   }
-
   return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
+    modifiedDate.getFullYear(),
+    modifiedDate.getMonth(),
+    modifiedDate.getDate(),
     hours,
     minutes
   );
 }
+
+export const calculateTotal = (item: IScheduleItem, userInfo: IUserInfo) => {
+  const shiftStart = generateStartTimeDate(item, userInfo);
+  const shiftEnd = generateEndTimeDate(item, userInfo);
+
+  const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+    shiftStart,
+    shiftEnd
+  );
+  const weekendHoursWorked = getWeekendPremiumHoursWorked(shiftStart, shiftEnd);
+
+  let baseRate = userInfo?.hourlyWage;
+  let nightShiftPremium = userInfo!.shiftPattern === "Alpha" ? 5.6 : 2.0;
+  let weekendPremium = 2.25;
+
+  let total =
+    parseInt(baseRate!) * baseHoursWorked +
+    nightShiftHoursWorked * nightShiftPremium +
+    weekendPremium * weekendHoursWorked;
+
+  if (item.rotation === "day off") {
+    total = 0;
+  }
+
+  return total;
+};
+
+export const calculateDaySummaryProps = (
+  item: IScheduleItem,
+  userInfo: IUserInfo
+) => {
+  const shiftStart = generateStartTimeDate(item, userInfo);
+  const shiftEnd = generateEndTimeDate(item, userInfo);
+
+  const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+    shiftStart,
+    shiftEnd
+  );
+  const weekendHoursWorked = getWeekendPremiumHoursWorked(shiftStart, shiftEnd);
+
+  let baseRate = userInfo?.hourlyWage;
+  let nightShiftPremium = userInfo!.shiftPattern === "Alpha" ? 5.6 : 2.0;
+  let weekendPremium = 2.25;
+
+  let total =
+    parseInt(baseRate!) * baseHoursWorked +
+    nightShiftHoursWorked * nightShiftPremium +
+    weekendPremium * weekendHoursWorked;
+
+  if (item.rotation === "day off") {
+    total = 0;
+  }
+
+  return {
+    DayOrNight: item.rotation,
+    Date: item.date,
+    TotalForDay: total.toString(),
+    BaseHoursWorked: baseHoursWorked,
+    NightHoursWorked: nightShiftHoursWorked,
+    WeekendHoursWorked: weekendHoursWorked,
+    baseRate: baseRate!,
+    shiftStart: shiftStart,
+    shiftEnd: shiftEnd,
+  };
+};
+
+export const calculateFinalTotalProps = (
+  item: IScheduleItem,
+  userInfo: IUserInfo
+) => {
+  const shiftStart = generateStartTimeDate(item, userInfo);
+  const shiftEnd = generateEndTimeDate(item, userInfo);
+
+  const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
+    shiftStart,
+    shiftEnd
+  );
+  const weekendHoursWorked = getWeekendPremiumHoursWorked(shiftStart, shiftEnd);
+
+  return {
+    baseHoursWorked,
+    nightShiftHoursWorked,
+    weekendHoursWorked,
+  };
+};

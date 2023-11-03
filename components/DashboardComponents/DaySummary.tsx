@@ -17,7 +17,6 @@ interface IDaySummaryProps {
   baseRate: string;
   shiftStart: Date;
   shiftEnd: Date;
-  index: number;
 }
 
 export default function DaySummary({
@@ -30,7 +29,6 @@ export default function DaySummary({
   baseRate,
   shiftStart,
   shiftEnd,
-  index,
 }: IDaySummaryProps) {
   const userInfo = useUserInfo();
   return (
@@ -44,9 +42,9 @@ export default function DaySummary({
         shadowRadius: 25,
         shadowOpacity: 1,
       }}
-      className="p-3 flex flex-col rounded-2xl bg-white divide-y divide-gray-300 divide-opacity-25 "
+      className="pt-3 flex flex-col rounded-2xl bg-white divide-y divide-gray-300 divide-opacity-25"
     >
-      <View className="flex flex-col">
+      <View className="px-3 flex flex-col">
         <View className="flex-1/3 flex flex-row justify-between">
           <View className="flex flex-row">
             <View className="rounded-lg overflow-hidden mb-1">
@@ -68,7 +66,7 @@ export default function DaySummary({
       </View>
 
       <View className="flex flex-col py-1">
-        <View className="flex flex-row ">
+        <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Base Pay</Text>
           <Text className="flex-2">
             {BaseHoursWorked} Hrs x ${baseRate}
@@ -79,7 +77,7 @@ export default function DaySummary({
           </Text>
         </View>
         {userInfo?.shiftPattern === "Alpha" ? (
-          <View className="flex flex-row">
+          <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
             <Text className="flex-2">{NightHoursWorked} Hrs x $3.60</Text>
             <Text className="flex-1 text-right">
@@ -88,7 +86,7 @@ export default function DaySummary({
             </Text>
           </View>
         ) : null}
-        <View className="flex flex-row">
+        <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Night P</Text>
           <Text className="flex-2">{NightHoursWorked} Hrs x $2.00</Text>
           <Text className="flex-1 text-right">
@@ -96,7 +94,7 @@ export default function DaySummary({
             ${(NightHoursWorked! * 2.0).toFixed(2)}
           </Text>
         </View>
-        <View className="flex flex-row">
+        <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Weekend P</Text>
           <Text className="flex-2">{WeekendHoursWorked} Hrs x $2.50</Text>
           <Text className="flex-1 text-right">
@@ -104,7 +102,7 @@ export default function DaySummary({
             ${(WeekendHoursWorked! * 2.25).toFixed(2)}
           </Text>
         </View>
-        <View className="flex flex-row justify-between rounded-lg py-2 px-1 bg-[#e1f1f1]">
+        <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
           <Text className="font-bold">
             ${parseFloat(TotalForDay).toFixed(2)}

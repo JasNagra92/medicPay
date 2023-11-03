@@ -276,6 +276,12 @@ describe("getWeekendPremiumHoursWorked", () => {
 
     expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(6);
   });
+  it("should return 12 if start time is friday night at 1800 and end time is saturday morning at 0600", () => {
+    let shiftStart: Date = new Date(2023, 9, 14, 18);
+    let shiftEnd: Date = new Date(2023, 9, 15, 6);
+
+    expect(getWeekendPremiumHoursWorked(shiftStart, shiftEnd)).toBe(12);
+  });
   it("should return 6.5 if start time is friday day at 1230 and end time is saturday morning at 0030", () => {
     let shiftStart: Date = new Date(2023, 9, 20, 12, 30);
     let shiftEnd: Date = new Date(2023, 9, 21, 0, 30);

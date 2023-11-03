@@ -52,6 +52,14 @@ export default function HomeLayout() {
             headerTransparent: true,
           }}
         />
+        <Stack.Screen
+          name="FinalTotal"
+          options={{
+            headerShown: true,
+            headerTitle: "",
+            headerTransparent: true,
+          }}
+        />
       </Stack>
     </UserInfoProvider>
   );

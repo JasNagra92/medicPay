@@ -64,7 +64,7 @@ const rotation = [
 ];
 
 export function getPayPeriodStart(payDay: Date): Date {
-  const payPeriodStart = sub(payDay, { days: 23 });
+  const payPeriodStart = sub(payDay, { days: 21 });
   return payPeriodStart;
 }
 
@@ -86,13 +86,16 @@ export function getPayPeriodSchedule(
 
   // initialize an empty schedule that will be filled in a for loop
   let payPeriodSchedule = [];
-  // get the starting index from the platoonStarts2023 object
+
+  // get the starting index from the platoonStarts2023 or 2024 object
+
   const startingIndex = platoonStarts2023[payPeriodStartMonth][platoon];
+
   // define the rotaiton index using the starting index
   let rotationIndex = startingIndex;
 
   // Use a while loop to collect 14 items
-  let i = 0;
+  let i = 1;
   while (payPeriodSchedule.length < 14) {
     let currentDay = new Date(2023, payPeriodStartMonth, i);
 
@@ -114,4 +117,23 @@ export function getPayPeriodSchedule(
 // function should take a date and return true only if the date given as a parameter is a friday
 export function validatePayday(date: Date): Boolean {
   return date.getDay() === 5 ? true : false;
+}
+
+// function to generate specified number of paydates start from given payday
+export function generatePaydaysForYear(
+  year: number,
+  firstPayday: Date,
+  numberOfPaydays: number
+): Date[] {
+  const paydays: Date[] = [firstPayday];
+
+  for (let i = 1; i < numberOfPaydays; i++) {
+    const nextPayday = new Date(firstPayday);
+    nextPayday.setDate(nextPayday.getDate() + i * 14); // Incrementing 14 days for each iteration
+    nextPayday.setFullYear(year); // Set the year to the provided year
+
+    paydays.push(nextPayday);
+  }
+
+  return paydays;
 }

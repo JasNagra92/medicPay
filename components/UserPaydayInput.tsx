@@ -17,6 +17,7 @@ export default function UserPaydayInput() {
 
   const onConfirmSingle = useCallback(
     (params: any) => {
+      console.log(params.date + ": console.log from payday Input");
       if (dispatch) {
         if (validatePayday(params.date)) {
           setOpen(false);
