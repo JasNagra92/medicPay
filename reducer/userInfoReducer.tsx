@@ -55,13 +55,10 @@ export default function userInfoReducer(state: IUserInfo, action: Action) {
         },
       };
     }
-    case "UPDATE_PAY_PERIODS":
+    case "SET_PAY_DAYS_FOR_YEAR":
       return {
         ...state,
-        payDayPeriods: {
-          ...state.payDayPeriods,
-          [action.payload.payDay.toString()]: action.payload.payPeriodSchedule,
-        },
+        payDaysForYear: action.payload,
       };
 
     default:

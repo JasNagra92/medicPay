@@ -1,9 +1,14 @@
-import { getPayPeriodSchedule } from "../../utils/ScheduleUtils";
+import {
+  createDayOffData,
+  createWorkDayData,
+  getPayPeriodSchedule,
+} from "../../utils/ScheduleUtils";
 import {
   getPayPeriodStart,
   validatePayday,
   generatePaydaysForYear,
   generateTwoWeekPayPeriodData,
+  generateFullYearsPayDaysForUserInfo,
 } from "../../utils/ScheduleUtils";
 import { IScheduleItem } from "../../interfaces/IPlatoonStart";
 import {
@@ -128,9 +133,6 @@ describe("generateTwoWeekPayPeriodData", () => {
       payDay,
       sampleUserData
     );
-    console.log(result);
-    expect(result.payDay).toBeInstanceOf(Date);
-    expect(result).toHaveProperty("payDay");
     expect(result).toHaveProperty("totalEarnings");
     expect(result).toHaveProperty("baseTotalEarnings");
 
@@ -139,8 +141,75 @@ describe("generateTwoWeekPayPeriodData", () => {
   });
 });
 
-describe("createDayOffData", () => {});
+describe("createDayOffData", () => {
+  it("returns a single days pay data object with the totals set to 0 because no hours were worked", () => {
+    const testDay: IScheduleItem = {
+      date: new Date(2023, 10, 3),
+      rotation: "day off",
+    };
+    const dayOffData: ISingleDaysPayData = createDayOffData(testDay);
 
-describe("createWorkDayData", () => {});
+    expect(dayOffData).toHaveProperty("dayTotal");
+    expect(dayOffData).toHaveProperty("nightTotal");
+    expect(dayOffData.dayTotal).toEqual(0);
+    expect(dayOffData.baseHoursWorked).toEqual(0);
+  });
+});
 
-describe("getPayDaysInPayPeriod", () => {});
+describe("createWorkDayData", () => {
+  it("returns a single days pay data with numbers for the totals that are correct", () => {
+    const testDay: IScheduleItem = {
+      date: new Date(2023, 10, 3),
+      rotation: "Day 1",
+    };
+    const testUserInfo: IUserInfo = {
+      hourlyWage: "43.13",
+      payDay: new Date(2023, 11, 14),
+      shiftPattern: "Alpha",
+      platoon: "A",
+      dayShiftStartTime: { hours: 6, minutes: 0 },
+      dayShiftEndTime: { hours: 18, minutes: 0 },
+      nightShiftStartTime: { hours: 18, minutes: 0 },
+      nightShiftEndTime: { hours: 6, minutes: 0 },
+    };
+    const dayShiftData: ISingleDaysPayData = createWorkDayData(
+      testDay,
+      testUserInfo
+    );
+
+    expect(dayShiftData.dayTotal).toBeGreaterThan(0);
+    expect(dayShiftData.baseTotal).toEqual(43.13 * 12);
+    expect(dayShiftData.nightHoursWorked).toEqual(0);
+  });
+});
+
+describe("getClosestPayDay", () => {
+  it("should return the closest pay day that is coming up when given a date, it will be run with whatever date is current when user opens the dashboard", () => {
+    const payDaysFor2024: Date[] = generatePaydaysForYear(
+      2024,
+      new Date(2024, 0, 12),
+      26
+    );
+
+    // February 12th user opens the app
+    const testDayWhenUserOpensApp: Date = new Date(2024, 1, 12);
+    // February 12th work day will be paid out on Februar 23rd which is what I need returned
+  });
+});
+
+describe("generateFullYearsPayDaysForUserInfo", () => {
+  it("quick test", () => {
+    const sampleUserData: IUserInfo = {
+      hourlyWage: "43.13",
+      payDay: new Date(),
+      shiftPattern: "Alpha",
+      platoon: "A",
+      dayShiftStartTime: { hours: 6, minutes: 0 },
+      dayShiftEndTime: { hours: 18, minutes: 0 },
+      nightShiftStartTime: { hours: 18, minutes: 0 },
+      nightShiftEndTime: { hours: 6, minutes: 0 },
+    };
+
+    generateFullYearsPayDaysForUserInfo(sampleUserData);
+  });
+});

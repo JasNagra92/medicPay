@@ -515,5 +515,7 @@ export const calculateFinalTotalProps = (
     baseHoursWorked,
     nightShiftHoursWorked,
     weekendHoursWorked,
+    shiftStart,
+    shiftEnd,
   };
 };

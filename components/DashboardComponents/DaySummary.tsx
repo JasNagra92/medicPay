@@ -5,31 +5,23 @@ import { AntDesign } from "@expo/vector-icons";
 import { useUserInfo } from "../../context/userInfoContext";
 import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
-
-interface IDaySummaryProps {
-  DayOrNight: string;
-  Date: Date;
-  BaseHoursWorked: number;
-  AlphaHoursWorked?: number;
-  NightHoursWorked?: number;
-  WeekendHoursWorked?: number;
-  TotalForDay: string;
-  baseRate: string;
-  shiftStart: Date;
-  shiftEnd: Date;
-}
+import { ISingleDaysPayData } from "../../interfaces/IAppState";
 
 export default function DaySummary({
-  DayOrNight,
-  Date,
-  BaseHoursWorked,
-  NightHoursWorked,
-  WeekendHoursWorked,
-  TotalForDay,
-  baseRate,
+  day,
+  rotation, //day 1, day 2, //
+  baseHoursWorked,
+  baseTotal,
+  alphaHoursWorked,
+  alphaTotal,
+  nightHoursWorked,
+  nightTotal,
+  weekendHoursWorked,
+  weekendTotal,
+  dayTotal,
   shiftStart,
   shiftEnd,
-}: IDaySummaryProps) {
+}: ISingleDaysPayData) {
   const userInfo = useUserInfo();
   return (
     <View
@@ -49,7 +41,7 @@ export default function DaySummary({
           <View className="flex flex-row">
             <View className="rounded-lg overflow-hidden mb-1">
               <Text className="bg-[#379D9F] flex flex-1/3 p-1.5 text-white font-bold">
-                {DayOrNight}
+                {rotation}
               </Text>
             </View>
             <Text className=" p-1.5 font-bold">{`${format(
@@ -60,7 +52,7 @@ export default function DaySummary({
           <AntDesign name="up" size={18} color="black" style={{ padding: 7 }} />
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
-          <Text className="font-bold mt-2">{Date.toDateString()}</Text>
+          <Text className="font-bold mt-2">{day.toDateString()}</Text>
           <ToggleSwitch />
         </View>
       </View>
@@ -69,44 +61,30 @@ export default function DaySummary({
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Base Pay</Text>
           <Text className="flex-2">
-            {BaseHoursWorked} Hrs x ${baseRate}
+            {baseHoursWorked} Hrs x ${userInfo?.hourlyWage}
           </Text>
-          <Text className="flex-1 text-right">
-            {" "}
-            ${(BaseHoursWorked * parseInt(baseRate)).toFixed(2)}
-          </Text>
+          <Text className="flex-1 text-right"> ${baseTotal.toFixed(2)}</Text>
         </View>
         {userInfo?.shiftPattern === "Alpha" ? (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
-            <Text className="flex-2">{NightHoursWorked} Hrs x $3.60</Text>
-            <Text className="flex-1 text-right">
-              {" "}
-              ${(NightHoursWorked! * 3.6).toFixed(2)}
-            </Text>
+            <Text className="flex-2">{alphaHoursWorked} Hrs x $3.60</Text>
+            <Text className="flex-1 text-right"> ${alphaTotal.toFixed(2)}</Text>
           </View>
         ) : null}
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Night P</Text>
-          <Text className="flex-2">{NightHoursWorked} Hrs x $2.00</Text>
-          <Text className="flex-1 text-right">
-            {" "}
-            ${(NightHoursWorked! * 2.0).toFixed(2)}
-          </Text>
+          <Text className="flex-2">{nightHoursWorked} Hrs x $2.00</Text>
+          <Text className="flex-1 text-right"> ${nightTotal.toFixed(2)}</Text>
         </View>
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Weekend P</Text>
-          <Text className="flex-2">{WeekendHoursWorked} Hrs x $2.50</Text>
-          <Text className="flex-1 text-right">
-            {" "}
-            ${(WeekendHoursWorked! * 2.25).toFixed(2)}
-          </Text>
+          <Text className="flex-2">{weekendHoursWorked} Hrs x $2.50</Text>
+          <Text className="flex-1 text-right"> ${weekendTotal.toFixed(2)}</Text>
         </View>
         <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
-          <Text className="font-bold">
-            ${parseFloat(TotalForDay).toFixed(2)}
-          </Text>
+          <Text className="font-bold">${dayTotal.toFixed(2)}</Text>
         </View>
       </View>
     </View>

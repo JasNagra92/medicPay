@@ -4,50 +4,37 @@ import { Button } from "react-native-paper";
 import { Stack, Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserInfo } from "../context/userInfoContext";
-import {
-  getPayPeriodStart,
-  getPayPeriodSchedule,
-  generatePaydaysForYear,
-} from "../utils/ScheduleUtils";
-import {
-  calculateDaySummaryProps,
-  calculateTotal,
-  calculateFinalTotalProps,
-} from "../utils/HourAndMoneyUtils";
-import { IScheduleItem } from "../interfaces/IPlatoonStart";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import { generateFullYearsPayDaysForUserInfo } from "../utils/ScheduleUtils";
+
 import DaySummary from "../components/DashboardComponents/DaySummary";
 import DayOff from "../components/DashboardComponents/DayOff";
+import { ISingleDaysPayData, ITwoWeekPayPeriod } from "../interfaces/IAppState";
 
 export default function Dashboard() {
-  const [payPeriodSchedule, setPayPeriodSchedule] = useState<IScheduleItem[]>();
+  const [payPeriodSchedule, setPayPeriodSchedule] =
+    useState<ISingleDaysPayData[]>();
   const [grossIncome, setGrossIncome] = useState(0);
   const userInfo = useUserInfo();
+  const dispatch = useUserInfoDispatch();
 
   useEffect(() => {
-    console.log(userInfo?.payDay);
-    const payPeriodStart = getPayPeriodStart(userInfo?.payDay!);
-    const returnedSchedule = getPayPeriodSchedule(
-      payPeriodStart,
-      userInfo?.platoon!
-    );
-    setPayPeriodSchedule(returnedSchedule);
-
-    let totalEarnings: number = 0;
-    let totalBaseHours: number = 0;
-    let totalNightShiftHours: number = 0;
-    let totalWeekendHours: number = 0;
-    for (const item of returnedSchedule) {
-      const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
-        calculateFinalTotalProps(item, userInfo!);
-
-      totalBaseHours += baseHoursWorked;
-      totalNightShiftHours += nightShiftHoursWorked;
-      totalWeekendHours += weekendHoursWorked;
-      totalEarnings += calculateTotal(item, userInfo!);
+    const payDaysForYear: Record<string, ITwoWeekPayPeriod> =
+      generateFullYearsPayDaysForUserInfo(userInfo!);
+    if (dispatch) {
+      dispatch({ type: "SET_PAY_DAYS_FOR_YEAR", payload: payDaysForYear });
     }
-    setGrossIncome(totalEarnings);
   }, []);
+
+  useEffect(() => {
+    let testDate = new Date(2024, 1, 23);
+    let testSchedule =
+      userInfo?.payDaysForYear![testDate.toISOString()].payDaysInPayPeriod;
+    setPayPeriodSchedule(testSchedule!);
+    setGrossIncome(
+      userInfo?.payDaysForYear![testDate.toISOString()].totalEarnings!
+    );
+  }, [userInfo]);
 
   return (
     <SafeAreaView
@@ -83,15 +70,13 @@ export default function Dashboard() {
               if (item.rotation === "day off") {
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DayOff date={item.date} />
+                    <DayOff date={item.day} />
                   </View>
                 );
               } else {
-                const props = calculateDaySummaryProps(item, userInfo!);
-
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DaySummary {...props} />
+                    <DaySummary {...item} />
                   </View>
                 );
               }

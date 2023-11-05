@@ -149,7 +149,7 @@ export function validatePayday(date: Date): Boolean {
   return date.getDay() === 5 ? true : false;
 }
 
-// function to generate specified number of paydates start from given payday
+// function to generate specified number of paydates start from first payday of the year
 export function generatePaydaysForYear(
   year: number,
   firstPayday: Date,
@@ -190,8 +190,13 @@ export function createWorkDayData(
   item: IScheduleItem,
   userInfo: IUserInfo
 ): ISingleDaysPayData {
-  const { baseHoursWorked, nightShiftHoursWorked, weekendHoursWorked } =
-    calculateFinalTotalProps(item, userInfo!);
+  const {
+    baseHoursWorked,
+    nightShiftHoursWorked,
+    weekendHoursWorked,
+    shiftStart,
+    shiftEnd,
+  } = calculateFinalTotalProps(item, userInfo!);
 
   const singleDayPayData: ISingleDaysPayData = {
     day: item.date,
@@ -205,6 +210,8 @@ export function createWorkDayData(
     weekendHoursWorked: weekendHoursWorked,
     weekendTotal: weekendHoursWorked * 2.25, // Assuming weekend pay rate is $2.25
     dayTotal: 0, // Replace with total earnings for the day
+    shiftStart,
+    shiftEnd,
   };
   singleDayPayData.dayTotal =
     singleDayPayData.baseTotal +
@@ -272,7 +279,6 @@ export function generateTwoWeekPayPeriodData(
   }
 
   const twoWeekPayPeriodData: ITwoWeekPayPeriod = {
-    payDay,
     baseHoursWorkedInPayPeriod: totalBaseHours,
     nightHoursWorkedInPayPeriod: totalNightShiftHours,
     weekendHoursWorkedInPayPeriod: totalWeekendHours,
@@ -286,4 +292,28 @@ export function generateTwoWeekPayPeriodData(
   };
 
   return twoWeekPayPeriodData;
+}
+
+// function to fill out the entire years paydays(26 of them), and then for each payday calculate and return the 14 days that will be paid out in that payday
+export function generateFullYearsPayDaysForUserInfo(
+  userInfo: IUserInfo
+): Record<string, ITwoWeekPayPeriod> {
+  const payDaysFor2024: Date[] = generatePaydaysForYear(
+    2024,
+    new Date(2024, 0, 12),
+    26
+  );
+
+  const result: Record<string, ITwoWeekPayPeriod> = payDaysFor2024.reduce(
+    (acc, payDay) => {
+      const payDayData = generateTwoWeekPayPeriodData(payDay, userInfo);
+      const payDayKey: string = payDay.toISOString();
+      // @ts-ignore
+      acc[payDayKey] = payDayData;
+
+      return acc;
+    },
+    {}
+  );
+  return result;
 }

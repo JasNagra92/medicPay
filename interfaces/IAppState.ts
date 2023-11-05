@@ -15,10 +15,11 @@ export interface ISingleDaysPayData {
   weekendHoursWorked: number;
   weekendTotal: number;
   dayTotal: number;
+  shiftStart: Date;
+  shiftEnd: Date;
 }
 
 export interface ITwoWeekPayPeriod {
-  payDay: Date;
   totalEarnings: number;
   baseHoursWorkedInPayPeriod: number;
   alphaHoursWorkedInPayPeriod: number;
@@ -41,8 +42,8 @@ export interface IUserInfo {
   dayShiftEndTime: IShiftTime;
   nightShiftStartTime: IShiftTime;
   nightShiftEndTime: IShiftTime;
-  payDayPeriods?: {
-    [payDay: string]: ISingleDaysPayData; // Replace IScheduleItem with your specific structure
+  payDaysForYear?: {
+    [payDay: string]: ITwoWeekPayPeriod; // Replace IScheduleItem with your specific structure
   };
 }
 
@@ -57,6 +58,6 @@ export type Action =
   | { type: "setNightShiftStart"; payload: IShiftTime }
   | { type: "setNightShiftEnd"; payload: IShiftTime }
   | {
-      type: "UPDATE_PAY_PERIODS";
-      payload: { payDay: string; payPeriodSchedule: ISingleDaysPayData };
+      type: "SET_PAY_DAYS_FOR_YEAR";
+      payload: Record<string, ITwoWeekPayPeriod>;
     };
