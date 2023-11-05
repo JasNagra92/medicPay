@@ -5,7 +5,11 @@ import { Stack, Link } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
-import { generateFullYearsPayDaysForUserInfo } from "../utils/ScheduleUtils";
+import {
+  generateFullYearsPayDaysForUserInfo,
+  getNextPayday,
+  generatePaydays,
+} from "../utils/ScheduleUtils";
 
 import DaySummary from "../components/DashboardComponents/DaySummary";
 import DayOff from "../components/DashboardComponents/DayOff";
@@ -27,13 +31,20 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    let testDate = new Date(2024, 1, 23);
-    let testSchedule =
-      userInfo?.payDaysForYear![testDate.toISOString()].payDaysInPayPeriod;
-    setPayPeriodSchedule(testSchedule!);
-    setGrossIncome(
-      userInfo?.payDaysForYear![testDate.toISOString()].totalEarnings!
-    );
+    if (userInfo && userInfo.payDaysForYear) {
+      let today = new Date();
+      let payDays = generatePaydays(new Date(2023, 10, 3), 32);
+      let nextPayday = getNextPayday(today, payDays);
+
+      if (nextPayday && userInfo.payDaysForYear[nextPayday.toISOString()]) {
+        let testSchedule =
+          userInfo.payDaysForYear[nextPayday.toISOString()].payDaysInPayPeriod;
+        setPayPeriodSchedule(testSchedule);
+        setGrossIncome(
+          userInfo.payDaysForYear[nextPayday.toISOString()].totalEarnings
+        );
+      }
+    }
   }, [userInfo]);
 
   return (

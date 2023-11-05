@@ -149,9 +149,8 @@ export function validatePayday(date: Date): Boolean {
   return date.getDay() === 5 ? true : false;
 }
 
-// function to generate specified number of paydates start from first payday of the year
-export function generatePaydaysForYear(
-  year: number,
+// function to generate specified number of paydates starting from provided payday
+export function generatePaydays(
   firstPayday: Date,
   numberOfPaydays: number
 ): Date[] {
@@ -160,7 +159,6 @@ export function generatePaydaysForYear(
   for (let i = 1; i < numberOfPaydays; i++) {
     const nextPayday = new Date(firstPayday);
     nextPayday.setDate(nextPayday.getDate() + i * 14); // Incrementing 14 days for each iteration
-    nextPayday.setFullYear(year); // Set the year to the provided year
 
     paydays.push(nextPayday);
   }
@@ -170,7 +168,7 @@ export function generatePaydaysForYear(
 
 // function to create the days data if the day is a day off
 export function createDayOffData(item: IScheduleItem): ISingleDaysPayData {
-  const dayOffData: ISingleDaysPayData = {
+  const dayOffData: any = {
     day: item.date,
     rotation: item.rotation,
     baseHoursWorked: 0,
@@ -298,13 +296,9 @@ export function generateTwoWeekPayPeriodData(
 export function generateFullYearsPayDaysForUserInfo(
   userInfo: IUserInfo
 ): Record<string, ITwoWeekPayPeriod> {
-  const payDaysFor2024: Date[] = generatePaydaysForYear(
-    2024,
-    new Date(2024, 0, 12),
-    26
-  );
+  const payDays: Date[] = generatePaydays(new Date(2023, 10, 3), 32);
 
-  const result: Record<string, ITwoWeekPayPeriod> = payDaysFor2024.reduce(
+  const result: Record<string, ITwoWeekPayPeriod> = payDays.reduce(
     (acc, payDay) => {
       const payDayData = generateTwoWeekPayPeriodData(payDay, userInfo);
       const payDayKey: string = payDay.toISOString();
@@ -316,4 +310,34 @@ export function generateFullYearsPayDaysForUserInfo(
     {}
   );
   return result;
+}
+
+export function getNextPayday(currentDate: Date, paydays: Date[]) {
+  const currentDateUTC = currentDate.getTime(); // Convert current date to milliseconds
+
+  let nearestPayday = null;
+  let nearestDifference = Infinity;
+
+  for (const payday of paydays) {
+    const paydayDate = new Date(payday); // Convert payday string to Date object
+    const paydayUTC = paydayDate.getTime(); // Convert payday to milliseconds
+
+    // Check if the payday is in the future
+    if (paydayUTC > currentDateUTC) {
+      const difference = Math.floor(
+        (paydayUTC - currentDateUTC) / (1000 * 60 * 60 * 24)
+      ); // Difference in days
+
+      if (difference >= 7) {
+        return paydayDate; // Found a payday more than or equal to 7 days away
+      }
+
+      if (difference < nearestDifference) {
+        nearestDifference = difference;
+        nearestPayday = paydayDate;
+      }
+    }
+  }
+
+  return nearestPayday;
 }

@@ -6,7 +6,7 @@ import {
 import {
   getPayPeriodStart,
   validatePayday,
-  generatePaydaysForYear,
+  generatePaydays,
   generateTwoWeekPayPeriodData,
   generateFullYearsPayDaysForUserInfo,
 } from "../../utils/ScheduleUtils";
@@ -102,11 +102,7 @@ describe("validatePayday", () => {
 
 describe("generateAll2024", () => {
   it("should return an array of 26 items when given a year of 2024, first payday of Jan 15th, and number of paydays 26", () => {
-    let payDaysFor2024: Date[] = generatePaydaysForYear(
-      2024,
-      new Date(2024, 0, 12),
-      26
-    );
+    let payDaysFor2024: Date[] = generatePaydays(new Date(2024, 0, 12), 26);
 
     expect(payDaysFor2024[0]).toEqual(new Date(2024, 0, 12));
     expect(payDaysFor2024.length).toEqual(26);
@@ -185,11 +181,7 @@ describe("createWorkDayData", () => {
 
 describe("getClosestPayDay", () => {
   it("should return the closest pay day that is coming up when given a date, it will be run with whatever date is current when user opens the dashboard", () => {
-    const payDaysFor2024: Date[] = generatePaydaysForYear(
-      2024,
-      new Date(2024, 0, 12),
-      26
-    );
+    const payDaysFor2024: Date[] = generatePaydays(new Date(2024, 0, 12), 26);
 
     // February 12th user opens the app
     const testDayWhenUserOpensApp: Date = new Date(2024, 1, 12);

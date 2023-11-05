@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { Button } from "react-native-paper";
+import { View, Text } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useUserInfo } from "../../context/userInfoContext";
 import { format } from "date-fns";
