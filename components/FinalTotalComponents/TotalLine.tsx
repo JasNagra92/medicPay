@@ -18,8 +18,8 @@ export default function TotalLine({
 }: ITotalLineProps) {
   return (
     <View
-      className={`flex flex-row justify-between p-3 ${
-        bgColor ? "bg-slate-50" : null
+      className={`flex flex-row justify-between p-4 ${
+        bgColor ? "bg-slate-100" : null
       }`}
     >
       <Text>{premiumType}</Text>
