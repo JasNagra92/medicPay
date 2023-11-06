@@ -284,7 +284,7 @@ export function generateTwoWeekPayPeriodData(
     totalEarnings,
     baseTotalEarnings: totalBaseHours * parseInt(userInfo.hourlyWage),
     nightShiftTotalEarnings: totalNightShiftHours * 2.0,
-    alphaNightTotalEarnings: totalNightShiftHours * 3.2,
+    alphaNightTotalEarnings: totalNightShiftHours * 3.6,
     weekendTotalEarnings: totalWeekendHours * 2.25,
     payDaysInPayPeriod: payDaysInPayPeriod,
   };

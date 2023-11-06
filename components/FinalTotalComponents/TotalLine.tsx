@@ -4,8 +4,9 @@ import { View, Text } from "react-native";
 interface ITotalLineProps {
   premiumType: string;
   hoursTotal: number;
-  premiumRate: number;
-  premiumTotal: number;
+  premiumRate: string;
+  premiumTotal: string;
+  bgColor?: string;
 }
 
 export default function TotalLine({
@@ -13,14 +14,19 @@ export default function TotalLine({
   hoursTotal,
   premiumRate,
   premiumTotal,
+  bgColor,
 }: ITotalLineProps) {
   return (
-    <View className="flex flex-row justify-between">
+    <View
+      className={`flex flex-row justify-between p-3 ${
+        bgColor ? "bg-slate-50" : null
+      }`}
+    >
       <Text>{premiumType}</Text>
       <Text>
-        {hoursTotal} x ${premiumRate}
+        {hoursTotal}Hrs x ${premiumRate}
       </Text>
-      <Text className="font-bold">{premiumTotal}</Text>
+      <Text className="font-bold">${premiumTotal}</Text>
     </View>
   );
 }

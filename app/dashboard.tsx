@@ -19,6 +19,8 @@ export default function Dashboard() {
   const [payPeriodSchedule, setPayPeriodSchedule] =
     useState<ISingleDaysPayData[]>();
   const [grossIncome, setGrossIncome] = useState(0);
+  const [payDay, setPayDay] = useState("");
+
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
 
@@ -37,9 +39,10 @@ export default function Dashboard() {
       let nextPayday = getNextPayday(today, payDays);
 
       if (nextPayday && userInfo.payDaysForYear[nextPayday.toISOString()]) {
-        let testSchedule =
+        let currentPayPeriod =
           userInfo.payDaysForYear[nextPayday.toISOString()].payDaysInPayPeriod;
-        setPayPeriodSchedule(testSchedule);
+        setPayPeriodSchedule(currentPayPeriod);
+        setPayDay(nextPayday.toISOString());
         setGrossIncome(
           userInfo.payDaysForYear[nextPayday.toISOString()].totalEarnings
         );
@@ -77,24 +80,27 @@ export default function Dashboard() {
           className="space-y-3 pt-4"
         >
           {payPeriodSchedule &&
-            payPeriodSchedule.map((item, i) => {
-              if (item.rotation === "day off") {
+            payPeriodSchedule.map((singleDay, i) => {
+              if (singleDay.rotation === "day off") {
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DayOff date={item.day} />
+                    <DayOff date={singleDay.day} />
                   </View>
                 );
               } else {
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DaySummary {...item} />
+                    <DaySummary {...singleDay} />
                   </View>
                 );
               }
             })}
         </ScrollView>
         <View className="flex flex-row justify-center">
-          <Link href="/FinalTotal" asChild>
+          <Link
+            href={{ pathname: "/FinalTotal", params: { payDay: payDay } }}
+            asChild
+          >
             <TouchableOpacity className="rounded-2xl px-3 py-2 justify-between bg-[#379D9F] flex flex-row shadow-lg w-5/6">
               <View>
                 <Text className="text-white">Gross Income</Text>
