@@ -24,6 +24,7 @@ export default function FinalTotal() {
     weekendHoursWorkedInPayPeriod: weekendHours,
     weekendTotalEarnings: weekendTotal,
     totalEarnings,
+    levellingHours,
   } = userInfoData;
 
   return (
@@ -59,6 +60,14 @@ export default function FinalTotal() {
               hoursTotal={baseHoursTotal!}
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={baseTotalEarnings?.toFixed(2)!}
+            />
+            <TotalLine
+              premiumType="Levelling"
+              hoursTotal={levellingHours!}
+              premiumRate={userInfo?.hourlyWage!}
+              premiumTotal={(
+                levellingHours * parseInt(userInfo?.hourlyWage!)
+              ).toFixed(2)}
             />
             <TotalLine
               premiumType="Alpha P"
@@ -110,7 +119,7 @@ export default function FinalTotal() {
             </View>
           </View>
           <View>
-            <Text className="text-center text-xl font-semi-bold">
+            <Text className="text-center text-xl font-bold">
               Total Gross pay
             </Text>
             <View

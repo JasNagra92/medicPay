@@ -22,6 +22,7 @@ export interface ISingleDaysPayData {
 export interface ITwoWeekPayPeriod {
   totalEarnings: number;
   baseHoursWorkedInPayPeriod: number;
+  levellingHours: number;
   alphaHoursWorkedInPayPeriod: number;
   nightHoursWorkedInPayPeriod: number;
   weekendHoursWorkedInPayPeriod: number;
@@ -34,7 +35,8 @@ export interface ITwoWeekPayPeriod {
 
 export interface IUserInfo {
   hourlyWage: string;
-  payDay: Date | undefined;
+  payDayToDisplay?: string | undefined;
+  payMonthAndYearToDisplay?: string | undefined;
   shiftPattern: string;
   rotation?: string;
   platoon: string;
@@ -49,7 +51,8 @@ export interface IUserInfo {
 
 export type Action =
   | { type: "setHourlyWage"; payload: string }
-  | { type: "setPayday"; payload: Date }
+  | { type: "setPaydayToDisplay"; payload: string }
+  | { type: "setPayMonthAndYearToDisplay"; payload: string }
   | { type: "setShiftPattern"; payload: string }
   | { type: "setPlatoon"; payload: string }
   | { type: "setRotation"; payload: string }

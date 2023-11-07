@@ -24,7 +24,6 @@ export default function UserForm() {
       className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 pt-3 pb-3 flex flex-col justify-around"
     >
       <UserInputField />
-      <UserPaydayInput />
       <UserButtonInput
         text="Shift Pattern"
         button={{ key1: "Alpha", key2: "Bravo/Charlie" }}

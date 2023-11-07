@@ -10,8 +10,6 @@ import {
 } from "../../utils/HourAndMoneyUtils.ts";
 import { IUserInfo } from "../../interfaces/IAppState.ts";
 
-import { IScheduleItem } from "../../interfaces/IPlatoonStart.ts";
-
 const baseRate: number = 43.13;
 const nightShiftPremium: number = 5.6;
 const weekendPremium: number = 2.25;
@@ -96,7 +94,6 @@ describe("generateStartTimeDate", () => {
   it("should return a date object with the correct start time using the info from the userinfo object as well as a schedule item", () => {
     let userInfoTest: IUserInfo = {
       hourlyWage: "",
-      payDay: new Date(),
       shiftPattern: "",
       platoon: "A",
       dayShiftStartTime: { hours: 6, minutes: 0 },
@@ -116,7 +113,6 @@ describe("generateStartTimeDate", () => {
   it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a night shift", () => {
     let userInfoTest: IUserInfo = {
       hourlyWage: "",
-      payDay: new Date(),
       shiftPattern: "",
       platoon: "A",
       dayShiftStartTime: { hours: 0, minutes: 0 },
@@ -138,7 +134,6 @@ describe("generateEndTimeDate", () => {
   it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a day shift", () => {
     let userInfoTest: IUserInfo = {
       hourlyWage: "",
-      payDay: new Date(),
       shiftPattern: "",
       platoon: "A",
       dayShiftStartTime: { hours: 0, minutes: 0 },
@@ -157,7 +152,6 @@ describe("generateEndTimeDate", () => {
   it("should return a date object with the correct end time using the info from the userinfo object as well as a schedule item when its a night shift, should be the next day ", () => {
     let userInfoTest: IUserInfo = {
       hourlyWage: "",
-      payDay: new Date(),
       shiftPattern: "",
       platoon: "A",
       dayShiftStartTime: { hours: 0, minutes: 0 },

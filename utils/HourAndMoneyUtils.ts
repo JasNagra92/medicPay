@@ -519,3 +519,45 @@ export const calculateFinalTotalProps = (
     shiftEnd,
   };
 };
+
+export const calculateMonthlyTotalEarnings = (
+  userInfo: IUserInfo,
+  targetMonthAndYear: string
+) => {
+  let totalEarnings = 0;
+
+  if (userInfo && userInfo.payDaysForYear) {
+    Object.entries(userInfo.payDaysForYear!).forEach(([payDay, payPeriod]) => {
+      const date = new Date(payDay);
+      const monthAndYear = date.toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      });
+
+      if (monthAndYear === targetMonthAndYear) {
+        totalEarnings += payPeriod.totalEarnings;
+      }
+    });
+  }
+  return totalEarnings;
+};
+export const calculateYearlyTotalEarnings = (
+  userInfo: IUserInfo,
+  targetYear: string
+) => {
+  let totalEarnings = 0;
+
+  if (userInfo && userInfo.payDaysForYear) {
+    Object.entries(userInfo.payDaysForYear!).forEach(([payDay, payPeriod]) => {
+      const date = new Date(payDay);
+      const year = date.toLocaleString("default", {
+        year: "numeric",
+      });
+
+      if (year === targetYear) {
+        totalEarnings += payPeriod.totalEarnings;
+      }
+    });
+  }
+  return totalEarnings;
+};

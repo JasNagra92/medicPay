@@ -116,7 +116,6 @@ describe("generateTwoWeekPayPeriodData", () => {
     const payDay = new Date(2023, 10, 3);
     const sampleUserData: IUserInfo = {
       hourlyWage: "43.13",
-      payDay,
       shiftPattern: "Alpha",
       platoon: "A",
       dayShiftStartTime: { hours: 6, minutes: 0 },
@@ -160,7 +159,6 @@ describe("createWorkDayData", () => {
     };
     const testUserInfo: IUserInfo = {
       hourlyWage: "43.13",
-      payDay: new Date(2023, 11, 14),
       shiftPattern: "Alpha",
       platoon: "A",
       dayShiftStartTime: { hours: 6, minutes: 0 },
@@ -193,7 +191,6 @@ describe("generateFullYearsPayDaysForUserInfo", () => {
   it("quick test", () => {
     const sampleUserData: IUserInfo = {
       hourlyWage: "43.13",
-      payDay: new Date(),
       shiftPattern: "Alpha",
       platoon: "A",
       dayShiftStartTime: { hours: 6, minutes: 0 },

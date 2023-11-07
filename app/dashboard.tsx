@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { Button } from "react-native-paper";
-import { Stack, Link } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+import { Stack, Link, router } from "expo-router";
+import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 import {
@@ -12,6 +12,7 @@ import {
 } from "../utils/ScheduleUtils";
 
 import DaySummary from "../components/DashboardComponents/DaySummary";
+import Header from "../components/DashboardComponents/Header";
 import DayOff from "../components/DashboardComponents/DayOff";
 import { ISingleDaysPayData, ITwoWeekPayPeriod } from "../interfaces/IAppState";
 
@@ -33,7 +34,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (userInfo && userInfo.payDaysForYear) {
+    if (userInfo && userInfo.payDaysForYear && dispatch) {
       let today = new Date();
       let payDays = generatePaydays(new Date(2023, 10, 3), 32);
       let nextPayday = getNextPayday(today, payDays);
@@ -42,13 +43,52 @@ export default function Dashboard() {
         let currentPayPeriod =
           userInfo.payDaysForYear[nextPayday.toISOString()].payDaysInPayPeriod;
         setPayPeriodSchedule(currentPayPeriod);
+
         setPayDay(nextPayday.toISOString());
+
         setGrossIncome(
           userInfo.payDaysForYear[nextPayday.toISOString()].totalEarnings
         );
       }
     }
-  }, [userInfo]);
+  }, []);
+
+  useEffect(() => {
+    // anytime payDay changes dispatch an update to update the header component with the correct month
+    if (payDay) {
+      if (dispatch) {
+        dispatch({
+          type: "setPaydayToDisplay",
+          payload: payDay,
+        });
+      }
+    }
+  }, [payDay]);
+
+  // anytime the paymonth to display changes, rerender the dashboard with the new corresponding pay period from the userInfoObject
+  useEffect(() => {
+    if (userInfo?.payMonthAndYearToDisplay) {
+      const [selectedMonth, selectedYear] =
+        userInfo.payMonthAndYearToDisplay.split(" ");
+
+      const matchingPayDay = Object.entries(userInfo.payDaysForYear!).find(
+        ([payDay]) => {
+          const date = new Date(payDay);
+          const month = date.toLocaleString("default", { month: "long" });
+          const year = date.toLocaleString("default", { year: "numeric" });
+
+          return month === selectedMonth && year === selectedYear;
+        }
+      );
+      if (matchingPayDay) {
+        const [payDay, payPeriod] = matchingPayDay;
+        const twoWeekPayPeriod = payPeriod.payDaysInPayPeriod;
+        setPayPeriodSchedule(twoWeekPayPeriod);
+        setGrossIncome(payPeriod.totalEarnings);
+        setPayDay(payDay);
+      }
+    }
+  }, [userInfo?.payMonthAndYearToDisplay, userInfo?.payDaysForYear]);
 
   return (
     <SafeAreaView
@@ -56,13 +96,27 @@ export default function Dashboard() {
     >
       <Stack.Screen
         options={{
-          headerBackTitleVisible: false,
           headerStyle: { backgroundColor: "#379D9F" },
+          headerShown: true,
+          headerTitle: () => {
+            return <Header />;
+          },
+          headerBackVisible: false,
+          headerRight: () => {
+            return (
+              <MaterialIcons
+                name="settings"
+                onPress={() => router.back()}
+                size={24}
+                color={"white"}
+              />
+            );
+          },
         }}
       />
 
       <View>
-        <View className="mt-9 py-4 bg-[#379D9F] w-screen flex flex-row justify-evenly">
+        <View className="pt-10 pb-4 bg-[#379D9F] w-screen flex flex-row justify-evenly">
           <Button mode="contained" onPress={() => console.log("Pressed")}>
             First Half
           </Button>

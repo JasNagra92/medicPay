@@ -7,8 +7,11 @@ export default function userInfoReducer(state: IUserInfo, action: Action) {
     case "setHourlyWage": {
       return { ...state, hourlyWage: action.payload };
     }
-    case "setPayday": {
-      return { ...state, payDay: action.payload };
+    case "setPaydayToDisplay": {
+      return { ...state, payDayToDisplay: action.payload };
+    }
+    case "setPayMonthAndYearToDisplay": {
+      return { ...state, payMonthAndYearToDisplay: action.payload };
     }
     case "setShiftPattern": {
       return { ...state, shiftPattern: action.payload };

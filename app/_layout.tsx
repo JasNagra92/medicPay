@@ -1,4 +1,4 @@
-import { Slot, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { UserInfoProvider } from "../context/userInfoContext";
 import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
 
@@ -58,6 +58,12 @@ export default function HomeLayout() {
             headerShown: true,
             headerTitle: "",
             headerTransparent: true,
+          }}
+        />
+        <Stack.Screen
+          name="monthModal"
+          options={{
+            presentation: "modal",
           }}
         />
       </Stack>

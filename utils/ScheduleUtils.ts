@@ -275,9 +275,13 @@ export function generateTwoWeekPayPeriodData(
       totalEarnings += calculateTotal(item, userInfo!);
     }
   }
+  let levellingHours = 80 - totalBaseHours;
+  totalEarnings =
+    totalEarnings + levellingHours * parseInt(userInfo.hourlyWage);
 
   const twoWeekPayPeriodData: ITwoWeekPayPeriod = {
     baseHoursWorkedInPayPeriod: totalBaseHours,
+    levellingHours,
     nightHoursWorkedInPayPeriod: totalNightShiftHours,
     weekendHoursWorkedInPayPeriod: totalWeekendHours,
     alphaHoursWorkedInPayPeriod: totalNightShiftHours,
