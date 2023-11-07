@@ -46,11 +46,12 @@ export default function FinalTotal() {
             },
             shadowRadius: 25,
             shadowOpacity: 1,
+            elevation: 5,
           }}
           className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 p-3 flex flex-col justify-evenly"
         >
           <View className="flex flex-col justify-between">
-            <View className="p-5">
+            <View>
               <Text className="text-3xl text-center font-semibold underline decoration-[#379D9F]">
                 Final Total
               </Text>
@@ -60,6 +61,7 @@ export default function FinalTotal() {
               hoursTotal={baseHoursTotal!}
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={baseTotalEarnings?.toFixed(2)!}
+              bgColor="gray"
             />
             <TotalLine
               premiumType="Levelling"
@@ -108,7 +110,7 @@ export default function FinalTotal() {
               premiumRate={(parseInt(userInfo?.hourlyWage!) * 2.0).toFixed(2)}
               premiumTotal={0.0}
             />
-            <View className="py-7">
+            <View>
               <View
                 style={{
                   borderBottomColor: "#D9D9D9",

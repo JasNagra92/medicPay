@@ -29,6 +29,7 @@ export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
         },
         shadowRadius: 25,
         shadowOpacity: 1,
+        elevation: 10,
       }}
       className="rounded-2xl bg-white border-0 p-4 w-5/6"
       onPress={() => {

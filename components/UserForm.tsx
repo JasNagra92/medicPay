@@ -20,6 +20,7 @@ export default function UserForm() {
         },
         shadowRadius: 25,
         shadowOpacity: 1,
+        elevation: 10,
       }}
       className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 pt-3 pb-3 flex flex-col justify-around"
     >

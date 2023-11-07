@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text, SafeAreaView, Pressable } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import {
@@ -32,11 +32,16 @@ export default function Header() {
           style={{ backgroundColor: "#379D9F", alignItems: "center" }}
           className="flex flex-row"
         >
-          <Text className="text-2xl font-bold text-white text-center px-2">
-            {month}
-          </Text>
-          <Link asChild href={"/monthModal"}>
-            <AntDesign name="down" size={18} color={"white"} />
+          <Link href={"/monthModal"} asChild>
+            <Pressable
+              className="flex flex-row"
+              style={{ alignItems: "center" }}
+            >
+              <Text className="text-2xl font-bold text-white text-center px-2">
+                {month}
+              </Text>
+              <AntDesign name="down" size={18} color={"white"} />
+            </Pressable>
           </Link>
         </SafeAreaView>
       )}

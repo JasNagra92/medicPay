@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
-import { Button } from "react-native-paper";
+import { format } from "date-fns";
 import { Stack, Link, router } from "expo-router";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +21,9 @@ export default function Dashboard() {
     useState<ISingleDaysPayData[]>();
   const [grossIncome, setGrossIncome] = useState(0);
   const [payDay, setPayDay] = useState("");
+  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<
+    string[]
+  >([]);
 
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
@@ -38,10 +41,22 @@ export default function Dashboard() {
       let today = new Date();
       let payDays = generatePaydays(new Date(2023, 10, 3), 32);
       let nextPayday = getNextPayday(today, payDays);
+      const currentMonth = nextPayday!.toLocaleString("default", {
+        month: "long",
+      });
+      const currentYear = nextPayday!.toLocaleString("default", {
+        year: "numeric",
+      });
+      // update displayed month/year in context so header and payday buttons are not null
+      dispatch({
+        type: "setPayMonthAndYearToDisplay",
+        payload: `${currentMonth} ${currentYear}`,
+      });
 
       if (nextPayday && userInfo.payDaysForYear[nextPayday.toISOString()]) {
         let currentPayPeriod =
           userInfo.payDaysForYear[nextPayday.toISOString()].payDaysInPayPeriod;
+
         setPayPeriodSchedule(currentPayPeriod);
 
         setPayDay(nextPayday.toISOString());
@@ -51,7 +66,7 @@ export default function Dashboard() {
         );
       }
     }
-  }, []);
+  }, [userInfo!.payDaysForYear]);
 
   useEffect(() => {
     // anytime payDay changes dispatch an update to update the header component with the correct month
@@ -62,6 +77,10 @@ export default function Dashboard() {
           payload: payDay,
         });
       }
+      setPayPeriodSchedule(
+        userInfo?.payDaysForYear![payDay].payDaysInPayPeriod
+      );
+      setGrossIncome(userInfo?.payDaysForYear![payDay].totalEarnings!);
     }
   }, [payDay]);
 
@@ -80,6 +99,21 @@ export default function Dashboard() {
           return month === selectedMonth && year === selectedYear;
         }
       );
+
+      // loop over all the paydays for the year and look for the entries that match both the selected month and year for the context variable payMonthAndYearToDisplay, and return an array of just those dates
+      if (userInfo.payDaysForYear) {
+        const payDaysInMonth = Object.keys(userInfo.payDaysForYear!).filter(
+          (payDay) => {
+            const date = new Date(payDay);
+            const month = date.toLocaleString("default", { month: "long" });
+            const year = date.toLocaleString("default", { year: "numeric" });
+
+            return month === selectedMonth && year === selectedYear;
+          }
+        );
+        setPayDaysInDisplayedMonth(payDaysInMonth);
+      }
+
       if (matchingPayDay) {
         const [payDay, payPeriod] = matchingPayDay;
         const twoWeekPayPeriod = payPeriod.payDaysInPayPeriod;
@@ -116,13 +150,31 @@ export default function Dashboard() {
       />
 
       <View>
-        <View className="pt-10 pb-4 bg-[#379D9F] w-screen flex flex-row justify-evenly">
-          <Button mode="contained" onPress={() => console.log("Pressed")}>
-            First Half
-          </Button>
-          <Button mode="contained" onPress={() => console.log("Pressed")}>
-            Second Half
-          </Button>
+        <View className="pt-12 pb-4 bg-[#379D9F] w-screen flex flex-row justify-evenly">
+          <View className="rounded-2xl bg-[#45abad] flex flex-row">
+            {payDaysInDisplayedMonth &&
+              payDaysInDisplayedMonth.map((p, index) => {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    className={`rounded-full bg-white p-3 ${
+                      p === payDay ? "bg-white" : "bg-[#45abad]"
+                    }`}
+                    onPress={() => {
+                      setPayDay(p);
+                    }}
+                  >
+                    <Text
+                      className={`font-bold ${
+                        p === payDay ? " text-[#379D9F]" : "text-white"
+                      }`}
+                    >
+                      {format(new Date(p), "PP")}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+          </View>
         </View>
         <ScrollView
           style={{
