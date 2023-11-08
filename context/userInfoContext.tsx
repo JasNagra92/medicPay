@@ -4,7 +4,6 @@ import userInfoReducer from "../reducer/userInfoReducer";
 
 const initialUserInfo: IUserInfo = {
   hourlyWage: "",
-  payDay: new Date(),
   shiftPattern: "",
   platoon: "A",
   dayShiftStartTime: { hours: 0, minutes: 0 },

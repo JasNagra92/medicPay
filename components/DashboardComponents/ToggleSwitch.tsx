@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
+import { Link } from "expo-router";
 
-export default function ToggleSwitch() {
+interface IToggleSwitchProps {
+  date: Date;
+}
+
+export default function ToggleSwitch({ date }: IToggleSwitchProps) {
   const [selected, setSelected] = useState("");
 
   const handleSelect = (value: string) => {
@@ -25,20 +30,27 @@ export default function ToggleSwitch() {
       }}
       className="rounded-2xl bg-white flex flex-row mb-2"
     >
-      <TouchableOpacity
-        className={`rounded-2xl m-0.5 px-3 py-1 ${
-          selected === "Stiip" ? "bg-[#379D9F]" : "white"
-        }`}
-        onPress={() => handleSelect("Stiip")}
+      <Link
+        href={{ pathname: "/stiipModal", params: { date: date.toISOString() } }}
+        asChild
       >
-        <Text
-          className={`${
-            selected === "Stiip" ? "text-white" : "text-[#379D9F]"
+        <TouchableOpacity
+          className={`rounded-2xl m-0.5 px-3 py-1 ${
+            selected === "Stiip" ? "bg-[#379D9F]" : "white"
           }`}
+          onPress={() => {
+            handleSelect("Stiip");
+          }}
         >
-          Stiip
-        </Text>
-      </TouchableOpacity>
+          <Text
+            className={`${
+              selected === "Stiip" ? "text-white" : "text-[#379D9F]"
+            }`}
+          >
+            Stiip
+          </Text>
+        </TouchableOpacity>
+      </Link>
       <TouchableOpacity
         className={`rounded-2xl m-0.5 px-4 py-1 ${
           selected === "OT" ? "bg-[#379D9F]" : "white"

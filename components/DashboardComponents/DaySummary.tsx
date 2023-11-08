@@ -52,7 +52,7 @@ export default function DaySummary({
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
           <Text className="font-bold mt-2">{day.toDateString()}</Text>
-          <ToggleSwitch />
+          <ToggleSwitch date={day} />
         </View>
       </View>
 

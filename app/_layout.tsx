@@ -66,6 +66,18 @@ export default function HomeLayout() {
             presentation: "modal",
           }}
         />
+        <Stack.Screen
+          name="stiipModal"
+          options={{
+            presentation: "modal",
+            contentStyle: {
+              marginTop: "115%",
+              overflow: "hidden",
+              borderTopLeftRadius: 30,
+              borderTopRightRadius: 30,
+            },
+          }}
+        />
       </Stack>
     </UserInfoProvider>
   );
