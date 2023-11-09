@@ -1,4 +1,4 @@
-import { IUserInfo } from "../interfaces/IAppState";
+import { ISingleDaysPayData, IUserInfo } from "../interfaces/IAppState";
 import { IScheduleItem } from "../interfaces/IPlatoonStart";
 
 const nightShiftStartHour: number = 18;
@@ -464,7 +464,7 @@ export const calculateDaySummaryProps = (
   const shiftStart = generateStartTimeDate(item, userInfo);
   const shiftEnd = generateEndTimeDate(item, userInfo);
 
-  const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  let baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
   const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
     shiftStart,
     shiftEnd
@@ -504,7 +504,7 @@ export const calculateFinalTotalProps = (
   const shiftStart = generateStartTimeDate(item, userInfo);
   const shiftEnd = generateEndTimeDate(item, userInfo);
 
-  const baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
+  let baseHoursWorked = getHoursWorked(shiftStart, shiftEnd);
   const nightShiftHoursWorked = getNightShiftPremiumHoursWorked(
     shiftStart,
     shiftEnd

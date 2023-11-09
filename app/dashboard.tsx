@@ -14,11 +14,9 @@ import {
 import DaySummary from "../components/DashboardComponents/DaySummary";
 import Header from "../components/DashboardComponents/Header";
 import DayOff from "../components/DashboardComponents/DayOff";
-import { ISingleDaysPayData, ITwoWeekPayPeriod } from "../interfaces/IAppState";
+import { ITwoWeekPayPeriod } from "../interfaces/IAppState";
 
 export default function Dashboard() {
-  const [payPeriodSchedule, setPayPeriodSchedule] =
-    useState<ISingleDaysPayData[]>();
   const [grossIncome, setGrossIncome] = useState(0);
   const [payDay, setPayDay] = useState("");
   const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<
@@ -54,11 +52,6 @@ export default function Dashboard() {
       });
 
       if (nextPayday && userInfo.payDaysForYear[nextPayday.toISOString()]) {
-        let currentPayPeriod =
-          userInfo.payDaysForYear[nextPayday.toISOString()].payDaysInPayPeriod;
-
-        setPayPeriodSchedule(currentPayPeriod);
-
         setPayDay(nextPayday.toISOString());
 
         setGrossIncome(
@@ -77,9 +70,7 @@ export default function Dashboard() {
           payload: payDay,
         });
       }
-      setPayPeriodSchedule(
-        userInfo?.payDaysForYear![payDay].payDaysInPayPeriod
-      );
+
       setGrossIncome(userInfo?.payDaysForYear![payDay].totalEarnings!);
     }
   }, [payDay]);
@@ -116,8 +107,6 @@ export default function Dashboard() {
 
       if (matchingPayDay) {
         const [payDay, payPeriod] = matchingPayDay;
-        const twoWeekPayPeriod = payPeriod.payDaysInPayPeriod;
-        setPayPeriodSchedule(twoWeekPayPeriod);
         setGrossIncome(payPeriod.totalEarnings);
         setPayDay(payDay);
       }
@@ -185,22 +174,26 @@ export default function Dashboard() {
           contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
           className="space-y-3 pt-4"
         >
-          {payPeriodSchedule &&
-            payPeriodSchedule.map((singleDay, i) => {
-              if (singleDay.rotation === "day off") {
-                return (
-                  <View className="flex w-5/6" key={i}>
-                    <DayOff date={singleDay.day} />
-                  </View>
-                );
-              } else {
-                return (
-                  <View className="flex w-5/6" key={i}>
-                    <DaySummary {...singleDay} />
-                  </View>
-                );
+          {userInfo?.payDaysForYear &&
+            userInfo.payDaysForYear[payDay] &&
+            userInfo.payDaysForYear[payDay].payDaysInPayPeriod &&
+            userInfo.payDaysForYear[payDay].payDaysInPayPeriod.map(
+              (singleDay, i) => {
+                if (singleDay.rotation === "day off") {
+                  return (
+                    <View className="flex w-5/6" key={i}>
+                      <DayOff date={singleDay.day} />
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View className="flex w-5/6" key={i}>
+                      <DaySummary {...singleDay} />
+                    </View>
+                  );
+                }
               }
-            })}
+            )}
         </ScrollView>
         <View className="flex flex-row justify-center">
           <Link

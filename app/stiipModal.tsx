@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { RadioButton } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
 import { TimePickerModal } from "react-native-paper-dates";
 import { AntDesign } from "@expo/vector-icons";
 import { format, isWithinInterval } from "date-fns";
 import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import { IStiipUpdatePayload } from "../interfaces/IAppState";
 const image = require("../assets/images/bgImage.png");
 
 export default function StiipModal() {
@@ -24,23 +25,19 @@ export default function StiipModal() {
 
   const onConfirm = React.useCallback(
     ({ hours, minutes }) => {
-      setOpen(false);
-
       let activeDay = userInfo?.payDaysForYear![
         userInfo.payDayToDisplay!
       ].payDaysInPayPeriod.find((day) => day.day.toISOString() === date);
 
       let scheduledStartOfShift = activeDay!.shiftStart;
       let scheudledEndOfShift = activeDay!.shiftEnd;
-      console.log(activeDay!.shiftEnd);
-
-      //   console.log({ hours, minutes });
 
       let dateOfBookOff = new Date(date as string);
       //   if the date the user selected when opening the stiip modal is a night shift, increment the date of book off by 1, if they booked off after midnight
       if (
-        activeDay?.rotation === "Night 1" ||
-        activeDay?.rotation === "Night 2"
+        (activeDay?.rotation === "Night 1" ||
+          activeDay?.rotation === "Night 2") &&
+        hours < scheudledEndOfShift.getHours()
       ) {
         dateOfBookOff.setDate(dateOfBookOff.getDate() + 1);
       }
@@ -51,21 +48,34 @@ export default function StiipModal() {
         start: scheduledStartOfShift,
         end: scheudledEndOfShift,
       });
-      console.log(isValid);
+      isValid
+        ? (setOpen(false), setEndTime(format(dateOfBookOff, "pp")))
+        : alert("must pick a valid book off time");
     },
+
     [setOpen]
   );
 
-  const handlePress = () => {};
+  const handleSubmitStiip = () => {
+    if (selected === "wholeShift" && dispatch) {
+      dispatch({
+        type: "setUsedStiip",
+        payload: {
+          usedStiip: true,
+          payDayOnDisplay: userInfo!.payDayToDisplay,
+          workDayToUpdate: date,
+          stiipHours: 12,
+          hourlyWage: userInfo?.hourlyWage,
+        } as IStiipUpdatePayload,
+      });
+    }
+    router.back();
+  };
+
+  const handleCancel = () => {};
 
   return (
-    <View
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: 20,
-      }}
-    >
+    <View className="p-3 flex flex-col flex-1 justify-evenly">
       <Text className="font-bold text-2xl text-center">STIIP</Text>
       <View className="flex flex-row justify-center">
         <View className="flex flex-row" style={{ alignItems: "center" }}>
@@ -109,6 +119,20 @@ export default function StiipModal() {
             />
           </View>
         ) : null}
+      </View>
+      <View className="flex flex-row justify-center">
+        <TouchableOpacity
+          className="p-4 mx-3 rounded-xl flex-1 bg-[#c6e4e5]"
+          onPress={handleCancel}
+        >
+          <Text className="text-[#379D9F] text-center font-bold">Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="p-4 mx-3 rounded-xl flex-1 bg-[#379D9F]"
+          onPress={handleSubmitStiip}
+        >
+          <Text className="text-white text-center font-bold">Ok</Text>
+        </TouchableOpacity>
       </View>
       <StatusBar style="light" />
     </View>

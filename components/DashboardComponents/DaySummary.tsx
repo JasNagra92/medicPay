@@ -20,6 +20,7 @@ export default function DaySummary({
   dayTotal,
   shiftStart,
   shiftEnd,
+  stiipHours,
 }: ISingleDaysPayData) {
   const userInfo = useUserInfo();
   return (
@@ -81,6 +82,21 @@ export default function DaySummary({
           <Text className="flex-2">{weekendHoursWorked} Hrs x $2.50</Text>
           <Text className="flex-1 text-right"> ${weekendTotal.toFixed(2)}</Text>
         </View>
+        {stiipHours && (
+          <View className="flex flex-row px-3">
+            <Text className="opacity-30 flex-1">STIIP</Text>
+            <Text className="flex-2">
+              {stiipHours} Hrs x ${0.75 * parseInt(userInfo?.hourlyWage!)}
+            </Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              $
+              {(stiipHours * (0.75 * parseInt(userInfo?.hourlyWage!))).toFixed(
+                2
+              )}
+            </Text>
+          </View>
+        )}
         <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
           <Text className="font-bold">${dayTotal.toFixed(2)}</Text>

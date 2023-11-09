@@ -1,6 +1,7 @@
 import React, { ReactNode, createContext, useReducer, useContext } from "react";
 import { Action, IUserInfo } from "../interfaces/IAppState";
 import userInfoReducer from "../reducer/userInfoReducer";
+import { useImmerReducer } from "use-immer";
 
 const initialUserInfo: IUserInfo = {
   hourlyWage: "",
@@ -25,7 +26,10 @@ export const useUserInfoDispatch = () => {
 };
 
 export function UserInfoProvider({ children }: { children: ReactNode }) {
-  const [userInfo, dispatch] = useReducer(userInfoReducer, initialUserInfo);
+  const [userInfo, dispatch] = useImmerReducer(
+    userInfoReducer,
+    initialUserInfo
+  );
   return (
     <UserInfoContext.Provider value={userInfo}>
       <UserInfoDisptachContext.Provider value={dispatch}>

@@ -3,6 +3,14 @@ export interface IShiftTime {
   minutes: number;
 }
 
+export interface IStiipUpdatePayload {
+  usedStiip: boolean;
+  stiipHours: number;
+  workDayToUpdate: string;
+  payDayOnDisplay: string;
+  hourlyWage: string;
+}
+
 export interface ISingleDaysPayData {
   day: Date;
   rotation: string; //day 1, day 2, //
@@ -17,6 +25,8 @@ export interface ISingleDaysPayData {
   dayTotal: number;
   shiftStart: Date;
   shiftEnd: Date;
+  usedStiip?: boolean;
+  stiipHours?: number;
 }
 
 export interface ITwoWeekPayPeriod {
@@ -45,7 +55,7 @@ export interface IUserInfo {
   nightShiftStartTime: IShiftTime;
   nightShiftEndTime: IShiftTime;
   payDaysForYear?: {
-    [payDay: string]: ITwoWeekPayPeriod; // Replace IScheduleItem with your specific structure
+    [payDay: string]: ITwoWeekPayPeriod;
   };
 }
 
@@ -60,6 +70,7 @@ export type Action =
   | { type: "setDayShiftEnd"; payload: IShiftTime }
   | { type: "setNightShiftStart"; payload: IShiftTime }
   | { type: "setNightShiftEnd"; payload: IShiftTime }
+  | { type: "setUsedStiip"; payload: IStiipUpdatePayload }
   | {
       type: "SET_PAY_DAYS_FOR_YEAR";
       payload: Record<string, ITwoWeekPayPeriod>;
