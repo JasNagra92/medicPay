@@ -60,7 +60,7 @@ export default function FinalTotal() {
               premiumType="Base Pay"
               hoursTotal={baseHoursTotal!}
               premiumRate={userInfo?.hourlyWage!}
-              premiumTotal={baseTotalEarnings?.toFixed(2)!}
+              premiumTotal={userInfoData.getBaseWageEarnings().toFixed(2)!}
               bgColor="gray"
             />
             <TotalLine
@@ -139,7 +139,7 @@ export default function FinalTotal() {
             </View>
             <View className="flex flex-row justify-center py-2">
               <Text className="text-3xl font-extrabold">
-                ${totalEarnings.toFixed(2)}
+                ${userInfoData.getTotalEarnings().toFixed(2)}
               </Text>
             </View>
           </View>

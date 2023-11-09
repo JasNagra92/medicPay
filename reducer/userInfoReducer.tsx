@@ -59,6 +59,7 @@ export default function userInfoReducer(draft: IUserInfo, action: Action) {
         ].payDaysInPayPeriod.find(
           (day) => day.day.toISOString() === action.payload.workDayToUpdate
         );
+        // update single days data
         if (dayToUpdate) {
           dayToUpdate.usedStiip = action.payload.usedStiip;
           dayToUpdate.stiipHours = action.payload.stiipHours;
@@ -74,6 +75,9 @@ export default function userInfoReducer(draft: IUserInfo, action: Action) {
             parseInt(action.payload.hourlyWage) *
             0.75 *
             action.payload.stiipHours;
+          // update 2 week totals
+          const payPeriodToUpdate =
+            draft.payDaysForYear[action.payload.payDayOnDisplay];
         }
       }
       break;

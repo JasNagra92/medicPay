@@ -284,12 +284,29 @@ export function generateTwoWeekPayPeriodData(
     levellingHours,
     nightHoursWorkedInPayPeriod: totalNightShiftHours,
     weekendHoursWorkedInPayPeriod: totalWeekendHours,
-    alphaHoursWorkedInPayPeriod: totalNightShiftHours,
-    totalEarnings,
-    baseTotalEarnings: totalBaseHours * parseInt(userInfo.hourlyWage),
+    getNightHoursWorked() {
+      return this.payDaysInPayPeriod.reduce(
+        (totalNightHours, day) => totalNightHours + day.nightHoursWorked,
+        0
+      );
+    },
+    getBaseWageEarnings() {
+      return this.payDaysInPayPeriod.reduce(
+        (total, day) => total + day.baseTotal,
+        0
+      );
+    },
     nightShiftTotalEarnings: totalNightShiftHours * 2.0,
     alphaNightTotalEarnings: totalNightShiftHours * 3.6,
     weekendTotalEarnings: totalWeekendHours * 2.25,
+    getTotalEarnings() {
+      return (
+        this.getBaseWageEarnings() +
+        this.nightShiftTotalEarnings +
+        this.weekendTotalEarnings +
+        this.alphaNightTotalEarnings
+      );
+    },
     payDaysInPayPeriod: payDaysInPayPeriod,
   };
 

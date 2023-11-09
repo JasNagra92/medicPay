@@ -55,7 +55,7 @@ export default function Dashboard() {
         setPayDay(nextPayday.toISOString());
 
         setGrossIncome(
-          userInfo.payDaysForYear[nextPayday.toISOString()].totalEarnings
+          userInfo.payDaysForYear[nextPayday.toISOString()].getTotalEarnings()
         );
       }
     }
@@ -71,7 +71,7 @@ export default function Dashboard() {
         });
       }
 
-      setGrossIncome(userInfo?.payDaysForYear![payDay].totalEarnings!);
+      setGrossIncome(userInfo?.payDaysForYear![payDay].getTotalEarnings()!);
     }
   }, [payDay]);
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
 
       if (matchingPayDay) {
         const [payDay, payPeriod] = matchingPayDay;
-        setGrossIncome(payPeriod.totalEarnings);
+        setGrossIncome(payPeriod.getTotalEarnings());
         setPayDay(payDay);
       }
     }

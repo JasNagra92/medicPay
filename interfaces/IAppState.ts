@@ -30,13 +30,13 @@ export interface ISingleDaysPayData {
 }
 
 export interface ITwoWeekPayPeriod {
-  totalEarnings: number;
+  getBaseWageEarnings: () => number;
+  getTotalEarnings: () => number;
+  getNightHoursWorked: () => number;
   baseHoursWorkedInPayPeriod: number;
   levellingHours: number;
-  alphaHoursWorkedInPayPeriod: number;
   nightHoursWorkedInPayPeriod: number;
   weekendHoursWorkedInPayPeriod: number;
-  baseTotalEarnings: number;
   alphaNightTotalEarnings: number;
   nightShiftTotalEarnings: number;
   weekendTotalEarnings: number;
