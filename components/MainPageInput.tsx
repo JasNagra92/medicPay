@@ -1,13 +1,15 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { View, TextInput, Text } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function MainPageInput({
   icon,
   placeholder,
+  handleChange,
 }: {
   icon: string;
   placeholder: string;
+  handleChange: Dispatch<SetStateAction<string>>;
 }) {
   const capitalizedPlaceholder =
     placeholder.charAt(0).toUpperCase() + placeholder.slice(1);
@@ -27,6 +29,7 @@ export default function MainPageInput({
         <TextInput
           className="flex-1 border rounded mx-5 py-2 pl-9 text-gray-700   focus:border-dotted focus:border-blue-500"
           placeholder={placeholder}
+          onChangeText={handleChange}
         />
       </View>
     </View>

@@ -1,22 +1,30 @@
 import React, { useState, useEffect } from "react";
+import { useAuthentication } from "../../utils/hooks/useAuthentication";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
-import { Stack, Link, router } from "expo-router";
+import { Stack, Link, router, Redirect } from "expo-router";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import {
+  useUserInfo,
+  useUserInfoDispatch,
+} from "../../context/userInfoContext";
 import {
   generateFullYearsPayDaysForUserInfo,
   getNextPayday,
   generatePaydays,
-} from "../utils/ScheduleUtils";
+} from "../../utils/ScheduleUtils";
 
-import DaySummary from "../components/DashboardComponents/DaySummary";
-import Header from "../components/DashboardComponents/Header";
-import DayOff from "../components/DashboardComponents/DayOff";
-import { ITwoWeekPayPeriod } from "../interfaces/IAppState";
+import DaySummary from "../../components/DashboardComponents/DaySummary";
+import Header from "../../components/DashboardComponents/Header";
+import DayOff from "../../components/DashboardComponents/DayOff";
+import { ITwoWeekPayPeriod } from "../../interfaces/IAppState";
 
 export default function Dashboard() {
+  const { user } = useAuthentication();
+  if (!user) {
+    Redirect({ href: "/login" });
+  }
   const [grossIncome, setGrossIncome] = useState(0);
   const [payDay, setPayDay] = useState("");
   const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<

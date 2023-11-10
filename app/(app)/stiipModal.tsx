@@ -6,9 +6,12 @@ import { StatusBar } from "expo-status-bar";
 import { TimePickerModal } from "react-native-paper-dates";
 import { AntDesign } from "@expo/vector-icons";
 import { format, isWithinInterval } from "date-fns";
-import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
-import { IStiipUpdatePayload } from "../interfaces/IAppState";
-const image = require("../assets/images/bgImage.png");
+import {
+  useUserInfo,
+  useUserInfoDispatch,
+} from "../../context/userInfoContext";
+import { IStiipUpdatePayload } from "../../interfaces/IAppState";
+const image = require("../../assets/images/bgImage.png");
 
 export default function StiipModal() {
   const [selected, setSelected] = useState("wholeShift");

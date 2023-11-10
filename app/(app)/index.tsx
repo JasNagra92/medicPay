@@ -1,13 +1,17 @@
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import React from "react";
-import { View } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "react-native";
-import MainPageInput from "../components/MainPageInput";
-import { Button } from "react-native-paper";
-const image = require("../assets/images/bgImage.png");
+import MainPageInput from "../../components/MainPageInput";
+const image = require("../../assets/images/bgImage.png");
+import { useAuthentication } from "../../utils/hooks/useAuthentication";
 
-export default function HomeScreen() {
+export default function HomePage() {
+  const { user } = useAuthentication();
+  if (!user) {
+    Redirect({ href: "/signUp" });
+  }
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
       <SafeAreaView
@@ -28,10 +32,10 @@ export default function HomeScreen() {
           <MainPageInput icon="mail" placeholder="email" />
           <MainPageInput icon="lock" placeholder="password" />
 
-          <Link href={"/workShift"}>
-            <Button icon="camera" mode="contained">
-              Press me
-            </Button>
+          <Link href="/dashboard" asChild>
+            <TouchableOpacity>
+              <Text>Press me</Text>
+            </TouchableOpacity>
           </Link>
         </View>
       </SafeAreaView>

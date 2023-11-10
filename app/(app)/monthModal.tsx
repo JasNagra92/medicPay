@@ -1,9 +1,12 @@
 import { ScrollView, ImageBackground } from "react-native";
 import { Link, router } from "expo-router";
-import MonthDisplay from "../components/MonthModalComponents/MonthDisplay";
+import MonthDisplay from "../../components/MonthModalComponents/MonthDisplay";
 import { StatusBar } from "expo-status-bar";
-import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
-const image = require("../assets/images/bgImage.png");
+import {
+  useUserInfo,
+  useUserInfoDispatch,
+} from "../../context/userInfoContext";
+const image = require("../../assets/images/bgImage.png");
 
 export default function MonthModal() {
   const userInfo = useUserInfo();

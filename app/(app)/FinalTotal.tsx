@@ -2,12 +2,12 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ImageBackground, View, Text } from "react-native";
-import { useUserInfo } from "../context/userInfoContext";
-import TotalLine from "../components/FinalTotalComponents/TotalLine";
+import { useUserInfo } from "../../context/userInfoContext";
+import TotalLine from "../../components/FinalTotalComponents/TotalLine";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
 
-const image = require("../assets/images/bgImage.png");
+const image = require("../../assets/images/bgImage.png");
 
 export default function FinalTotal() {
   const { payDay } = useLocalSearchParams();
@@ -16,15 +16,13 @@ export default function FinalTotal() {
 
   const {
     baseHoursWorkedInPayPeriod: baseHoursTotal,
-    baseTotalEarnings,
-    alphaHoursWorkedInPayPeriod: alphaHoursWorked,
     alphaNightTotalEarnings: alphaTotal,
     nightHoursWorkedInPayPeriod: nightHoursWorked,
     nightShiftTotalEarnings: nightTotal,
     weekendHoursWorkedInPayPeriod: weekendHours,
     weekendTotalEarnings: weekendTotal,
-    totalEarnings,
     levellingHours,
+    getNightHoursWorked,
   } = userInfoData;
 
   return (
@@ -73,7 +71,7 @@ export default function FinalTotal() {
             />
             <TotalLine
               premiumType="Alpha P"
-              hoursTotal={alphaHoursWorked}
+              hoursTotal={getNightHoursWorked()}
               premiumRate="3.60"
               premiumTotal={alphaTotal.toFixed(2)}
               bgColor="grey"
