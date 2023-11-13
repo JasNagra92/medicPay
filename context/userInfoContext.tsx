@@ -1,5 +1,5 @@
 import React, { ReactNode, createContext, useReducer, useContext } from "react";
-import { Action, IUserInfo } from "../interfaces/IAppState";
+import { UserInfoAction, IUserInfo } from "../interfaces/IAppState";
 import userInfoReducer from "../reducer/userInfoReducer";
 import { useImmerReducer } from "use-immer";
 
@@ -15,7 +15,7 @@ const initialUserInfo: IUserInfo = {
 
 export const UserInfoContext = createContext<IUserInfo | null>(initialUserInfo);
 export const UserInfoDisptachContext =
-  createContext<React.Dispatch<Action> | null>(null);
+  createContext<React.Dispatch<UserInfoAction> | null>(null);
 
 export const useUserInfo = () => {
   return useContext(UserInfoContext);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuthentication } from "../../utils/hooks/useAuthentication";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
@@ -9,117 +9,89 @@ import {
   useUserInfo,
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
-import {
-  generateFullYearsPayDaysForUserInfo,
-  getNextPayday,
-  generatePaydays,
-} from "../../utils/ScheduleUtils";
+import { DateTime } from "luxon";
+import axiosInstance from "../../utils/helpers/axiosInstance";
 
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
-import { ITwoWeekPayPeriod } from "../../interfaces/IAppState";
+import { IUserInfo } from "../../interfaces/IAppState";
+import {
+  usePayPeriod,
+  usePayPeriodDispatch,
+} from "../../context/payPeriodDataContext";
 
 export default function Dashboard() {
   const { user } = useAuthentication();
-  if (!user) {
-    Redirect({ href: "/login" });
-  }
+  // if (!user) {
+  //   Redirect({ href: "/login" });
+  // }
   const [grossIncome, setGrossIncome] = useState(0);
+  // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
-  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<
-    string[]
-  >([]);
+  // payDaysInDisplayedMonth will hold the actual data returned from the server
+  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState(null);
 
   const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
+  const payPeriod = usePayPeriod();
+  const payPeriodDispatch = usePayPeriodDispatch();
 
-  useEffect(() => {
-    const payDaysForYear: Record<string, ITwoWeekPayPeriod> =
-      generateFullYearsPayDaysForUserInfo(userInfo!);
-    if (dispatch) {
-      dispatch({ type: "SET_PAY_DAYS_FOR_YEAR", payload: payDaysForYear });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (userInfo && userInfo.payDaysForYear && dispatch) {
-      let today = new Date();
-      let payDays = generatePaydays(new Date(2023, 10, 3), 32);
-      let nextPayday = getNextPayday(today, payDays);
-      const currentMonth = nextPayday!.toLocaleString("default", {
-        month: "long",
+  const getPayDaysFromServer = async (
+    userInfo: IUserInfo,
+    month: number,
+    year: number
+  ) => {
+    try {
+      // get the paydays for the current month and year and set them in state for the buttons to display correctly
+      let response = await axiosInstance.post("/getPayData", {
+        userInfo,
+        month,
+        year,
       });
-      const currentYear = nextPayday!.toLocaleString("default", {
-        year: "numeric",
-      });
-      // update displayed month/year in context so header and payday buttons are not null
-      dispatch({
-        type: "setPayMonthAndYearToDisplay",
-        payload: `${currentMonth} ${currentYear}`,
-      });
-
-      if (nextPayday && userInfo.payDaysForYear[nextPayday.toISOString()]) {
-        setPayDay(nextPayday.toISOString());
-
-        setGrossIncome(
-          userInfo.payDaysForYear[nextPayday.toISOString()].getTotalEarnings()
-        );
-      }
-    }
-  }, [userInfo!.payDaysForYear]);
-
-  useEffect(() => {
-    // anytime payDay changes dispatch an update to update the header component with the correct month
-    if (payDay) {
-      if (dispatch) {
-        dispatch({
-          type: "setPaydayToDisplay",
-          payload: payDay,
+      setPayDaysInDisplayedMonth(response.data.data);
+      if (payPeriodDispatch) {
+        payPeriodDispatch({
+          type: "setPayPeriod",
+          payload: response.data.data[0],
         });
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      setGrossIncome(userInfo?.payDaysForYear![payDay].getTotalEarnings()!);
+  useEffect(() => {
+    if (userInfo && payPeriodDispatch) {
+      const today = DateTime.now();
+
+      getPayDaysFromServer(userInfo, today.month, today.year);
+    }
+  }, []);
+  useEffect(() => {
+    console.log(JSON.stringify(payPeriod, null, 2));
+  }, [payPeriod]);
+
+  useEffect(() => {
+    // hook to update the gross income whenever the payday data changes in state
+    if (payPeriod) {
+      setGrossIncome(
+        payPeriod.workDaysInPayPeriod.reduce(
+          (total, day) => total + day.dayTotal,
+          0
+        )
+      );
+    }
+  }, [payPeriod]);
+
+  useEffect(() => {
+    // change the displayed payday data whenever the payDay changes from a user button press
+    if (payDaysInDisplayedMonth && payPeriodDispatch) {
+      let newPayday = payDaysInDisplayedMonth!.find(
+        (dayInMonth) => dayInMonth.payDay === payDay
+      );
+      payPeriodDispatch({ type: "setPayPeriod", payload: newPayday });
     }
   }, [payDay]);
-
-  // anytime the paymonth to display changes, rerender the dashboard with the new corresponding pay period from the userInfoObject
-  useEffect(() => {
-    if (userInfo?.payMonthAndYearToDisplay) {
-      const [selectedMonth, selectedYear] =
-        userInfo.payMonthAndYearToDisplay.split(" ");
-
-      const matchingPayDay = Object.entries(userInfo.payDaysForYear!).find(
-        ([payDay]) => {
-          const date = new Date(payDay);
-          const month = date.toLocaleString("default", { month: "long" });
-          const year = date.toLocaleString("default", { year: "numeric" });
-
-          return month === selectedMonth && year === selectedYear;
-        }
-      );
-
-      // loop over all the paydays for the year and look for the entries that match both the selected month and year for the context variable payMonthAndYearToDisplay, and return an array of just those dates
-      if (userInfo.payDaysForYear) {
-        const payDaysInMonth = Object.keys(userInfo.payDaysForYear!).filter(
-          (payDay) => {
-            const date = new Date(payDay);
-            const month = date.toLocaleString("default", { month: "long" });
-            const year = date.toLocaleString("default", { year: "numeric" });
-
-            return month === selectedMonth && year === selectedYear;
-          }
-        );
-        setPayDaysInDisplayedMonth(payDaysInMonth);
-      }
-
-      if (matchingPayDay) {
-        const [payDay, payPeriod] = matchingPayDay;
-        setGrossIncome(payPeriod.getTotalEarnings());
-        setPayDay(payDay);
-      }
-    }
-  }, [userInfo?.payMonthAndYearToDisplay, userInfo?.payDaysForYear]);
 
   return (
     <SafeAreaView
@@ -155,18 +127,18 @@ export default function Dashboard() {
                   <TouchableOpacity
                     key={index}
                     className={`rounded-full bg-white p-3 ${
-                      p === payDay ? "bg-white" : "bg-[#45abad]"
+                      p.payDay === payDay ? "bg-white" : "bg-[#45abad]"
                     }`}
                     onPress={() => {
-                      setPayDay(p);
+                      setPayDay(p.payDay);
                     }}
                   >
                     <Text
                       className={`font-bold ${
-                        p === payDay ? " text-[#379D9F]" : "text-white"
+                        p.payDay === payDay ? " text-[#379D9F]" : "text-white"
                       }`}
                     >
-                      {format(new Date(p), "PP")}
+                      {format(new Date(p.payDay), "PP")}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -182,26 +154,22 @@ export default function Dashboard() {
           contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
           className="space-y-3 pt-4"
         >
-          {userInfo?.payDaysForYear &&
-            userInfo.payDaysForYear[payDay] &&
-            userInfo.payDaysForYear[payDay].payDaysInPayPeriod &&
-            userInfo.payDaysForYear[payDay].payDaysInPayPeriod.map(
-              (singleDay, i) => {
-                if (singleDay.rotation === "day off") {
-                  return (
-                    <View className="flex w-5/6" key={i}>
-                      <DayOff date={singleDay.day} />
-                    </View>
-                  );
-                } else {
-                  return (
-                    <View className="flex w-5/6" key={i}>
-                      <DaySummary {...singleDay} />
-                    </View>
-                  );
-                }
+          {payPeriod?.workDaysInPayPeriod &&
+            payPeriod.workDaysInPayPeriod.map((singleDay, i) => {
+              if (singleDay.rotation === "day off") {
+                return (
+                  <View className="flex w-5/6" key={i}>
+                    <DayOff date={singleDay.date} />
+                  </View>
+                );
+              } else {
+                return (
+                  <View className="flex w-5/6" key={i}>
+                    <DaySummary {...singleDay} index={i} />
+                  </View>
+                );
               }
-            )}
+            })}
         </ScrollView>
         <View className="flex flex-row justify-center">
           <Link

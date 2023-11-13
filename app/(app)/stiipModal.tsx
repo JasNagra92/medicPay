@@ -10,8 +10,7 @@ import {
   useUserInfo,
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
-import { IStiipUpdatePayload } from "../../interfaces/IAppState";
-const image = require("../../assets/images/bgImage.png");
+import axiosInstance from "../../utils/helpers/axiosInstance";
 
 export default function StiipModal() {
   const [selected, setSelected] = useState("wholeShift");
@@ -20,7 +19,7 @@ export default function StiipModal() {
 
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
-  const { date } = useLocalSearchParams();
+  const { date, index, rotation } = useLocalSearchParams();
 
   const onDismiss = React.useCallback(() => {
     setOpen(false);
@@ -59,18 +58,19 @@ export default function StiipModal() {
     [setOpen]
   );
 
-  const handleSubmitStiip = () => {
+  const handleSubmitStiip = async () => {
     if (selected === "wholeShift" && dispatch) {
-      dispatch({
-        type: "setUsedStiip",
-        payload: {
-          usedStiip: true,
-          payDayOnDisplay: userInfo!.payDayToDisplay,
-          workDayToUpdate: date,
-          stiipHours: 12,
-          hourlyWage: userInfo?.hourlyWage,
-        } as IStiipUpdatePayload,
-      });
+      try {
+        let response = await axiosInstance.post("/getPayData/addStiip", {
+          userInfo,
+          date,
+          rotation,
+        });
+        console.log(response.data);
+        let indexAsNumber = parseInt(index as string, 10);
+      } catch (error) {
+        console.log(error);
+      }
     }
     router.back();
   };

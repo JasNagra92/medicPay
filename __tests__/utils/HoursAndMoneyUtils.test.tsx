@@ -92,7 +92,7 @@ describe("getHoursWorked", () => {
 
 describe("generateStartTimeDate", () => {
   it("should return a date object with the correct start time using the info from the userinfo object as well as a schedule item", () => {
-    let userInfoTest: IUserInfo = {
+    let userInfoTest:  = {
       hourlyWage: "",
       shiftPattern: "",
       platoon: "A",

@@ -4,9 +4,11 @@ import { Link } from "expo-router";
 
 interface IToggleSwitchProps {
   date: Date;
+  index: number;
+  rotation: string;
 }
 
-export default function ToggleSwitch({ date }: IToggleSwitchProps) {
+export default function ToggleSwitch({ date, index }: IToggleSwitchProps) {
   const [selected, setSelected] = useState("");
 
   const handleSelect = (value: string) => {
@@ -31,7 +33,10 @@ export default function ToggleSwitch({ date }: IToggleSwitchProps) {
       className="rounded-2xl bg-white flex flex-row mb-2"
     >
       <Link
-        href={{ pathname: "/stiipModal", params: { date: date.toISOString() } }}
+        href={{
+          pathname: "/stiipModal",
+          params: { date: date.toISOString(), index },
+        }}
         asChild
       >
         <TouchableOpacity

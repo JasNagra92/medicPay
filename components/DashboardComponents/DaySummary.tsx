@@ -6,22 +6,25 @@ import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
 import { ISingleDaysPayData } from "../../interfaces/IAppState";
 
+interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
+  index: number;
+}
+
 export default function DaySummary({
-  day,
-  rotation, //day 1, day 2, //
-  baseHoursWorked,
-  baseTotal,
-  alphaHoursWorked,
-  alphaTotal,
-  nightHoursWorked,
-  nightTotal,
-  weekendHoursWorked,
-  weekendTotal,
-  dayTotal,
+  date,
+  rotation, //Day 1, Day 2, Night 1 //
   shiftStart,
   shiftEnd,
-  stiipHours,
-}: ISingleDaysPayData) {
+  baseHoursWorked,
+  baseWageEarnings,
+  nightHoursWorked,
+  alphaNightsEarnings,
+  nightEarnings,
+  weekendHoursWorked,
+  weekendEarnings,
+  dayTotal,
+  index,
+}: ISingleDaysPayDataWithIndex) {
   const userInfo = useUserInfo();
   return (
     <View
@@ -45,15 +48,23 @@ export default function DaySummary({
               </Text>
             </View>
             <Text className=" p-1.5 font-bold">{`${format(
-              shiftStart,
+              new Date(shiftStart),
               "p"
-            )} - ${format(shiftEnd, "p")}`}</Text>
+            )} - ${format(new Date(shiftEnd), "p")}`}</Text>
           </View>
           <AntDesign name="up" size={18} color="black" style={{ padding: 7 }} />
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
-          <Text className="font-bold mt-2">{day.toDateString()}</Text>
-          <ToggleSwitch date={day} />
+          <Text className="font-bold mt-2">
+            {new Date(date).toDateString()}
+          </Text>
+          {
+            <ToggleSwitch
+              date={new Date(date)}
+              index={index}
+              rotation={rotation}
+            />
+          }
         </View>
       </View>
 
@@ -63,26 +74,38 @@ export default function DaySummary({
           <Text className="flex-2">
             {baseHoursWorked} Hrs x ${userInfo?.hourlyWage}
           </Text>
-          <Text className="flex-1 text-right"> ${baseTotal.toFixed(2)}</Text>
+          <Text className="flex-1 text-right">
+            {" "}
+            ${baseWageEarnings.toFixed(2)}
+          </Text>
         </View>
         {userInfo?.shiftPattern === "Alpha" ? (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
-            <Text className="flex-2">{alphaHoursWorked} Hrs x $3.60</Text>
-            <Text className="flex-1 text-right"> ${alphaTotal.toFixed(2)}</Text>
+            <Text className="flex-2">{nightHoursWorked} Hrs x $3.60</Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              ${alphaNightsEarnings.toFixed(2)}
+            </Text>
           </View>
         ) : null}
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Night P</Text>
           <Text className="flex-2">{nightHoursWorked} Hrs x $2.00</Text>
-          <Text className="flex-1 text-right"> ${nightTotal.toFixed(2)}</Text>
+          <Text className="flex-1 text-right">
+            {" "}
+            ${nightEarnings.toFixed(2)}
+          </Text>
         </View>
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Weekend P</Text>
           <Text className="flex-2">{weekendHoursWorked} Hrs x $2.50</Text>
-          <Text className="flex-1 text-right"> ${weekendTotal.toFixed(2)}</Text>
+          <Text className="flex-1 text-right">
+            {" "}
+            ${weekendEarnings.toFixed(2)}
+          </Text>
         </View>
-        {stiipHours && (
+        {/* {stiipHours && (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">STIIP</Text>
             <Text className="flex-2">
@@ -96,7 +119,7 @@ export default function DaySummary({
               )}
             </Text>
           </View>
-        )}
+        )} */}
         <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
           <Text className="font-bold">${dayTotal.toFixed(2)}</Text>

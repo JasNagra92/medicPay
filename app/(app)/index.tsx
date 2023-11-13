@@ -10,7 +10,7 @@ import { useAuthentication } from "../../utils/hooks/useAuthentication";
 export default function HomePage() {
   const { user } = useAuthentication();
   if (!user) {
-    Redirect({ href: "/signUp" });
+    Redirect({ href: "/workShift" });
   }
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>

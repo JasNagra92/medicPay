@@ -3,30 +3,24 @@ export interface IShiftTime {
   minutes: number;
 }
 
-export interface IStiipUpdatePayload {
-  usedStiip: boolean;
-  stiipHours: number;
-  workDayToUpdate: string;
-  payDayOnDisplay: string;
-  hourlyWage: string;
-}
-
 export interface ISingleDaysPayData {
-  day: Date;
-  rotation: string; //day 1, day 2, //
-  baseHoursWorked: number;
-  baseTotal: number;
-  alphaHoursWorked: number;
-  alphaTotal: number;
-  nightHoursWorked: number;
-  nightTotal: number;
-  weekendHoursWorked: number;
-  weekendTotal: number;
-  dayTotal: number;
+  date: Date;
+  rotation: string; //Day 1, Day 2, Night 1 //
   shiftStart: Date;
   shiftEnd: Date;
-  usedStiip?: boolean;
-  stiipHours?: number;
+  baseHoursWorked: number;
+  baseWageEarnings: number;
+  nightHoursWorked: number;
+  alphaNightsEarnings: number;
+  nightEarnings: number;
+  weekendHoursWorked: number;
+  weekendEarnings: number;
+  dayTotal: number;
+}
+
+export interface IPayPeriodData {
+  payday: Date;
+  workDaysInPayPeriod: ISingleDaysPayData[];
 }
 
 export interface ITwoWeekPayPeriod {
@@ -44,22 +38,21 @@ export interface ITwoWeekPayPeriod {
 }
 
 export interface IUserInfo {
-  hourlyWage: string;
-  payDayToDisplay?: string | undefined;
-  payMonthAndYearToDisplay?: string | undefined;
+  id: string;
+  email: string;
   shiftPattern: string;
-  rotation?: string;
   platoon: string;
   dayShiftStartTime: IShiftTime;
   dayShiftEndTime: IShiftTime;
   nightShiftStartTime: IShiftTime;
   nightShiftEndTime: IShiftTime;
-  payDaysForYear?: {
-    [payDay: string]: ITwoWeekPayPeriod;
-  };
+  Rday?: string; // R1, R2 etc //
+  hourlyWage: string;
+  payDayToDisplay?: string | undefined;
+  payMonthAndYearToDisplay?: string | undefined;
 }
 
-export type Action =
+export type UserInfoAction =
   | { type: "setHourlyWage"; payload: string }
   | { type: "setPaydayToDisplay"; payload: string }
   | { type: "setPayMonthAndYearToDisplay"; payload: string }
@@ -70,8 +63,17 @@ export type Action =
   | { type: "setDayShiftEnd"; payload: IShiftTime }
   | { type: "setNightShiftStart"; payload: IShiftTime }
   | { type: "setNightShiftEnd"; payload: IShiftTime }
-  | { type: "setUsedStiip"; payload: IStiipUpdatePayload }
   | {
       type: "SET_PAY_DAYS_FOR_YEAR";
       payload: Record<string, ITwoWeekPayPeriod>;
+    };
+
+export type PayPeriodAction =
+  | {
+      type: "updateStiip";
+      payload: { index: number; updatedSingleDay: ISingleDaysPayData };
+    }
+  | {
+      type: "setPayPeriod";
+      payload: IPayPeriodData;
     };

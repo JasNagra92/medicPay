@@ -1,7 +1,13 @@
-import { ISingleDaysPayData, IUserInfo } from "../interfaces/IAppState";
-import { Action } from "../interfaces/IAppState";
+import {
+  ISingleDaysPayData,
+  IUserInfo,
+  UserInfoAction,
+} from "../interfaces/IAppState";
 
-export default function userInfoReducer(draft: IUserInfo, action: Action) {
+export default function userInfoReducer(
+  draft: IUserInfo,
+  action: UserInfoAction
+) {
   switch (action.type) {
     case "setHourlyWage":
       draft.hourlyWage = action.payload;

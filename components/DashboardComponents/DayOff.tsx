@@ -28,7 +28,9 @@ export default function DayOff({ date }: IDayOffProps) {
               Day Off
             </Text>
           </View>
-          <Text className=" p-1.5 font-bold">{date.toDateString()}</Text>
+          <Text className=" p-1.5 font-bold">
+            {new Date(date).toDateString()}
+          </Text>
         </View>
         <AntDesign name="down" size={18} color="black" style={{ padding: 7 }} />
       </View>
