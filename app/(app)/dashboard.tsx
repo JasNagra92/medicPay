@@ -5,17 +5,14 @@ import { format } from "date-fns";
 import { Stack, Link, router, Redirect } from "expo-router";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useUserInfo,
-  useUserInfoDispatch,
-} from "../../context/userInfoContext";
+import { useUserInfo } from "../../context/userInfoContext";
 import { DateTime } from "luxon";
 import axiosInstance from "../../utils/helpers/axiosInstance";
 
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
-import { IUserInfo } from "../../interfaces/IAppState";
+import { IPayPeriodData, IUserInfo } from "../../interfaces/IAppState";
 import {
   usePayPeriod,
   usePayPeriodDispatch,
@@ -30,7 +27,9 @@ export default function Dashboard() {
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
   // payDaysInDisplayedMonth will hold the actual data returned from the server
-  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState(null);
+  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<
+    IPayPeriodData[] | null
+  >(null);
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -55,11 +54,13 @@ export default function Dashboard() {
           payload: response.data.data[0],
         });
       }
+      setPayDay(response.data.data[0].payDay);
     } catch (error) {
       console.log(error);
     }
   };
 
+  // hook to make api call and fetch current months pay data for user
   useEffect(() => {
     if (userInfo && payPeriodDispatch) {
       const today = DateTime.now();
@@ -67,12 +68,9 @@ export default function Dashboard() {
       getPayDaysFromServer(userInfo, today.month, today.year);
     }
   }, []);
-  useEffect(() => {
-    console.log(JSON.stringify(payPeriod, null, 2));
-  }, [payPeriod]);
 
+  // hook to update the gross income whenever the payday data in context changes
   useEffect(() => {
-    // hook to update the gross income whenever the payday data changes in state
     if (payPeriod) {
       setGrossIncome(
         payPeriod.workDaysInPayPeriod.reduce(
@@ -89,7 +87,7 @@ export default function Dashboard() {
       let newPayday = payDaysInDisplayedMonth!.find(
         (dayInMonth) => dayInMonth.payDay === payDay
       );
-      payPeriodDispatch({ type: "setPayPeriod", payload: newPayday });
+      payPeriodDispatch({ type: "setPayPeriod", payload: newPayday! });
     }
   }, [payDay]);
 

@@ -23,6 +23,7 @@ export default function DaySummary({
   weekendHoursWorked,
   weekendEarnings,
   dayTotal,
+  stiipHours,
   index,
 }: ISingleDaysPayDataWithIndex) {
   const userInfo = useUserInfo();
@@ -63,6 +64,8 @@ export default function DaySummary({
               date={new Date(date)}
               index={index}
               rotation={rotation}
+              shiftStart={shiftStart}
+              shiftEnd={shiftEnd}
             />
           }
         </View>
@@ -105,7 +108,7 @@ export default function DaySummary({
             ${weekendEarnings.toFixed(2)}
           </Text>
         </View>
-        {/* {stiipHours && (
+        {stiipHours && (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">STIIP</Text>
             <Text className="flex-2">
@@ -119,7 +122,7 @@ export default function DaySummary({
               )}
             </Text>
           </View>
-        )} */}
+        )}
         <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
           <Text className="font-bold">${dayTotal.toFixed(2)}</Text>

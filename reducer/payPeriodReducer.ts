@@ -6,10 +6,10 @@ export default function payPeriodDataReducer(
 ) {
   switch (action.type) {
     case "setPayPeriod":
-      draft.payday = action.payload.payday;
+      draft.payDay = action.payload.payDay;
       draft.workDaysInPayPeriod = action.payload.workDaysInPayPeriod;
       break;
-    case "updateStiip":
+    case "updateSingleDay":
       draft.workDaysInPayPeriod[action.payload.index] =
         action.payload.updatedSingleDay;
       break;

@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import payPeriodDataReducer from "../reducer/payPeriodReducer";
 
 const initialPayPeriodData: IPayPeriodData = {
-  payday: DateTime.now().toJSDate(),
+  payDay: DateTime.now().toString(),
   workDaysInPayPeriod: [],
 };
 

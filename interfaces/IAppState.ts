@@ -16,10 +16,11 @@ export interface ISingleDaysPayData {
   weekendHoursWorked: number;
   weekendEarnings: number;
   dayTotal: number;
+  stiipHours?: number;
 }
 
 export interface IPayPeriodData {
-  payday: Date;
+  payDay: string;
   workDaysInPayPeriod: ISingleDaysPayData[];
 }
 
@@ -70,7 +71,7 @@ export type UserInfoAction =
 
 export type PayPeriodAction =
   | {
-      type: "updateStiip";
+      type: "updateSingleDay";
       payload: { index: number; updatedSingleDay: ISingleDaysPayData };
     }
   | {

@@ -6,20 +6,24 @@ import { StatusBar } from "expo-status-bar";
 import { TimePickerModal } from "react-native-paper-dates";
 import { AntDesign } from "@expo/vector-icons";
 import { format, isWithinInterval } from "date-fns";
-import {
-  useUserInfo,
-  useUserInfoDispatch,
-} from "../../context/userInfoContext";
+import { useUserInfo } from "../../context/userInfoContext";
 import axiosInstance from "../../utils/helpers/axiosInstance";
+import {
+  usePayPeriod,
+  usePayPeriodDispatch,
+} from "../../context/payPeriodDataContext";
 
 export default function StiipModal() {
   const [selected, setSelected] = useState("wholeShift");
   const [open, setOpen] = React.useState(false);
   const [endTime, setEndTime] = useState("8:30 pm");
+  const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>(null);
 
   const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
-  const { date, index, rotation } = useLocalSearchParams();
+  const payPeriod = usePayPeriod();
+  const payPeriodDataDispatch = usePayPeriodDispatch();
+  const { date, index, rotation, shiftStart, shiftEnd } =
+    useLocalSearchParams();
 
   const onDismiss = React.useCallback(() => {
     setOpen(false);
@@ -27,19 +31,18 @@ export default function StiipModal() {
 
   const onConfirm = React.useCallback(
     ({ hours, minutes }) => {
-      let activeDay = userInfo?.payDaysForYear![
-        userInfo.payDayToDisplay!
-      ].payDaysInPayPeriod.find((day) => day.day.toISOString() === date);
+      let currentDay =
+        payPeriod?.workDaysInPayPeriod[parseInt(index! as string)];
 
-      let scheduledStartOfShift = activeDay!.shiftStart;
-      let scheudledEndOfShift = activeDay!.shiftEnd;
+      let scheduledStartOfShift = new Date(currentDay?.shiftStart!);
+      let scheduledEndOfShift = new Date(currentDay?.shiftEnd!);
 
       let dateOfBookOff = new Date(date as string);
       //   if the date the user selected when opening the stiip modal is a night shift, increment the date of book off by 1, if they booked off after midnight
       if (
-        (activeDay?.rotation === "Night 1" ||
-          activeDay?.rotation === "Night 2") &&
-        hours < scheudledEndOfShift.getHours()
+        (currentDay?.rotation === "Night 1" ||
+          currentDay?.rotation === "Night 2") &&
+        hours < scheduledEndOfShift!.getHours()
       ) {
         dateOfBookOff.setDate(dateOfBookOff.getDate() + 1);
       }
@@ -47,11 +50,13 @@ export default function StiipModal() {
       dateOfBookOff.setMinutes(minutes);
 
       let isValid = isWithinInterval(dateOfBookOff, {
-        start: scheduledStartOfShift,
-        end: scheudledEndOfShift,
+        start: scheduledStartOfShift!,
+        end: scheduledEndOfShift!,
       });
       isValid
-        ? (setOpen(false), setEndTime(format(dateOfBookOff, "pp")))
+        ? (setOpen(false),
+          setEndTime(format(dateOfBookOff, "pp")),
+          setUpdatedShiftEnd(dateOfBookOff))
         : alert("must pick a valid book off time");
     },
 
@@ -59,15 +64,43 @@ export default function StiipModal() {
   );
 
   const handleSubmitStiip = async () => {
-    if (selected === "wholeShift" && dispatch) {
+    if (selected === "wholeShift" && payPeriodDataDispatch) {
       try {
         let response = await axiosInstance.post("/getPayData/addStiip", {
           userInfo,
           date,
           rotation,
         });
-        console.log(response.data);
-        let indexAsNumber = parseInt(index as string, 10);
+        payPeriodDataDispatch({
+          type: "updateSingleDay",
+          payload: {
+            index: parseInt(index! as string),
+            updatedSingleDay: response.data.data,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        let response = await axiosInstance.post("/getPayData/addPartialStiip", {
+          userInfo,
+          date,
+          rotation,
+          shiftStart,
+          updatedShiftEnd: updatedShiftEnd.toISOString(),
+          originalShiftEnd: shiftEnd,
+        });
+        if (payPeriodDataDispatch) {
+          payPeriodDataDispatch({
+            type: "updateSingleDay",
+            payload: {
+              index: parseInt(index! as string),
+              updatedSingleDay: response.data.data,
+            },
+          });
+        }
+        console.log(response.data.data);
       } catch (error) {
         console.log(error);
       }
