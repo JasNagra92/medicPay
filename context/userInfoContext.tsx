@@ -4,6 +4,8 @@ import userInfoReducer from "../reducer/userInfoReducer";
 import { useImmerReducer } from "use-immer";
 
 const initialUserInfo: IUserInfo = {
+  email: "test@email.com",
+  id: "user1-replace-with-uuid",
   hourlyWage: "",
   shiftPattern: "",
   platoon: "A",

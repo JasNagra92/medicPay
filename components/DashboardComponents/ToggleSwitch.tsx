@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import { useRouter } from "expo-router";
 import axiosInstance from "../../utils/helpers/axiosInstance";
-import { usePayPeriodDispatch } from "../../context/payPeriodDataContext";
+import {
+  usePayPeriod,
+  usePayPeriodDispatch,
+} from "../../context/payPeriodDataContext";
 import { useUserInfo } from "../../context/userInfoContext";
+import { format } from "date-fns";
 
 interface IToggleSwitchProps {
   date: Date;
@@ -20,6 +24,7 @@ export default function ToggleSwitch({
   shiftStart,
   shiftEnd,
 }: IToggleSwitchProps) {
+  const payPeriod = usePayPeriod();
   const [selected, setSelected] = useState("");
   const router = useRouter();
   const userInfo = useUserInfo();
@@ -33,6 +38,14 @@ export default function ToggleSwitch({
           userInfo,
           date,
           rotation,
+          collectionInDB: "sickHours",
+          monthAndYear: new Date(payPeriod!.payDay).toLocaleDateString(
+            "en-us",
+            {
+              month: "long",
+              year: "numeric",
+            }
+          ),
         });
         if (payPeriodDispatch) {
           payPeriodDispatch({
@@ -58,6 +71,12 @@ export default function ToggleSwitch({
       });
     }
   };
+
+  useEffect(() => {
+    payPeriod?.workDaysInPayPeriod[index].stiipHours
+      ? setSelected("Stiip")
+      : "";
+  }, []);
 
   return (
     <View

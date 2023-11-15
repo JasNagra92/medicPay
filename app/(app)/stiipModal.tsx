@@ -70,6 +70,8 @@ export default function StiipModal() {
           userInfo,
           date,
           rotation,
+          payDay: format(new Date(payPeriod!.payDay), "PP"),
+          index,
         });
         payPeriodDataDispatch({
           type: "updateSingleDay",
