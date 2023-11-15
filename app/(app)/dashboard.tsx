@@ -27,9 +27,7 @@ export default function Dashboard() {
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
   // payDaysInDisplayedMonth will hold the actual data returned from the server
-  const [payDaysInDisplayedMonth, setPayDaysInDisplayedMonth] = useState<
-    IPayPeriodData[] | null
-  >(null);
+  const [indexInMonth, setIndexInMonth] = useState(0);
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -47,14 +45,13 @@ export default function Dashboard() {
         month,
         year,
       });
-      setPayDaysInDisplayedMonth(response.data.data);
       if (payPeriodDispatch) {
         payPeriodDispatch({
           type: "setPayPeriod",
-          payload: response.data.data[0],
+          payload: response.data.data,
         });
+        setPayDay(response.data.data[0].payDay);
       }
-      setPayDay(response.data.data[0].payDay);
     } catch (error) {
       console.log(error);
     }
@@ -73,23 +70,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (payPeriod) {
       setGrossIncome(
-        payPeriod.workDaysInPayPeriod.reduce(
+        payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
           (total, day) => total + day.dayTotal,
           0
         )
       );
     }
-  }, [payPeriod]);
-
-  useEffect(() => {
-    // change the displayed payday data whenever the payDay changes from a user button press
-    if (payDaysInDisplayedMonth && payPeriodDispatch) {
-      let newPayday = payDaysInDisplayedMonth!.find(
-        (dayInMonth) => dayInMonth.payDay === payDay
-      );
-      payPeriodDispatch({ type: "setPayPeriod", payload: newPayday! });
-    }
-  }, [payDay]);
+  }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);
 
   return (
     <SafeAreaView
@@ -119,8 +106,8 @@ export default function Dashboard() {
       <View>
         <View className="pt-12 pb-4 bg-[#379D9F] w-screen flex flex-row justify-evenly">
           <View className="rounded-2xl bg-[#45abad] flex flex-row">
-            {payDaysInDisplayedMonth &&
-              payDaysInDisplayedMonth.map((p, index) => {
+            {payPeriod &&
+              payPeriod.map((p, index) => {
                 return (
                   <TouchableOpacity
                     key={index}
@@ -129,6 +116,7 @@ export default function Dashboard() {
                     }`}
                     onPress={() => {
                       setPayDay(p.payDay);
+                      setIndexInMonth(index);
                     }}
                   >
                     <Text
@@ -152,8 +140,8 @@ export default function Dashboard() {
           contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
           className="space-y-3 pt-4"
         >
-          {payPeriod?.workDaysInPayPeriod &&
-            payPeriod.workDaysInPayPeriod.map((singleDay, i) => {
+          {payPeriod![indexInMonth].workDaysInPayPeriod &&
+            payPeriod![indexInMonth].workDaysInPayPeriod.map((singleDay, i) => {
               if (singleDay.rotation === "day off") {
                 return (
                   <View className="flex w-5/6" key={i}>
@@ -163,7 +151,11 @@ export default function Dashboard() {
               } else {
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DaySummary {...singleDay} index={i} />
+                    <DaySummary
+                      {...singleDay}
+                      index={i}
+                      indexInMonth={indexInMonth}
+                    />
                   </View>
                 );
               }

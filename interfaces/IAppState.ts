@@ -72,9 +72,13 @@ export type UserInfoAction =
 export type PayPeriodAction =
   | {
       type: "updateSingleDay";
-      payload: { index: number; updatedSingleDay: ISingleDaysPayData };
+      payload: {
+        indexInMonth: number;
+        indexInWorkDays: number;
+        updatedSingleDay: ISingleDaysPayData;
+      };
     }
   | {
       type: "setPayPeriod";
-      payload: IPayPeriodData;
+      payload: IPayPeriodData[];
     };

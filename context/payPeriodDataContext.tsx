@@ -4,12 +4,11 @@ import { useImmerReducer } from "use-immer";
 import { DateTime } from "luxon";
 import payPeriodDataReducer from "../reducer/payPeriodReducer";
 
-const initialPayPeriodData: IPayPeriodData = {
-  payDay: DateTime.now().toString(),
-  workDaysInPayPeriod: [],
-};
+const initialPayPeriodData: IPayPeriodData[] = [
+  { payDay: DateTime.now().toString(), workDaysInPayPeriod: [] },
+];
 
-export const PayPeriodContext = createContext<IPayPeriodData | null>(
+export const PayPeriodContext = createContext<IPayPeriodData[] | null>(
   initialPayPeriodData
 );
 export const PayPeriodDispatchContext =

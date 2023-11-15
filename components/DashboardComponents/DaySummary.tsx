@@ -8,6 +8,7 @@ import { ISingleDaysPayData } from "../../interfaces/IAppState";
 
 interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
   index: number;
+  indexInMonth: number;
 }
 
 export default function DaySummary({
@@ -25,6 +26,7 @@ export default function DaySummary({
   dayTotal,
   stiipHours,
   index,
+  indexInMonth,
 }: ISingleDaysPayDataWithIndex) {
   const userInfo = useUserInfo();
   return (
@@ -66,6 +68,7 @@ export default function DaySummary({
               rotation={rotation}
               shiftStart={shiftStart}
               shiftEnd={shiftEnd}
+              indexInMonth={indexInMonth}
             />
           }
         </View>

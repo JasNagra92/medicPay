@@ -1,17 +1,17 @@
 import { IPayPeriodData, PayPeriodAction } from "../interfaces/IAppState";
 
 export default function payPeriodDataReducer(
-  draft: IPayPeriodData,
+  draft: IPayPeriodData[],
   action: PayPeriodAction
 ) {
   switch (action.type) {
     case "setPayPeriod":
-      draft.payDay = action.payload.payDay;
-      draft.workDaysInPayPeriod = action.payload.workDaysInPayPeriod;
+      draft.splice(0, draft.length, ...action.payload);
       break;
     case "updateSingleDay":
-      draft.workDaysInPayPeriod[action.payload.index] =
-        action.payload.updatedSingleDay;
+      draft[action.payload.indexInMonth].workDaysInPayPeriod[
+        action.payload.indexInWorkDays
+      ] = action.payload.updatedSingleDay;
       break;
     default:
       return draft;

@@ -15,6 +15,7 @@ interface IToggleSwitchProps {
   rotation: string;
   shiftStart: Date;
   shiftEnd: Date;
+  indexInMonth: number;
 }
 
 export default function ToggleSwitch({
@@ -23,6 +24,7 @@ export default function ToggleSwitch({
   rotation,
   shiftStart,
   shiftEnd,
+  indexInMonth,
 }: IToggleSwitchProps) {
   const payPeriod = usePayPeriod();
   const [selected, setSelected] = useState("");
@@ -39,18 +41,21 @@ export default function ToggleSwitch({
           date,
           rotation,
           collectionInDB: "sickHours",
-          monthAndYear: new Date(payPeriod!.payDay).toLocaleDateString(
-            "en-us",
-            {
-              month: "long",
-              year: "numeric",
-            }
-          ),
+          monthAndYear: new Date(
+            payPeriod![indexInMonth].payDay
+          ).toLocaleDateString("en-us", {
+            month: "long",
+            year: "numeric",
+          }),
         });
         if (payPeriodDispatch) {
           payPeriodDispatch({
             type: "updateSingleDay",
-            payload: { index, updatedSingleDay: response.data.data },
+            payload: {
+              indexInMonth,
+              indexInWorkDays: index,
+              updatedSingleDay: response.data.data,
+            },
           });
         }
         setSelected("");
@@ -67,13 +72,14 @@ export default function ToggleSwitch({
           rotation,
           shiftStart,
           shiftEnd,
+          indexInMonth,
         },
       });
     }
   };
 
   useEffect(() => {
-    payPeriod?.workDaysInPayPeriod[index].stiipHours
+    payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
       ? setSelected("Stiip")
       : "";
   }, []);
@@ -93,7 +99,9 @@ export default function ToggleSwitch({
     >
       <TouchableOpacity
         className={`rounded-2xl m-0.5 px-3 py-1 ${
-          selected === "Stiip" ? "bg-[#379D9F]" : "white"
+          payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+            ? "bg-[#379D9F]"
+            : "white"
         }`}
         onPress={() => {
           handleStiipSelect("Stiip");
@@ -101,7 +109,9 @@ export default function ToggleSwitch({
       >
         <Text
           className={`${
-            selected === "Stiip" ? "text-white" : "text-[#379D9F]"
+            payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+              ? "text-white"
+              : "text-[#379D9F]"
           }`}
         >
           Stiip

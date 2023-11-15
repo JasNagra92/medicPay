@@ -22,7 +22,7 @@ export default function StiipModal() {
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
   const payPeriodDataDispatch = usePayPeriodDispatch();
-  const { date, index, rotation, shiftStart, shiftEnd } =
+  const { date, index, rotation, shiftStart, shiftEnd, indexInMonth } =
     useLocalSearchParams();
 
   const onDismiss = React.useCallback(() => {
@@ -32,7 +32,9 @@ export default function StiipModal() {
   const onConfirm = React.useCallback(
     ({ hours, minutes }) => {
       let currentDay =
-        payPeriod?.workDaysInPayPeriod[parseInt(index! as string)];
+        payPeriod![parseInt(indexInMonth! as string)].workDaysInPayPeriod[
+          parseInt(index! as string)
+        ];
 
       let scheduledStartOfShift = new Date(currentDay?.shiftStart!);
       let scheduledEndOfShift = new Date(currentDay?.shiftEnd!);
@@ -70,13 +72,17 @@ export default function StiipModal() {
           userInfo,
           date,
           rotation,
-          payDay: format(new Date(payPeriod!.payDay), "PP"),
+          payDay: format(
+            new Date(payPeriod![parseInt(indexInMonth as string)].payDay),
+            "PP"
+          ),
           index,
         });
         payPeriodDataDispatch({
           type: "updateSingleDay",
           payload: {
-            index: parseInt(index! as string),
+            indexInWorkDays: parseInt(index! as string),
+            indexInMonth: parseInt(indexInMonth! as string),
             updatedSingleDay: response.data.data,
           },
         });
@@ -97,7 +103,8 @@ export default function StiipModal() {
           payPeriodDataDispatch({
             type: "updateSingleDay",
             payload: {
-              index: parseInt(index! as string),
+              indexInWorkDays: parseInt(index! as string),
+              indexInMonth: parseInt(indexInMonth! as string),
               updatedSingleDay: response.data.data,
             },
           });
