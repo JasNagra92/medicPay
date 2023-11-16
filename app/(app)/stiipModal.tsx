@@ -17,7 +17,7 @@ export default function StiipModal() {
   const [selected, setSelected] = useState("wholeShift");
   const [open, setOpen] = React.useState(false);
   const [endTime, setEndTime] = useState("8:30 pm");
-  const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>(null);
+  const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>();
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -30,7 +30,7 @@ export default function StiipModal() {
   }, [setOpen]);
 
   const onConfirm = React.useCallback(
-    ({ hours, minutes }) => {
+    ({ hours, minutes }: any) => {
       let currentDay =
         payPeriod![parseInt(indexInMonth! as string)].workDaysInPayPeriod[
           parseInt(index! as string)
@@ -93,10 +93,15 @@ export default function StiipModal() {
       try {
         let response = await axiosInstance.post("/getPayData/addPartialStiip", {
           userInfo,
+          index,
           date,
           rotation,
+          payDay: format(
+            new Date(payPeriod![parseInt(indexInMonth as string)].payDay),
+            "PP"
+          ),
           shiftStart,
-          updatedShiftEnd: updatedShiftEnd.toISOString(),
+          updatedShiftEnd: updatedShiftEnd!.toISOString(),
           originalShiftEnd: shiftEnd,
         });
         if (payPeriodDataDispatch) {
@@ -117,7 +122,9 @@ export default function StiipModal() {
     router.back();
   };
 
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    router.back();
+  };
 
   return (
     <View className="p-3 flex flex-col flex-1 justify-evenly">

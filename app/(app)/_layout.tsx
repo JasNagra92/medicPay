@@ -80,6 +80,18 @@ export default function HomeLayout() {
               },
             }}
           />
+          <Stack.Screen
+            name="overtimeModal"
+            options={{
+              presentation: "modal",
+              contentStyle: {
+                marginTop: "80%",
+                overflow: "hidden",
+                borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,
+              },
+            }}
+          />
         </Stack>
       </PayPeriodProvider>
     </UserInfoProvider>

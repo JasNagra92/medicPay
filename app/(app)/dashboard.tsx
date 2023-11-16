@@ -145,7 +145,11 @@ export default function Dashboard() {
               if (singleDay.rotation === "day off") {
                 return (
                   <View className="flex w-5/6" key={i}>
-                    <DayOff date={singleDay.date} />
+                    <DayOff
+                      {...singleDay}
+                      index={i}
+                      indexInMonth={indexInMonth}
+                    />
                   </View>
                 );
               } else {

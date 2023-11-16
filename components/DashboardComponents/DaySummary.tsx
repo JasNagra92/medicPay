@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
 import { ISingleDaysPayData } from "../../interfaces/IAppState";
 
-interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
+export interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
   index: number;
   indexInMonth: number;
 }
@@ -25,6 +25,7 @@ export default function DaySummary({
   weekendEarnings,
   dayTotal,
   stiipHours,
+  regOTHours,
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {
@@ -78,7 +79,7 @@ export default function DaySummary({
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Base Pay</Text>
           <Text className="flex-2">
-            {baseHoursWorked} Hrs x ${userInfo?.hourlyWage}
+            {baseHoursWorked.toFixed(2)} Hrs x ${userInfo?.hourlyWage}
           </Text>
           <Text className="flex-1 text-right">
             {" "}
@@ -88,7 +89,9 @@ export default function DaySummary({
         {userInfo?.shiftPattern === "Alpha" ? (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
-            <Text className="flex-2">{nightHoursWorked} Hrs x $3.60</Text>
+            <Text className="flex-2">
+              {nightHoursWorked.toFixed(2)} Hrs x $3.60
+            </Text>
             <Text className="flex-1 text-right">
               {" "}
               ${alphaNightsEarnings.toFixed(2)}
@@ -97,7 +100,9 @@ export default function DaySummary({
         ) : null}
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Night P</Text>
-          <Text className="flex-2">{nightHoursWorked} Hrs x $2.00</Text>
+          <Text className="flex-2">
+            {nightHoursWorked.toFixed(2)} Hrs x $2.00
+          </Text>
           <Text className="flex-1 text-right">
             {" "}
             ${nightEarnings.toFixed(2)}
@@ -105,7 +110,9 @@ export default function DaySummary({
         </View>
         <View className="flex flex-row px-3">
           <Text className="opacity-30 flex-1">Weekend P</Text>
-          <Text className="flex-2">{weekendHoursWorked} Hrs x $2.50</Text>
+          <Text className="flex-2">
+            {weekendHoursWorked.toFixed(2)} Hrs x $2.50
+          </Text>
           <Text className="flex-1 text-right">
             {" "}
             ${weekendEarnings.toFixed(2)}
@@ -115,12 +122,30 @@ export default function DaySummary({
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">STIIP</Text>
             <Text className="flex-2">
-              {stiipHours} Hrs x ${0.75 * parseInt(userInfo?.hourlyWage!)}
+              {stiipHours.toFixed(2)} Hrs x $
+              {(0.75 * parseFloat(userInfo?.hourlyWage!)).toFixed(2)}
             </Text>
             <Text className="flex-1 text-right">
               {" "}
               $
-              {(stiipHours * (0.75 * parseInt(userInfo?.hourlyWage!))).toFixed(
+              {(
+                stiipHours *
+                (0.75 * parseFloat(userInfo?.hourlyWage!))
+              ).toFixed(2)}
+            </Text>
+          </View>
+        )}
+        {regOTHours && (
+          <View className="flex flex-row px-3">
+            <Text className="opacity-30 flex-1">OT 1.5</Text>
+            <Text className="flex-2">
+              {regOTHours.toFixed(2)} Hrs x $
+              {1.5 * parseInt(userInfo?.hourlyWage!)}
+            </Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              $
+              {(regOTHours * (1.5 * parseFloat(userInfo?.hourlyWage!))).toFixed(
                 2
               )}
             </Text>
