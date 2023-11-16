@@ -17,7 +17,8 @@ export interface ISingleDaysPayData {
   weekendEarnings: number;
   dayTotal: number;
   stiipHours?: number;
-  regOTHours?: number;
+  OTOnePointFive?: number;
+  OTDoubleTime?: number;
 }
 
 export interface IPayPeriodData {

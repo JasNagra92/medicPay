@@ -19,7 +19,6 @@ export default function DayOff({
   weekendEarnings,
   dayTotal,
   stiipHours,
-  regOTHours,
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {

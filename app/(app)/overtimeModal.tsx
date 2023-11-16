@@ -23,9 +23,7 @@ export default function OvertimeModal() {
   const payPeriodDataDispatch = usePayPeriodDispatch();
   const { date, index, rotation, shiftStart, shiftEnd, indexInMonth } =
     useLocalSearchParams();
-  const [startTime, setStartTime] = useState(
-    format(new Date(shiftStart as string), "pp")
-  );
+  const [startTime, setStartTime] = useState<string | undefined>(undefined);
   const [endTime, setEndTime] = useState(
     format(new Date(shiftEnd as string), "pp")
   );
@@ -36,12 +34,11 @@ export default function OvertimeModal() {
 
   const onConfirm = React.useCallback(
     ({ hours, minutes }: any) => {
+      let currentDay =
+        payPeriod![parseInt(indexInMonth! as string)].workDaysInPayPeriod[
+          parseInt(index! as string)
+        ];
       if (selected === "End of Shift OT") {
-        let currentDay =
-          payPeriod![parseInt(indexInMonth! as string)].workDaysInPayPeriod[
-            parseInt(index! as string)
-          ];
-
         let scheduledEndOfShift = new Date(currentDay?.shiftEnd!);
 
         let overtimeEndTime = new Date(scheduledEndOfShift);
@@ -62,12 +59,33 @@ export default function OvertimeModal() {
             setEndTime(format(overtimeEndTime, "pp")),
             setUpdatedShiftEnd(overtimeEndTime))
           : alert("must pick a valid book off time");
-      } else if (selected === "Regular OT" && startOrEndTime === "start") {
-        // logic to handle user setting a start time for the start of a regular overtime shift. Will have to
+      } else if (selected === "Regular OT") {
+        if (startOrEndTime === "start") {
+          // logic to handle user setting a start time for the start of a regular overtime shift.
+          const shiftStartForRegOT = new Date(currentDay.date);
+          shiftStartForRegOT.setHours(hours);
+          shiftStartForRegOT.setMinutes(minutes);
+          setStartTime(shiftStartForRegOT.toISOString());
+          setOpen(false);
+        } else {
+          // else block will run when startOrEndTime is not start, only other option is endTime
+          const shiftEndForRegOT = new Date(currentDay.date);
+          shiftEndForRegOT.setHours(hours);
+          shiftEndForRegOT.setMinutes(minutes);
+          // if user selected a end time that is before the previously selected start time, that indicates a shift ending on the next day so set the date forward 1 day, only allow users to input end time if start time is not undefined to prevent users from entering end times before start times
+          if (shiftEndForRegOT < new Date(startTime!)) {
+            shiftEndForRegOT.setDate(shiftEndForRegOT.getMonth() + 1);
+            // store shift end in same variable being used for late calls because they are both dates
+            setUpdatedShiftEnd(shiftEndForRegOT);
+            setOpen(false);
+          }
+          setUpdatedShiftEnd(shiftEndForRegOT);
+          setOpen(false);
+        }
       }
     },
 
-    [setOpen]
+    [setOpen, selected, startOrEndTime]
   );
 
   const handleSubmitOT = async () => {
@@ -97,7 +115,40 @@ export default function OvertimeModal() {
       } catch (error) {
         console.log(error);
       }
-    } else {
+    } else if (selected === "Regular OT" && payPeriodDataDispatch) {
+      try {
+        let response = await axiosInstance.post(
+          "/getPayData/addRegularOvertime",
+          {
+            userInfo,
+            date,
+            shiftStart: startTime,
+            shiftEnd: updatedShiftEnd,
+            index,
+            payDay: format(
+              new Date(payPeriod![parseInt(indexInMonth as string)].payDay),
+              "PP"
+            ),
+            monthAndYear: new Date(
+              payPeriod![parseInt(indexInMonth as string)].payDay
+            ).toLocaleDateString("en-us", {
+              month: "long",
+              year: "numeric",
+            }),
+          }
+        );
+        console.log(response.data.data);
+        payPeriodDataDispatch({
+          type: "updateSingleDay",
+          payload: {
+            indexInWorkDays: parseInt(index! as string),
+            indexInMonth: parseInt(indexInMonth! as string),
+            updatedSingleDay: response.data.data,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
     router.back();
   };
@@ -168,7 +219,9 @@ export default function OvertimeModal() {
                 }}
                 className="border rounded-md border-gray-300 flex flex-row items-center p-2 justify-between"
               >
-                <Text className="pr-3">{endTime}</Text>
+                <Text className="pr-3">
+                  {startTime ? format(new Date(startTime!), "pp") : null}
+                </Text>
                 <AntDesign name="clockcircle" size={20} color="gray" />
               </TouchableOpacity>
             </View>
@@ -176,12 +229,18 @@ export default function OvertimeModal() {
             <View className="flex flex-row" style={{ alignItems: "center" }}>
               <TouchableOpacity
                 onPress={() => {
-                  setStartOrEndTime("end");
-                  setOpen(true);
+                  if (startTime) {
+                    setStartOrEndTime("end");
+                    setOpen(true);
+                  } else {
+                    alert("must select start time first");
+                  }
                 }}
                 className="border rounded-md border-gray-300 flex flex-row items-center p-2 justify-between"
               >
-                <Text className="pr-3">{endTime}</Text>
+                <Text className="pr-3">
+                  {updatedShiftEnd ? format(updatedShiftEnd!, "pp") : null}
+                </Text>
                 <AntDesign name="clockcircle" size={20} color="gray" />
               </TouchableOpacity>
             </View>

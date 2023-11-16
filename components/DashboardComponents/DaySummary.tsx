@@ -25,7 +25,8 @@ export default function DaySummary({
   weekendEarnings,
   dayTotal,
   stiipHours,
-  regOTHours,
+  OTOnePointFive,
+  OTDoubleTime,
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {
@@ -135,19 +136,37 @@ export default function DaySummary({
             </Text>
           </View>
         )}
-        {regOTHours && (
+        {OTOnePointFive && (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">OT 1.5</Text>
             <Text className="flex-2">
-              {regOTHours.toFixed(2)} Hrs x $
+              {OTOnePointFive.toFixed(2)} Hrs x $
               {1.5 * parseInt(userInfo?.hourlyWage!)}
             </Text>
             <Text className="flex-1 text-right">
               {" "}
               $
-              {(regOTHours * (1.5 * parseFloat(userInfo?.hourlyWage!))).toFixed(
-                2
-              )}
+              {(
+                OTOnePointFive *
+                (1.5 * parseFloat(userInfo?.hourlyWage!))
+              ).toFixed(2)}
+            </Text>
+          </View>
+        )}
+        {OTDoubleTime && (
+          <View className="flex flex-row px-3">
+            <Text className="opacity-30 flex-1">OT 2.0</Text>
+            <Text className="flex-2">
+              {OTDoubleTime.toFixed(2)} Hrs x $
+              {1.5 * parseInt(userInfo?.hourlyWage!)}
+            </Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              $
+              {(
+                OTDoubleTime *
+                (2.0 * parseFloat(userInfo?.hourlyWage!))
+              ).toFixed(2)}
             </Text>
           </View>
         )}
