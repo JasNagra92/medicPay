@@ -83,4 +83,12 @@ export type PayPeriodAction =
   | {
       type: "setPayPeriod";
       payload: IPayPeriodData[];
+    }
+  | {
+      type: "updateHolidayBlock";
+      payload: {
+        indexInMonth: number;
+        indexInWorkDays: number;
+        updatedDays: ISingleDaysPayData[];
+      };
     };

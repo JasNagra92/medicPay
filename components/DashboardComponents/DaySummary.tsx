@@ -5,6 +5,7 @@ import { useUserInfo } from "../../context/userInfoContext";
 import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
 import { ISingleDaysPayData } from "../../interfaces/IAppState";
+import VacationToggle from "./VacationToggle";
 
 export interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
   index: number;
@@ -57,7 +58,6 @@ export default function DaySummary({
               "p"
             )} - ${format(new Date(shiftEnd), "p")}`}</Text>
           </View>
-          <AntDesign name="up" size={18} color="black" style={{ padding: 7 }} />
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
           <Text className="font-bold mt-2">
@@ -172,7 +172,9 @@ export default function DaySummary({
         )}
         <View className="flex flex-row justify-between rounded-xl py-2 px-1 mx-1 bg-[#e1f1f1] ">
           <Text className="opacity-30">Day Total:</Text>
-          <Text className="font-bold">${dayTotal.toFixed(2)}</Text>
+          <Text className="font-bold">
+            ${dayTotal ? dayTotal.toFixed(2) : 0}
+          </Text>
         </View>
       </View>
     </View>

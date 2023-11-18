@@ -8,6 +8,7 @@ import {
 } from "../../context/payPeriodDataContext";
 import { useUserInfo } from "../../context/userInfoContext";
 import { format } from "date-fns";
+import VacationToggle from "./VacationToggle";
 
 interface IToggleSwitchProps {
   date: Date;
@@ -146,6 +147,7 @@ export default function ToggleSwitch({
           },
           shadowRadius: 25,
           shadowOpacity: 1,
+          elevation: 10,
         }}
         className="rounded-2xl bg-white flex flex-row mb-2"
       >
@@ -174,32 +176,38 @@ export default function ToggleSwitch({
         },
         shadowRadius: 25,
         shadowOpacity: 1,
+        elevation: 10,
       }}
       className="rounded-2xl bg-white flex flex-row mb-2"
     >
+      {rotation === "Day 1" || rotation === "Vacation" ? (
+        <VacationToggle index={index} indexInMonth={indexInMonth} />
+      ) : null}
+
       {!payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime &&
-        !payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive && (
-          <TouchableOpacity
-            className={`rounded-2xl m-0.5 px-3 py-1 ${
+      !payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive ? (
+        <TouchableOpacity
+          style={rotation === "Vacation" ? { display: "none" } : null}
+          className={`rounded-2xl m-0.5 px-3 py-1 ${
+            payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+              ? "bg-[#379D9F]"
+              : "white"
+          }`}
+          onPress={() => {
+            handleStiipSelect();
+          }}
+        >
+          <Text
+            className={`${
               payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
-                ? "bg-[#379D9F]"
-                : "white"
+                ? "text-white"
+                : "text-[#379D9F]"
             }`}
-            onPress={() => {
-              handleStiipSelect();
-            }}
           >
-            <Text
-              className={`${
-                payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
-                  ? "text-white"
-                  : "text-[#379D9F]"
-              }`}
-            >
-              Stiip
-            </Text>
-          </TouchableOpacity>
-        )}
+            Stiip
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       {!payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours && (
         <TouchableOpacity
           className={`rounded-2xl m-0.5 px-4 py-1 ${

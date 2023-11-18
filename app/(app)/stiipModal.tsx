@@ -168,6 +168,7 @@ export default function StiipModal() {
               onConfirm={onConfirm}
               hours={12}
               minutes={14}
+              use24HourClock={true}
             />
           </View>
         ) : null}

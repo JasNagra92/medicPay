@@ -59,7 +59,7 @@ export default function OvertimeModal() {
             setEndTime(format(overtimeEndTime, "pp")),
             setUpdatedShiftEnd(overtimeEndTime))
           : alert("must pick a valid book off time");
-      } else if (selected === "Regular OT") {
+      } else if (selected === "Regular OT" || selected === "Holiday recall") {
         if (startOrEndTime === "start") {
           // logic to handle user setting a start time for the start of a regular overtime shift.
           const shiftStartForRegOT = new Date(currentDay.date);
@@ -74,7 +74,7 @@ export default function OvertimeModal() {
           shiftEndForRegOT.setMinutes(minutes);
           // if user selected a end time that is before the previously selected start time, that indicates a shift ending on the next day so set the date forward 1 day, only allow users to input end time if start time is not undefined to prevent users from entering end times before start times
           if (shiftEndForRegOT < new Date(startTime!)) {
-            shiftEndForRegOT.setDate(shiftEndForRegOT.getMonth() + 1);
+            shiftEndForRegOT.setDate(shiftEndForRegOT.getDate() + 1);
             // store shift end in same variable being used for late calls because they are both dates
             setUpdatedShiftEnd(shiftEndForRegOT);
             setOpen(false);
@@ -89,6 +89,7 @@ export default function OvertimeModal() {
   );
 
   const handleSubmitOT = async () => {
+    let data = [];
     if (selected === "End of Shift OT" && payPeriodDataDispatch) {
       try {
         let response = await axiosInstance.post("/getPayData/addOvertime", {
@@ -104,14 +105,7 @@ export default function OvertimeModal() {
           updatedShiftEnd: updatedShiftEnd!.toISOString(),
           originalShiftEnd: shiftEnd,
         });
-        payPeriodDataDispatch({
-          type: "updateSingleDay",
-          payload: {
-            indexInWorkDays: parseInt(index! as string),
-            indexInMonth: parseInt(indexInMonth! as string),
-            updatedSingleDay: response.data.data,
-          },
-        });
+        data = response.data.data;
       } catch (error) {
         console.log(error);
       }
@@ -137,18 +131,50 @@ export default function OvertimeModal() {
             }),
           }
         );
-        console.log(response.data.data);
-        payPeriodDataDispatch({
-          type: "updateSingleDay",
-          payload: {
-            indexInWorkDays: parseInt(index! as string),
-            indexInMonth: parseInt(indexInMonth! as string),
-            updatedSingleDay: response.data.data,
-          },
-        });
+        data = response.data.data;
       } catch (error) {
-        console.log(error);
+        console.log(error + "adding regular OT");
       }
+    } else if (selected === "Holiday recall" && payPeriodDataDispatch) {
+      try {
+        let response = await axiosInstance.post(
+          "/getPayData/addRecallOvertime",
+          {
+            userInfo,
+            date,
+            shiftStart: startTime,
+            shiftEnd: updatedShiftEnd,
+            index,
+            payDay: format(
+              new Date(payPeriod![parseInt(indexInMonth as string)].payDay),
+              "PP"
+            ),
+            monthAndYear: new Date(
+              payPeriod![parseInt(indexInMonth as string)].payDay
+            ).toLocaleDateString("en-us", {
+              month: "long",
+              year: "numeric",
+            }),
+            prevRotation:
+              payPeriod![parseInt(indexInMonth as string)].workDaysInPayPeriod[
+                parseInt(index as string)
+              ].rotation,
+          }
+        );
+        data = response.data.data;
+      } catch (error) {
+        console.log(error + "adding holiday recall");
+      }
+    }
+    if (payPeriodDataDispatch) {
+      payPeriodDataDispatch({
+        type: "updateSingleDay",
+        payload: {
+          indexInWorkDays: parseInt(index! as string),
+          indexInMonth: parseInt(indexInMonth! as string),
+          updatedSingleDay: data,
+        },
+      });
     }
     router.back();
   };
@@ -162,7 +188,7 @@ export default function OvertimeModal() {
       <Text className="font-bold text-2xl text-center">Overtime</Text>
       <View className="flex flex-row justify-center">
         {/* don't render end of shift OT option if toggle switch is being rendered in a day off component instead render the regular OT option */}
-        {rotation !== "day off" ? (
+        {rotation !== "day off" && rotation !== "Vacation" && (
           <View className="flex flex-row" style={{ alignItems: "center" }}>
             <RadioButton.Android
               value="End of Shift OT"
@@ -172,7 +198,9 @@ export default function OvertimeModal() {
             />
             <Text className=" text-slate-500 text-lg">End of Shift OT</Text>
           </View>
-        ) : (
+        )}
+
+        {rotation === "day off" && (
           <View className="flex flex-row" style={{ alignItems: "center" }}>
             <RadioButton.Android
               value="Regular OT"
@@ -183,15 +211,18 @@ export default function OvertimeModal() {
             <Text className=" text-slate-500 text-lg">Regular OT</Text>
           </View>
         )}
-        <View className="flex flex-row" style={{ alignItems: "center" }}>
-          <RadioButton.Android
-            value="Holiday Recall"
-            onPress={() => setSelected("Holiday recall")}
-            status={selected === "Holiday recall" ? "checked" : "unchecked"}
-            color="#379D9F"
-          />
-          <Text className=" text-slate-500 text-lg">Holiday Recall</Text>
-        </View>
+
+        {rotation === "Vacation" || rotation === "day off" ? (
+          <View className="flex flex-row" style={{ alignItems: "center" }}>
+            <RadioButton.Android
+              value="Holiday Recall"
+              onPress={() => setSelected("Holiday recall")}
+              status={selected === "Holiday recall" ? "checked" : "unchecked"}
+              color="#379D9F"
+            />
+            <Text className=" text-slate-500 text-lg">Holiday Recall</Text>
+          </View>
+        ) : null}
       </View>
       <View>
         {selected === "End of Shift OT" && (
@@ -208,7 +239,8 @@ export default function OvertimeModal() {
             </View>
           </View>
         )}
-        {selected === "Regular OT" && (
+
+        {selected === "Holiday recall" || selected === "Regular OT" ? (
           <View className="flex flex-row items-center justify-evenly">
             <Text className="text-slate-500 text-lg">Start/End</Text>
             <View className="flex flex-row" style={{ alignItems: "center" }}>
@@ -245,7 +277,7 @@ export default function OvertimeModal() {
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        ) : null}
       </View>
       <View className="flex flex-row justify-center">
         <TouchableOpacity
@@ -267,6 +299,7 @@ export default function OvertimeModal() {
         onConfirm={onConfirm}
         hours={12}
         minutes={14}
+        use24HourClock={true}
       />
       <StatusBar style="light" />
     </View>
