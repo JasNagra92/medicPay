@@ -6,25 +6,26 @@ import {
   useUserInfo,
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
+import { usePayPeriod } from "../../context/payPeriodDataContext";
 
-export default function Header() {
+export default function Header({ indexInMonth }: { indexInMonth: number }) {
   const [month, setMonth] = useState("");
   const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
+  const userInfoDispatch = useUserInfoDispatch();
+  const payPeriod = usePayPeriod();
 
   useEffect(() => {
-    if (userInfo?.payDayToDisplay) {
-      let dateToDisplay = new Date(userInfo?.payDayToDisplay!);
+    if (payPeriod) {
+      let dateToDisplay = new Date(payPeriod[indexInMonth].payDay);
       let month = dateToDisplay.toLocaleString("default", { month: "long" });
       setMonth(month);
     }
-  }, [userInfo?.payDayToDisplay]);
+  }, []);
 
   useEffect(() => {
-    if (userInfo?.payMonthAndYearToDisplay) {
-      setMonth(userInfo?.payMonthAndYearToDisplay!.split(" ")[0]!);
-    }
+    setMonth(userInfo?.payMonthAndYearToDisplay?.split(" ")[0]!);
   }, [userInfo?.payMonthAndYearToDisplay]);
+
   return (
     <View>
       {month && (

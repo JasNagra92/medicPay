@@ -1,7 +1,6 @@
 import React from "react";
 import { router } from "expo-router";
 import { TouchableOpacity, Text } from "react-native";
-import { calculateMonthlyTotalEarnings } from "../../utils/HourAndMoneyUtils";
 import {
   useUserInfo,
   useUserInfoDispatch,
@@ -14,11 +13,6 @@ interface IMonthDisplayProps {
 export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
-  let monthlyEarnings = 0;
-  if (userInfo) {
-    monthlyEarnings = calculateMonthlyTotalEarnings(userInfo, monthAndYear);
-  }
-
   return (
     <TouchableOpacity
       style={{
@@ -42,9 +36,7 @@ export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
         }
       }}
     >
-      <Text className="text-center font-semibold">
-        {monthAndYear} - ${monthlyEarnings.toFixed(2)}
-      </Text>
+      <Text className="text-center font-semibold">{monthAndYear}</Text>
     </TouchableOpacity>
   );
 }

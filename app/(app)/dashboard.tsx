@@ -12,7 +12,7 @@ import axiosInstance from "../../utils/helpers/axiosInstance";
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
-import { IPayPeriodData, IUserInfo } from "../../interfaces/IAppState";
+import { IUserInfo } from "../../interfaces/IAppState";
 import {
   usePayPeriod,
   usePayPeriodDispatch,
@@ -91,6 +91,33 @@ export default function Dashboard() {
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);
 
+  // effect to fetch a new month and years pay data whenever the dispatch function in the month picker modal changes the month and year the user is wanting to be displayed
+  useEffect(() => {
+    if (userInfo && payPeriodDispatch) {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const requestedMonthName =
+        userInfo.payMonthAndYearToDisplay?.split(" ")[0];
+      const monthNumber = monthNames.indexOf(requestedMonthName!) + 1;
+      const requestedYear = userInfo.payMonthAndYearToDisplay?.split(" ")[1];
+
+      getPayDaysFromServer(userInfo, monthNumber, parseInt(requestedYear!));
+      setIndexInMonth(0);
+    }
+  }, [userInfo?.payMonthAndYearToDisplay]);
   return (
     <SafeAreaView
       style={{ flex: 1, flexDirection: "column", alignItems: "center" }}
@@ -100,7 +127,7 @@ export default function Dashboard() {
           headerStyle: { backgroundColor: "#379D9F" },
           headerShown: true,
           headerTitle: () => {
-            return <Header />;
+            return <Header indexInMonth={indexInMonth} />;
           },
           headerBackVisible: false,
           headerRight: () => {
