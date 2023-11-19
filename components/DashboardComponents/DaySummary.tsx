@@ -158,7 +158,7 @@ export default function DaySummary({
             <Text className="opacity-30 flex-1">OT 2.0</Text>
             <Text className="flex-2">
               {OTDoubleTime.toFixed(2)} Hrs x $
-              {1.5 * parseInt(userInfo?.hourlyWage!)}
+              {2.0 * parseInt(userInfo?.hourlyWage!)}
             </Text>
             <Text className="flex-1 text-right">
               {" "}

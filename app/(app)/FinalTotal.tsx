@@ -6,24 +6,65 @@ import { useUserInfo } from "../../context/userInfoContext";
 import TotalLine from "../../components/FinalTotalComponents/TotalLine";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
+import { usePayPeriod } from "../../context/payPeriodDataContext";
 
 const image = require("../../assets/images/bgImage.png");
 
 export default function FinalTotal() {
-  const { payDay } = useLocalSearchParams();
+  const { indexInMonth } = useLocalSearchParams();
   const userInfo = useUserInfo();
-  const userInfoData = userInfo!.payDaysForYear![payDay as string] || {};
+  const payPeriod = usePayPeriod();
 
-  const {
-    baseHoursWorkedInPayPeriod: baseHoursTotal,
-    alphaNightTotalEarnings: alphaTotal,
-    nightHoursWorkedInPayPeriod: nightHoursWorked,
-    nightShiftTotalEarnings: nightTotal,
-    weekendHoursWorkedInPayPeriod: weekendHours,
-    weekendTotalEarnings: weekendTotal,
-    levellingHours,
-    getNightHoursWorked,
-  } = userInfoData;
+  let workDaysInPayPeriod =
+    payPeriod![parseInt(indexInMonth as string)].workDaysInPayPeriod;
+  let baseHoursWorkedInPayPeriod = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.baseHoursWorked,
+    0
+  );
+  let baseWageEarnings = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.baseWageEarnings,
+    0
+  );
+  let nightHoursWorked = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.nightHoursWorked,
+    0
+  );
+  let alphaTotal = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.alphaNightsEarnings,
+    0
+  );
+  let nightEarnings = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.nightEarnings,
+    0
+  );
+  let weekendHours = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.weekendHoursWorked,
+    0
+  );
+  let weekendTotal = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.weekendEarnings,
+    0
+  );
+  let stiipHours = workDaysInPayPeriod.reduce(
+    (total, day) => total + (day.stiipHours ? day.stiipHours : 0),
+    0
+  );
+  let OTOnePointFiveHours = workDaysInPayPeriod.reduce(
+    (total, day) => total + (day.OTOnePointFive ? day.OTOnePointFive : 0),
+    0
+  );
+  let OTDoubleTime = workDaysInPayPeriod.reduce(
+    (total, day) => total + (day.OTDoubleTime ? day.OTDoubleTime : 0),
+    0
+  );
+  let biWeeklyEarnings = workDaysInPayPeriod.reduce(
+    (total, day) => total + day.dayTotal,
+    0
+  );
+  biWeeklyEarnings =
+    biWeeklyEarnings +
+    (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
+      parseFloat(userInfo?.hourlyWage!);
 
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
@@ -46,7 +87,7 @@ export default function FinalTotal() {
             shadowOpacity: 1,
             elevation: 5,
           }}
-          className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 p-3 flex flex-col justify-evenly"
+          className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 p-3 flex flex-col justify-between"
         >
           <View className="flex flex-col justify-between">
             <View>
@@ -56,58 +97,81 @@ export default function FinalTotal() {
             </View>
             <TotalLine
               premiumType="Base Pay"
-              hoursTotal={baseHoursTotal!}
+              hoursTotal={baseHoursWorkedInPayPeriod}
               premiumRate={userInfo?.hourlyWage!}
-              premiumTotal={userInfoData.getBaseWageEarnings().toFixed(2)!}
+              premiumTotal={baseWageEarnings.toFixed(2)!}
               bgColor="gray"
             />
             <TotalLine
               premiumType="Levelling"
-              hoursTotal={levellingHours!}
+              hoursTotal={80 - (baseHoursWorkedInPayPeriod + stiipHours)}
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={(
-                levellingHours * parseInt(userInfo?.hourlyWage!)
+                (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
+                parseFloat(userInfo?.hourlyWage!)
               ).toFixed(2)}
             />
             <TotalLine
+              premiumType="STIIP"
+              hoursTotal={stiipHours > 0 ? stiipHours : 0}
+              premiumRate={(parseInt(userInfo?.hourlyWage!) * 0.75).toFixed(2)}
+              premiumTotal={
+                stiipHours > 0
+                  ? (parseFloat(userInfo?.hourlyWage!) * 0.75).toFixed(2)
+                  : "0.00"
+              }
+              bgColor="grey"
+            />
+
+            <TotalLine
               premiumType="Alpha P"
-              hoursTotal={getNightHoursWorked()}
+              hoursTotal={nightHoursWorked}
               premiumRate="3.60"
               premiumTotal={alphaTotal.toFixed(2)}
-              bgColor="grey"
             />
             <TotalLine
               premiumType="Night Shift"
               hoursTotal={nightHoursWorked}
               premiumRate="2.00"
-              premiumTotal={nightTotal.toFixed(2)}
+              premiumTotal={nightEarnings.toFixed(2)}
+              bgColor="gray"
             />
             <TotalLine
               premiumType="Weekend"
               hoursTotal={weekendHours}
               premiumRate="2.00"
               premiumTotal={weekendTotal.toFixed(2)}
-              bgColor="gray"
             />
-            <TotalLine
-              premiumType="STIIP"
-              hoursTotal={0}
-              premiumRate={(parseInt(userInfo?.hourlyWage!) * 0.75).toFixed(2)}
-              premiumTotal={0.0}
-            />
+
             <TotalLine
               premiumType="OT 1.5"
-              hoursTotal={0}
-              premiumRate={(parseInt(userInfo?.hourlyWage!) * 1.5).toFixed(2)}
-              premiumTotal={0.0}
+              hoursTotal={OTOnePointFiveHours > 0 ? OTOnePointFiveHours : 0}
+              premiumRate={(parseFloat(userInfo?.hourlyWage!) * 1.5).toFixed(2)}
+              premiumTotal={
+                OTOnePointFiveHours > 0
+                  ? (
+                      OTOnePointFiveHours *
+                      (parseFloat(userInfo?.hourlyWage!) * 1.5)
+                    ).toFixed(2)
+                  : "0.00"
+              }
               bgColor="gray"
             />
+
             <TotalLine
               premiumType="OT 2.0"
-              hoursTotal={0}
+              hoursTotal={OTDoubleTime > 0 ? OTDoubleTime : 0}
               premiumRate={(parseInt(userInfo?.hourlyWage!) * 2.0).toFixed(2)}
-              premiumTotal={0.0}
+              premiumTotal={
+                OTDoubleTime > 0
+                  ? (
+                      OTDoubleTime *
+                      (parseFloat(userInfo?.hourlyWage!) * 2.0)
+                    ).toFixed(2)
+                  : "0.00"
+              }
             />
+
             <View>
               <View
                 style={{
@@ -118,6 +182,7 @@ export default function FinalTotal() {
               ></View>
             </View>
           </View>
+
           <View>
             <Text className="text-center text-xl font-bold">
               Total Gross pay
@@ -132,12 +197,18 @@ export default function FinalTotal() {
                 color="#379D9F"
               />
               <Text className="text-[#379D9F]">
-                {format(new Date(payDay as string), "PP")}{" "}
+                {format(
+                  new Date(
+                    payPeriod![parseInt(indexInMonth as string)]
+                      .payDay as string
+                  ),
+                  "PP"
+                )}{" "}
               </Text>
             </View>
             <View className="flex flex-row justify-center py-2">
               <Text className="text-3xl font-extrabold">
-                ${userInfoData.getTotalEarnings().toFixed(2)}
+                ${biWeeklyEarnings.toFixed(2)}
               </Text>
             </View>
           </View>

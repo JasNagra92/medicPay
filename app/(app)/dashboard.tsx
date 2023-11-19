@@ -69,12 +69,25 @@ export default function Dashboard() {
   // hook to update the gross income whenever the payday data in context changes
   useEffect(() => {
     if (payPeriod) {
-      setGrossIncome(
-        payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
-          (total, day) => total + day.dayTotal,
-          0
-        )
+      let baseHoursWorkedInPayPeriod = payPeriod[
+        indexInMonth
+      ].workDaysInPayPeriod.reduce(
+        (total, day) => total + day.baseHoursWorked,
+        0
       );
+      let stiipHours = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
+        (total, day) => total + (day.stiipHours ? day.stiipHours : 0),
+        0
+      );
+      let gross = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
+        (total, day) => total + day.dayTotal,
+        0
+      );
+      gross =
+        gross +
+        (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
+          parseFloat(userInfo?.hourlyWage!);
+      setGrossIncome(gross);
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);
 
@@ -167,7 +180,7 @@ export default function Dashboard() {
         </ScrollView>
         <View className="flex flex-row justify-center">
           <Link
-            href={{ pathname: "/FinalTotal", params: { payDay: payDay } }}
+            href={{ pathname: "/FinalTotal", params: { indexInMonth } }}
             asChild
           >
             <TouchableOpacity className="rounded-2xl px-3 py-2 justify-between bg-[#379D9F] flex flex-row shadow-lg w-5/6">

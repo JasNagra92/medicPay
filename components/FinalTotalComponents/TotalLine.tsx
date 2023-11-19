@@ -17,16 +17,13 @@ export default function TotalLine({
   bgColor,
 }: ITotalLineProps) {
   return (
-    <View
-      className={`flex flex-row justify-between p-4 ${
-        bgColor ? "bg-slate-100" : null
-      }`}
-    >
-      <Text>{premiumType}</Text>
-      <Text>
-        {hoursTotal}Hrs x ${premiumRate}
+    <View className={`flex flex-row p-4 ${bgColor ? "bg-slate-100" : null}`}>
+      <Text className="flex-1">{premiumType}</Text>
+      <Text className="flex-2 font-semibold">
+        {hoursTotal} Hrs x ${premiumRate}
       </Text>
-      <Text className="font-bold">${premiumTotal}</Text>
+
+      <Text className="font-bold flex-1 text-right">${premiumTotal}</Text>
     </View>
   );
 }
