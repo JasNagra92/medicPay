@@ -44,6 +44,10 @@ export default function OvertimeModal() {
         let overtimeEndTime = new Date(scheduledEndOfShift);
         overtimeEndTime.setHours(hours);
         overtimeEndTime.setMinutes(minutes);
+        if (overtimeEndTime.getTime() === scheduledEndOfShift.getTime()) {
+          alert("end time must be later than scheduled end time");
+          return;
+        }
 
         //   users selection must be between the scheduled end time and 4 hours later, which is the max allowed OT due to WorkSafeBC
         let endTimePlus4Hours = new Date(scheduledEndOfShift);
@@ -90,6 +94,10 @@ export default function OvertimeModal() {
 
   const handleSubmitOT = async () => {
     let data = [];
+    if (!updatedShiftEnd || !startTime) {
+      alert("must select times");
+      return;
+    }
     if (selected === "End of Shift OT" && payPeriodDataDispatch) {
       try {
         let response = await axiosInstance.post("/getPayData/addOvertime", {

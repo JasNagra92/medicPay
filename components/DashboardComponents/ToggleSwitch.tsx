@@ -40,7 +40,6 @@ export default function ToggleSwitch({
         let response = await axiosInstance.post("/getPayData/getDefaultDay", {
           userInfo,
           date,
-          rotation,
           collectionInDB: "sickHours",
           monthAndYear: new Date(
             payPeriod![indexInMonth].payDay
@@ -48,6 +47,11 @@ export default function ToggleSwitch({
             month: "long",
             year: "numeric",
           }),
+          // js Dates are 0 indexed so december is 11, endpoint uses schedule generation that is 1 indexed
+          month: new Date(payPeriod![indexInMonth].payDay).getMonth() + 1,
+          year: new Date(payPeriod![indexInMonth].payDay).getFullYear(),
+          index,
+          payDay: payPeriod![indexInMonth].payDay,
         });
         if (payPeriodDispatch) {
           payPeriodDispatch({
@@ -96,6 +100,11 @@ export default function ToggleSwitch({
             month: "long",
             year: "numeric",
           }),
+          // js Dates are 0 indexed so december is 11, endpoint uses schedule generation that is 1 indexed
+          month: new Date(payPeriod![indexInMonth].payDay).getMonth() + 1,
+          year: new Date(payPeriod![indexInMonth].payDay).getFullYear(),
+          index,
+          payDay: payPeriod![indexInMonth].payDay,
         });
         if (payPeriodDispatch) {
           payPeriodDispatch({

@@ -19,6 +19,7 @@ export interface ISingleDaysPayData {
   stiipHours?: number;
   OTOnePointFive?: number;
   OTDoubleTime?: number;
+  [key: string]: number | Date | string | undefined;
 }
 
 export interface IPayPeriodData {
