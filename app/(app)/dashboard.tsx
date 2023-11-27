@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [payDay, setPayDay] = useState("");
   // payDaysInDisplayedMonth will hold the actual data returned from the server
   const [indexInMonth, setIndexInMonth] = useState(0);
+  const [netIncome, setNextIncome] = useState();
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -57,16 +58,57 @@ export default function Dashboard() {
     }
   };
 
+  const getDeductionsFromServer = async (
+    gross: number,
+    stiipHours: number,
+    baseHoursWorkedInPayPeriod: number,
+    OTOnePointFive: number,
+    OTDoubleTime: number
+  ) => {
+    try {
+      let response = await axiosInstance.post("/getDeductions", {
+        userInfo,
+        grossIncome: gross,
+        stiipHours,
+        incomeLessLevelling:
+          gross -
+          (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
+            parseFloat(userInfo?.hourlyWage!),
+        OTOnePointFive:
+          OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
+        OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
+      });
+      const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
+        response.data.data;
+      if (payPeriodDispatch) {
+        payPeriodDispatch({
+          type: "updateDeductions",
+          payload: {
+            indexInMonth,
+            ei,
+            incomeTax,
+            cpp,
+            pserp,
+            unionDues,
+            netIncome,
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // hook to make api call and fetch current months pay data for user
   useEffect(() => {
     if (userInfo && payPeriodDispatch) {
-      const today = DateTime.now();
+      const today = DateTime.fromISO("2024-01-01");
 
       getPayDaysFromServer(userInfo, today.month, today.year);
     }
   }, []);
 
-  // hook to update the gross income whenever the payday data in context changes
+  // hook to update the gross income and the net income whenever the payday data in context changes
   useEffect(() => {
     if (payPeriod) {
       let baseHoursWorkedInPayPeriod = payPeriod[
@@ -79,15 +121,40 @@ export default function Dashboard() {
         (total, day) => total + (day.stiipHours ? day.stiipHours : 0),
         0
       );
+
       let gross = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
         (total, day) => total + day.dayTotal,
         0
       );
+
+      let OTOnePointFive: number = payPeriod[
+        indexInMonth
+      ].workDaysInPayPeriod.reduce(
+        (total, day) => total + (day.OTOnePointFive ? OTOnePointFive : 0),
+        0
+      );
+      let OTDoubleTime: number = payPeriod[
+        indexInMonth
+      ].workDaysInPayPeriod.reduce(
+        (total, day) => total + (day.OTDoubleTime ? OTDoubleTime : 0),
+        0
+      );
+
       gross =
+        // add 8.29 due to the uniform allowance every pay period but it is not sent to the backend
         gross +
         (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
-          parseFloat(userInfo?.hourlyWage!);
+          parseFloat(userInfo?.hourlyWage!) +
+        8.29;
       setGrossIncome(gross);
+
+      getDeductionsFromServer(
+        gross,
+        stiipHours,
+        baseHoursWorkedInPayPeriod,
+        OTOnePointFive,
+        OTDoubleTime
+      );
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);
 
@@ -118,6 +185,7 @@ export default function Dashboard() {
       setIndexInMonth(0);
     }
   }, [userInfo?.payMonthAndYearToDisplay]);
+
   return (
     <SafeAreaView
       style={{ flex: 1, flexDirection: "column", alignItems: "center" }}
@@ -211,11 +279,22 @@ export default function Dashboard() {
             asChild
           >
             <TouchableOpacity className="rounded-2xl px-3 py-2 justify-between bg-[#379D9F] flex flex-row shadow-lg w-5/6">
-              <View>
-                <Text className="text-white">Gross Income</Text>
-                <Text className=" text-white font-['General text-lg font-bold leading-[normal]">
-                  ${grossIncome.toFixed(2)}
-                </Text>
+              <View className="flex flex-row">
+                <View>
+                  <Text className="text-white">Gross Income</Text>
+                  <Text className=" text-white font-['General text-lg font-bold leading-[normal]">
+                    ${grossIncome.toFixed(2)}
+                  </Text>
+                </View>
+                <View className="pl-3">
+                  <Text className="text-white">Net Income</Text>
+                  <Text className=" text-white font-['General text-lg font-bold leading-[normal]">
+                    $
+                    {payPeriod &&
+                      payPeriod[indexInMonth].netIncome &&
+                      payPeriod[indexInMonth].netIncome}
+                  </Text>
+                </View>
               </View>
               <View className="flex flex-row items-center">
                 <Text className="text-white font-semibold">Overview</Text>

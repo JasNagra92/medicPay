@@ -25,6 +25,12 @@ export interface ISingleDaysPayData {
 export interface IPayPeriodData {
   payDay: string;
   workDaysInPayPeriod: ISingleDaysPayData[];
+  cpp: number;
+  ei: number;
+  incomeTax: number;
+  pserp: number;
+  unionDues: number;
+  netIncome: number;
 }
 
 export interface ITwoWeekPayPeriod {
@@ -91,5 +97,17 @@ export type PayPeriodAction =
         indexInMonth: number;
         indexInWorkDays: number;
         updatedDays: ISingleDaysPayData[];
+      };
+    }
+  | {
+      type: "updateDeductions";
+      payload: {
+        indexInMonth: number;
+        ei: number;
+        cpp: number;
+        incomeTax: number;
+        netIncome: number;
+        unionDues: number;
+        pserp: number;
       };
     };

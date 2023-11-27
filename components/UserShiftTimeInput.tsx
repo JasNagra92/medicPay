@@ -30,10 +30,12 @@ export default function UserShiftTimeInput({ text }: IUserShiftTimeInputProps) {
   ]);
   const [nightShiftStartTimes, setNightShiftStartTimes] = useState([
     { label: "1800", value: 1800 },
+    { label: "1830", value: 1830 },
     { label: "1900", value: 1900 },
   ]);
   const [nightShiftEndTimes, setNightShiftEndTimes] = useState([
     { label: "0600", value: 600 },
+    { label: "0630", value: 630 },
     { label: "0700", value: 700 },
   ]);
 

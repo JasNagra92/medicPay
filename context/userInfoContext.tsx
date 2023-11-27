@@ -13,7 +13,7 @@ const initialUserInfo: IUserInfo = {
   dayShiftEndTime: { hours: 0, minutes: 0 },
   nightShiftStartTime: { hours: 0, minutes: 0 },
   nightShiftEndTime: { hours: 0, minutes: 0 },
-  payMonthAndYearToDisplay: new Date().toLocaleDateString("en-us", {
+  payMonthAndYearToDisplay: new Date(2024, 0, 1).toLocaleDateString("en-us", {
     month: "long",
     year: "numeric",
   }),

@@ -23,6 +23,7 @@ export default function VacationToggle({
       payPeriod![indexInMonth].workDaysInPayPeriod[index].rotation ===
       "Vacation"
     ) {
+      console.log(index);
       for (let i = 0; i < 4; i++) {
         try {
           let response = await axiosInstance.post("/getPayData/getDefaultDay", {

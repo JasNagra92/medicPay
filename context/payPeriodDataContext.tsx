@@ -5,7 +5,16 @@ import { DateTime } from "luxon";
 import payPeriodDataReducer from "../reducer/payPeriodReducer";
 
 const initialPayPeriodData: IPayPeriodData[] = [
-  { payDay: DateTime.now().toString(), workDaysInPayPeriod: [] },
+  {
+    payDay: DateTime.now().toString(),
+    workDaysInPayPeriod: [],
+    ei: 0,
+    cpp: 0,
+    incomeTax: 0,
+    unionDues: 0,
+    netIncome: 0,
+    pserp: 0,
+  },
 ];
 
 export const PayPeriodContext = createContext<IPayPeriodData[] | null>(

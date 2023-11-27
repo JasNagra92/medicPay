@@ -23,6 +23,14 @@ export default function payPeriodDataReducer(
         }
       }
       break;
+    case "updateDeductions":
+      draft[action.payload.indexInMonth].ei = action.payload.ei;
+      draft[action.payload.indexInMonth].cpp = action.payload.cpp;
+      draft[action.payload.indexInMonth].incomeTax = action.payload.incomeTax;
+      draft[action.payload.indexInMonth].netIncome = action.payload.netIncome;
+      draft[action.payload.indexInMonth].pserp = action.payload.pserp;
+      draft[action.payload.indexInMonth].unionDues = action.payload.unionDues;
+      break;
     default:
       return draft;
   }

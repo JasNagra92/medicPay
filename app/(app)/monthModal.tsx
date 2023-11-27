@@ -12,9 +12,8 @@ const image = require("../../assets/images/bgImage.png");
 
 export default function MonthModal() {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(2023);
+  const [value, setValue] = useState(2024);
   const [year, setYear] = useState([
-    { label: "2023", value: 2023 },
     { label: "2024", value: 2024 },
     { label: "2025", value: 2025 },
   ]);
@@ -73,8 +72,8 @@ export default function MonthModal() {
             alignItems: "center",
           }}
         >
-          {monthAndYearArray.map((date) => {
-            return <MonthDisplay monthAndYear={date} />;
+          {monthAndYearArray.map((date, i) => {
+            return <MonthDisplay monthAndYear={date} key={i} />;
           })}
           <StatusBar style="light" />
         </ScrollView>
