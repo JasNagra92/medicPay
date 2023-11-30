@@ -33,20 +33,6 @@ export interface IPayPeriodData {
   netIncome: number;
 }
 
-export interface ITwoWeekPayPeriod {
-  getBaseWageEarnings: () => number;
-  getTotalEarnings: () => number;
-  getNightHoursWorked: () => number;
-  baseHoursWorkedInPayPeriod: number;
-  levellingHours: number;
-  nightHoursWorkedInPayPeriod: number;
-  weekendHoursWorkedInPayPeriod: number;
-  alphaNightTotalEarnings: number;
-  nightShiftTotalEarnings: number;
-  weekendTotalEarnings: number;
-  payDaysInPayPeriod: ISingleDaysPayData[];
-}
-
 export interface IUserInfo {
   id: string;
   email: string;
@@ -72,11 +58,7 @@ export type UserInfoAction =
   | { type: "setDayShiftStart"; payload: IShiftTime }
   | { type: "setDayShiftEnd"; payload: IShiftTime }
   | { type: "setNightShiftStart"; payload: IShiftTime }
-  | { type: "setNightShiftEnd"; payload: IShiftTime }
-  | {
-      type: "SET_PAY_DAYS_FOR_YEAR";
-      payload: Record<string, ITwoWeekPayPeriod>;
-    };
+  | { type: "setNightShiftEnd"; payload: IShiftTime };
 
 export type PayPeriodAction =
   | {

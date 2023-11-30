@@ -77,6 +77,7 @@ export default function Dashboard() {
         OTOnePointFive:
           OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
         OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
+        payDay: DateTime.fromISO(payPeriod![indexInMonth].payDay).toISODate(),
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
