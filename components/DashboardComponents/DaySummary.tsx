@@ -31,7 +31,6 @@ export default function DaySummary({
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {
-  console.log(shiftStart);
   const userInfo = useUserInfo();
   return (
     <View

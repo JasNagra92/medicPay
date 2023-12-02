@@ -61,8 +61,7 @@ export default function VacationToggle({
             console.log(error);
           }
         }
-      }
-      if (index > 10 && indexInMonth < payPeriod!.length - 1) {
+      } else if (index > 10 && indexInMonth < payPeriod!.length - 1) {
         // loop from current index to end of pay period and fetch default days
         for (let i = index; i < 14; i++) {
           try {
@@ -139,6 +138,78 @@ export default function VacationToggle({
               });
             }
           } catch (error) {}
+        }
+      } else if (index > 10 && indexInMonth === payPeriod!.length - 1) {
+        // loop from current index to end of pay period and fetch default days
+        for (let i = index; i < 14; i++) {
+          try {
+            let response = await axiosInstance.post(
+              "/getPayData/getDefaultDay",
+              {
+                userInfo,
+                date: payPeriod![indexInMonth].workDaysInPayPeriod[i].date,
+                collectionInDB: "holidayBlocks",
+                monthAndYear: new Date(
+                  payPeriod![indexInMonth].payDay
+                ).toLocaleDateString("en-us", {
+                  month: "long",
+                  year: "numeric",
+                }),
+                // js Dates are 0 indexed so december is 11, endpoint uses schedule generation that is 1 indexed
+                month: new Date(payPeriod![indexInMonth].payDay).getMonth() + 1,
+                year: new Date(payPeriod![indexInMonth].payDay).getFullYear(),
+                index: i,
+                payDay: payPeriod![indexInMonth].payDay,
+              }
+            );
+            if (payPeriodDispatch) {
+              payPeriodDispatch({
+                type: "updateSingleDay",
+                payload: {
+                  indexInMonth,
+                  indexInWorkDays: i,
+                  updatedSingleDay: response.data.data,
+                },
+              });
+            }
+          } catch (error) {
+            console.log(
+              error +
+                " error updating single day with day thats not at the start of the block"
+            );
+          }
+        }
+        // after looping through to the end of the pay period, calculate how many days need to be deleted from the database that fell in the next months pay period and send those to the database for deletion
+        let shiftsToFetchInNextPayPeriod = index - 10;
+        let vacationDatesInNextPeriod = [];
+        // start at the last day in the pay period
+        for (let i = 1; i <= shiftsToFetchInNextPayPeriod; i++) {
+          let lastDateInPayPeriod = new Date(
+            payPeriod![indexInMonth].workDaysInPayPeriod[13].date
+          );
+
+          let nextDate = new Date(lastDateInPayPeriod);
+          nextDate.setDate(lastDateInPayPeriod.getDate() + i);
+          vacationDatesInNextPeriod.push(nextDate);
+        }
+
+        let payDay = new Date(payPeriod![indexInMonth].payDay);
+        let nextPayDay = new Date(payDay);
+        nextPayDay.setDate(payDay.getDate() + 14);
+
+        try {
+          let response = await axiosInstance.post("/getPayData/deleteDay", {
+            userInfo,
+            collectionInDB: "holidayBlocks",
+            monthAndYear: nextPayDay.toLocaleDateString("en-us", {
+              month: "long",
+              year: "numeric",
+            }),
+            dates: vacationDatesInNextPeriod,
+          });
+          console.log(response.data.data);
+        } catch (error) {
+          console.log(error + " error deleting days from db in next month");
         }
       }
     } else {
