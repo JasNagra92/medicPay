@@ -141,10 +141,15 @@ export default function Dashboard() {
         0
       );
 
+      let RDayInPeriod = payPeriod[indexInMonth].workDaysInPayPeriod.find(
+        (day) => day.rotation === "R Day" || day.rotation === "R Day OT"
+      );
+
       gross =
-        // add 8.29 due to the uniform allowance every pay period but it is not sent to the backend
+        // add 8.29 due to the uniform allowance every pay period and send it to the backend, backend calculations automatically minus 8.29 in the calculations and users Pay Stubs will include this 8.29 figure in the gross totals
         gross +
-        (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
+        (80 -
+          (baseHoursWorkedInPayPeriod + stiipHours + (RDayInPeriod ? 12 : 0))) *
           parseFloat(userInfo?.hourlyWage!) +
         8.29;
       setGrossIncome(gross);

@@ -9,6 +9,7 @@ const initialUserInfo: IUserInfo = {
   hourlyWage: "",
   shiftPattern: "",
   platoon: "A",
+  rotation: "",
   dayShiftStartTime: { hours: 0, minutes: 0 },
   dayShiftEndTime: { hours: 0, minutes: 0 },
   nightShiftStartTime: { hours: 0, minutes: 0 },

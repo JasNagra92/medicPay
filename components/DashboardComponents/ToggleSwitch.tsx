@@ -145,7 +145,7 @@ export default function ToggleSwitch({
       ? setSelected("OT")
       : "";
   }, []);
-  if (rotation === "day off") {
+  if (rotation === "day off" || rotation === "R Day") {
     return (
       <View
         style={{
@@ -189,7 +189,10 @@ export default function ToggleSwitch({
       }}
       className="rounded-2xl bg-white flex flex-row mb-2"
     >
-      {rotation === "Day 1" || rotation === "Vacation" ? (
+      {rotation === "Day 1" ||
+      rotation === "Vacation" ||
+      payPeriod![indexInMonth].workDaysInPayPeriod[index].rotation ===
+        "Day 2" ? (
         <VacationToggle index={index} indexInMonth={indexInMonth} />
       ) : null}
 

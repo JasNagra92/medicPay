@@ -61,10 +61,18 @@ export default function FinalTotal() {
     (total, day) => total + day.dayTotal,
     0
   );
+  let RDayInPeriod = payPeriod![
+    parseInt(indexInMonth as string)
+  ].workDaysInPayPeriod.find(
+    (day) => day.rotation === "R Day" || day.rotation === "R Day OT"
+  );
+
+  // biweekly earnings includes the 8.29 uniform allowance and levelling
   biWeeklyEarnings =
     biWeeklyEarnings +
-    (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
-      parseFloat(userInfo?.hourlyWage!);
+    (80 - (baseHoursWorkedInPayPeriod + stiipHours + (RDayInPeriod ? 12 : 0))) *
+      parseFloat(userInfo?.hourlyWage!) +
+    8.29;
 
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
@@ -99,7 +107,9 @@ export default function FinalTotal() {
               premiumType="Base Pay"
               hoursTotal={baseHoursWorkedInPayPeriod}
               premiumRate={userInfo?.hourlyWage!}
-              premiumTotal={baseWageEarnings.toFixed(2)!}
+              premiumTotal={(
+                baseHoursWorkedInPayPeriod * parseFloat(userInfo?.hourlyWage!)
+              ).toFixed(2)}
               bgColor="gray"
             />
             <TotalLine

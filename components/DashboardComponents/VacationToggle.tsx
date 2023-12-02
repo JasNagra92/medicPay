@@ -17,22 +17,19 @@ export default function VacationToggle({
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
   const payPeriodDispatch = usePayPeriodDispatch();
+  const currentDay = payPeriod![indexInMonth].workDaysInPayPeriod[index];
 
   const handleAddVacation = async () => {
     // if payperiod day is already set to a vacation, user is deselecting the option so remove the vacation and fetch default days data. Will need to check if the deselected vacation block all falls within 1 pay period, or spans multiple to know what to update with the default days
-    if (
-      payPeriod![indexInMonth].workDaysInPayPeriod[index].rotation ===
-      "Vacation"
-    ) {
+    if (currentDay.rotation === "Vacation") {
       if (index <= 10) {
-        for (let i = 0; i < 4; i++) {
+        for (let i = index; i < index + 4; i++) {
           try {
             let response = await axiosInstance.post(
               "/getPayData/getDefaultDay",
               {
                 userInfo,
-                date: payPeriod![indexInMonth].workDaysInPayPeriod[index + i]
-                  .date,
+                date: payPeriod![indexInMonth].workDaysInPayPeriod[i].date,
                 collectionInDB: "holidayBlocks",
                 monthAndYear: new Date(
                   payPeriod![indexInMonth].payDay
@@ -52,7 +49,7 @@ export default function VacationToggle({
                 type: "updateSingleDay",
                 payload: {
                   indexInMonth,
-                  indexInWorkDays: index + i,
+                  indexInWorkDays: i,
                   updatedSingleDay: response.data.data,
                 },
               });
@@ -249,7 +246,8 @@ export default function VacationToggle({
             });
           }
           // after collecting the shifts in the current pay period, calculate how many need to be added in the second pay period
-          let shiftsToFetchInNextPayPeriod = index - 10;
+          let shiftsToFetchInNextPayPeriod =
+            index - (currentDay.rotation === "Day 1" ? 10 : 11);
           let vacationDatesInNextPeriod = [];
           for (let i = 0; i < shiftsToFetchInNextPayPeriod; i++) {
             const { date, rotation, shiftStart, shiftEnd } =
@@ -286,19 +284,19 @@ export default function VacationToggle({
         // if statement to check if the vacation days being added span 2 pay periods and the 2nd pay period is in the next month
       } else if (index > 10 && indexInMonth === payPeriod!.length - 1) {
         // collect all shifts from index to end of pay period
+        for (let i = index; i < 14; i++) {
+          const { date, rotation, shiftStart, shiftEnd } =
+            payPeriod![indexInMonth].workDaysInPayPeriod[i];
+          vacationDates.push({
+            date,
+            rotation,
+            shiftStart,
+            shiftEnd,
+            payDay: payPeriod![indexInMonth].payDay,
+            index: i,
+          });
+        }
         try {
-          for (let i = index; i < 14; i++) {
-            const { date, rotation, shiftStart, shiftEnd } =
-              payPeriod![indexInMonth].workDaysInPayPeriod[i];
-            vacationDates.push({
-              date,
-              rotation,
-              shiftStart,
-              shiftEnd,
-              payDay: payPeriod![indexInMonth].payDay,
-              index: i,
-            });
-          }
           let response = await axiosInstance.post(
             "/getPayData/addHolidayBlock",
             {
@@ -316,27 +314,35 @@ export default function VacationToggle({
               },
             });
           }
-          // after updating the vacation days in state, send the remaining shifts to the same endpoint so they can be updated in the database, but do not update them in context because context only stores 1 months payday data, and the remaining vacation days are in the next month and payday
-          let shiftsToFetchInNextPayPeriod = index - 10;
-          let vacationDatesInNextPeriod = [];
-          // start at the last day in the pay period
-          for (let i = 1; i <= shiftsToFetchInNextPayPeriod; i++) {
-            let lastDateInPayPeriod = new Date(
-              payPeriod![indexInMonth].workDaysInPayPeriod[13].date
-            );
+        } catch (error) {
+          console.log(
+            error +
+              " error adding holiday block when it spans 2 periods and 2nd pay period is in next month"
+          );
+        }
+        // after updating the vacation days in state, send the remaining shifts to the same endpoint so they can be updated in the database, but do not update them in context because context only stores 1 months payday data, and the remaining vacation days are in the next month and payday
+        let shiftsToFetchInNextPayPeriod =
+          index - (currentDay.rotation === "Day 1" ? 10 : 11);
+        let vacationDatesInNextPeriod = [];
+        // start at the last day in the pay period
+        for (let i = 1; i <= shiftsToFetchInNextPayPeriod; i++) {
+          let lastDateInPayPeriod = new Date(
+            payPeriod![indexInMonth].workDaysInPayPeriod[13].date
+          );
 
-            let nextDate = new Date(lastDateInPayPeriod);
-            nextDate.setDate(lastDateInPayPeriod.getDate() + i);
-            vacationDatesInNextPeriod.push(nextDate);
-          }
+          let nextDate = new Date(lastDateInPayPeriod);
+          nextDate.setDate(lastDateInPayPeriod.getDate() + i);
+          vacationDatesInNextPeriod.push(nextDate);
+        }
 
-          let payDay = new Date(payPeriod![indexInMonth].payDay);
-          let nextPayDay = new Date(payDay);
-          nextPayDay.setDate(payDay.getDate() + 14);
+        let payDay = new Date(payPeriod![indexInMonth].payDay);
+        let nextPayDay = new Date(payDay);
+        nextPayDay.setDate(payDay.getDate() + 14);
 
-          // month being sent to backend needs to be 1 indexed
-          const month = nextPayDay.getMonth() + 1;
-          const year = nextPayDay.getFullYear();
+        // month being sent to backend needs to be 1 indexed
+        const month = nextPayDay.getMonth() + 1;
+        const year = nextPayDay.getFullYear();
+        try {
           await axiosInstance.post("/getPayData/addHolidayBlockNextMonth", {
             userInfo,
             dates: vacationDatesInNextPeriod,
@@ -349,8 +355,8 @@ export default function VacationToggle({
             error + " error adding vacation block spanning 2 different months"
           );
         }
-      } else {
-        // try/catch for logging vacation days when all 4 fall in the same pay period
+      } else if (index <= 10 && currentDay.rotation === "Day 1") {
+        // try/catch for logging vacation days when all 4 fall in the same pay period and the first day of the holiday block is Day 1 and not an R day
         try {
           // loop from the current index of the Day 1 shift and find the next 4 shifts to send to the server to log as a holiday block, will need to add further logic to handle 2 edge cases, 1 where the holiday block flips over into the next payday which is still in the payPeriod data, and 1 where the holiday block flips over into the next payday which is stored in the next month
           for (let i = index; i < index + 4; i++) {
@@ -384,6 +390,44 @@ export default function VacationToggle({
           }
         } catch (error) {
           console.log(error);
+        }
+      } else if (index < 12 && currentDay.rotation === "Day 2") {
+        // if block to log holiday blocks that fall in 1 pay period but are short blocks that start on Day 2 because Day 1 was an R day
+        try {
+          for (let i = index; i < index + 3; i++) {
+            const { date, rotation, shiftStart, shiftEnd } =
+              payPeriod![indexInMonth].workDaysInPayPeriod[i];
+            vacationDates.push({
+              date,
+              rotation,
+              shiftStart,
+              shiftEnd,
+              payDay: payPeriod![indexInMonth].payDay,
+              index: i,
+            });
+          }
+          const response = await axiosInstance.post(
+            "/getPayData/addHolidayBlock",
+            {
+              userInfo,
+              vacationDates,
+            }
+          );
+          if (payPeriodDispatch) {
+            payPeriodDispatch({
+              type: "updateHolidayBlock",
+              payload: {
+                indexInWorkDays: index,
+                indexInMonth: indexInMonth,
+                updatedDays: response.data.data,
+              },
+            });
+          }
+        } catch (error) {
+          console.log(
+            error +
+              " error logging vacation block starting on Day 2 within 1 pay period"
+          );
         }
       }
     }

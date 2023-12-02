@@ -137,6 +137,7 @@ export default function OvertimeModal() {
               month: "long",
               year: "numeric",
             }),
+            rotation,
           }
         );
         data = response.data.data;
@@ -196,29 +197,34 @@ export default function OvertimeModal() {
       <Text className="font-bold text-2xl text-center">Overtime</Text>
       <View className="flex flex-row justify-center">
         {/* don't render end of shift OT option if toggle switch is being rendered in a day off component instead render the regular OT option */}
-        {rotation !== "day off" && rotation !== "Vacation" && (
-          <View className="flex flex-row" style={{ alignItems: "center" }}>
-            <RadioButton.Android
-              value="End of Shift OT"
-              onPress={() => setSelected("End of Shift OT")}
-              status={selected === "End of Shift OT" ? "checked" : "unchecked"}
-              color="#379D9F"
-            />
-            <Text className=" text-slate-500 text-lg">End of Shift OT</Text>
-          </View>
-        )}
+        {rotation !== "day off" &&
+          rotation !== "Vacation" &&
+          rotation !== "R Day" && (
+            <View className="flex flex-row" style={{ alignItems: "center" }}>
+              <RadioButton.Android
+                value="End of Shift OT"
+                onPress={() => setSelected("End of Shift OT")}
+                status={
+                  selected === "End of Shift OT" ? "checked" : "unchecked"
+                }
+                color="#379D9F"
+              />
+              <Text className=" text-slate-500 text-lg">End of Shift OT</Text>
+            </View>
+          )}
 
-        {rotation === "day off" && (
-          <View className="flex flex-row" style={{ alignItems: "center" }}>
-            <RadioButton.Android
-              value="Regular OT"
-              onPress={() => setSelected("Regular OT")}
-              status={selected === "Regular OT" ? "checked" : "unchecked"}
-              color="#379D9F"
-            />
-            <Text className=" text-slate-500 text-lg">Regular OT</Text>
-          </View>
-        )}
+        {rotation === "day off" ||
+          (rotation === "R Day" && (
+            <View className="flex flex-row" style={{ alignItems: "center" }}>
+              <RadioButton.Android
+                value="Regular OT"
+                onPress={() => setSelected("Regular OT")}
+                status={selected === "Regular OT" ? "checked" : "unchecked"}
+                color="#379D9F"
+              />
+              <Text className=" text-slate-500 text-lg">Regular OT</Text>
+            </View>
+          ))}
 
         {rotation === "Vacation" || rotation === "day off" ? (
           <View className="flex flex-row" style={{ alignItems: "center" }}>

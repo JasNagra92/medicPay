@@ -1,8 +1,4 @@
-import {
-  ISingleDaysPayData,
-  IUserInfo,
-  UserInfoAction,
-} from "../interfaces/IAppState";
+import { IUserInfo, UserInfoAction } from "../interfaces/IAppState";
 
 export default function userInfoReducer(
   draft: IUserInfo,
