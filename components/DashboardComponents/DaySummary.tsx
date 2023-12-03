@@ -28,6 +28,7 @@ export default function DaySummary({
   stiipHours,
   OTOnePointFive,
   OTDoubleTime,
+  OTStatReg,
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {
@@ -167,6 +168,22 @@ export default function DaySummary({
                 OTDoubleTime *
                 (2.0 * parseFloat(userInfo?.hourlyWage!))
               ).toFixed(2)}
+            </Text>
+          </View>
+        )}
+        {OTStatReg !== undefined && OTStatReg > 0 && (
+          <View className="flex flex-row px-3">
+            <Text className="opacity-30 flex-1">OTStatReg</Text>
+            <Text className="flex-2">
+              {OTStatReg.toFixed(2)} Hrs x $
+              {2.0 * parseInt(userInfo?.hourlyWage!)}
+            </Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              $
+              {(OTStatReg * (2.0 * parseFloat(userInfo?.hourlyWage!))).toFixed(
+                2
+              )}
             </Text>
           </View>
         )}

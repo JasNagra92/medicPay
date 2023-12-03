@@ -60,6 +60,7 @@ export default function Dashboard() {
 
   const getDeductionsFromServer = async (
     gross: number,
+    incomeLessLevelling: number,
     stiipHours: number,
     baseHoursWorkedInPayPeriod: number,
     OTOnePointFive: number,
@@ -70,10 +71,8 @@ export default function Dashboard() {
         userInfo,
         grossIncome: gross,
         stiipHours,
-        incomeLessLevelling:
-          gross -
-          (80 - (baseHoursWorkedInPayPeriod + stiipHours)) *
-            parseFloat(userInfo?.hourlyWage!),
+        incomeLessLevelling,
+
         OTOnePointFive:
           OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
         OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
@@ -81,6 +80,7 @@ export default function Dashboard() {
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
+      console.log(response.data.data);
       if (payPeriodDispatch) {
         payPeriodDispatch({
           type: "updateDeductions",
@@ -145,17 +145,43 @@ export default function Dashboard() {
         (day) => day.rotation === "R Day" || day.rotation === "R Day OT"
       );
 
+      let statDayInPeriod = payPeriod[indexInMonth].workDaysInPayPeriod.find(
+        (day) => day.OTStatReg! > 0
+      );
+      let OTStatReg = 0;
+      if (statDayInPeriod) {
+        OTStatReg = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
+          (total, day) => total + day.OTStatReg!,
+          0
+        );
+      }
+
       gross =
         // add 8.29 due to the uniform allowance every pay period and send it to the backend, backend calculations automatically minus 8.29 in the calculations and users Pay Stubs will include this 8.29 figure in the gross totals
         gross +
         (80 -
-          (baseHoursWorkedInPayPeriod + stiipHours + (RDayInPeriod ? 12 : 0))) *
+          (baseHoursWorkedInPayPeriod +
+            stiipHours +
+            (RDayInPeriod ? 12 : 0) +
+            (statDayInPeriod ? OTStatReg : 0))) *
           parseFloat(userInfo?.hourlyWage!) +
         8.29;
+
+      let level =
+        baseHoursWorkedInPayPeriod +
+        stiipHours +
+        (statDayInPeriod ? OTStatReg : 0);
+
+      let levelledWage = (80 - level) * parseFloat(userInfo?.hourlyWage!);
+
+      let incomeLessLevelling = gross - levelledWage - 8.29;
+      console.log(incomeLessLevelling + " test levelling");
+
       setGrossIncome(gross);
 
       getDeductionsFromServer(
         gross,
+        incomeLessLevelling,
         stiipHours,
         baseHoursWorkedInPayPeriod,
         OTOnePointFive,

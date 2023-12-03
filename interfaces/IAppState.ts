@@ -9,6 +9,7 @@ export interface ISingleDaysPayData {
   shiftStart: Date;
   shiftEnd: Date;
   baseHoursWorked: number;
+  OTStatReg?: number;
   baseWageEarnings: number;
   nightHoursWorked: number;
   alphaNightsEarnings: number;

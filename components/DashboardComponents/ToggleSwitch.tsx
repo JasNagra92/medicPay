@@ -7,7 +7,7 @@ import {
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
 import { useUserInfo } from "../../context/userInfoContext";
-import { format } from "date-fns";
+import { isDayBeforeRDay } from "../../utils/helpers/seedDates";
 import VacationToggle from "./VacationToggle";
 
 interface IToggleSwitchProps {
@@ -189,10 +189,10 @@ export default function ToggleSwitch({
       }}
       className="rounded-2xl bg-white flex flex-row mb-2"
     >
+      {/* only days that you can start a vacation block on are either the first day of the block or the second day if the day before is an Rday and the user has a holiday block on a short block, and if its already a vacation block, render the switch so user can deselect it */}
       {rotation === "Day 1" ||
       rotation === "Vacation" ||
-      payPeriod![indexInMonth].workDaysInPayPeriod[index].rotation ===
-        "Day 2" ? (
+      isDayBeforeRDay(userInfo!, date) ? (
         <VacationToggle index={index} indexInMonth={indexInMonth} />
       ) : null}
 
