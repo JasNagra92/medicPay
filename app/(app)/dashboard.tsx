@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useAuthentication } from "../../utils/hooks/useAuthentication";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
-import { Stack, Link, router } from "expo-router";
+import { Stack, Link, router, Redirect } from "expo-router";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserInfo } from "../../context/userInfoContext";
@@ -17,13 +16,16 @@ import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
+import { AuthStore } from "../../store";
 
 export default function Dashboard() {
-  const { user } = useAuthentication();
+  const { initialized, isLoggedIn, user } = AuthStore.useState();
 
-  useEffect(() => {
+  if (initialized && isLoggedIn) {
     console.log(user);
-  }, [user]);
+  } else if (initialized && !isLoggedIn) {
+    Redirect({ href: "/login" });
+  }
 
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed

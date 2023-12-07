@@ -11,14 +11,9 @@ export default function MainPageInput({
   placeholder: string;
   handleChange: Dispatch<SetStateAction<string>>;
 }) {
-  const capitalizedPlaceholder =
-    placeholder.charAt(0).toUpperCase() + placeholder.slice(1);
-
   return (
     <View>
-      <Text className=" font-bold pl-5 pb-2 text-lg">
-        {capitalizedPlaceholder}
-      </Text>
+      <Text className=" font-bold pl-5 pb-2 text-lg">{placeholder}</Text>
       <View className="flex flex-row" style={{ alignItems: "center" }}>
         <MaterialIcons
           style={{ position: "absolute", left: 25 }}

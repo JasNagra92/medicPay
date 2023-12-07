@@ -3,16 +3,19 @@ import React from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "react-native";
-import MainPageInput from "../../components/MainPageInput";
+import { AuthStore } from "../../store";
 const image = require("../../assets/images/bgImage.png");
-import { useAuthentication } from "../../utils/hooks/useAuthentication";
 
 export default function HomePage() {
-  const { user } = useAuthentication();
+  const { initialized, isLoggedIn, user } = AuthStore.useState();
 
-  if (!user) {
-    Redirect({ href: "/workShift" });
+  if (initialized && !isLoggedIn) {
+    Redirect({ href: "/login" });
   }
+  if (initialized && isLoggedIn) {
+    Redirect({ href: "/dashboard" });
+  }
+
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
       <SafeAreaView
@@ -30,9 +33,6 @@ export default function HomePage() {
           }}
           className="rounded-2xl bg-white shadow-sm w-5/6 border-0 pt-3 pb-3 flex flex-col justify-center mt-10"
         >
-          <MainPageInput icon="mail" placeholder="email" />
-          <MainPageInput icon="lock" placeholder="password" />
-
           <Link href="/dashboard" asChild>
             <TouchableOpacity>
               <Text>Press me</Text>

@@ -5,29 +5,28 @@ import { ImageBackground } from "react-native";
 import { useState } from "react";
 import MainPageInput from "../components/MainPageInput";
 const image = require("../assets/images/bgImage.png");
-import { useAuthentication } from "../utils/hooks/useAuthentication";
-import { signUp } from "../utils/hooks/useSignUp";
-import { UserCredential } from "firebase/auth";
 import { useUserInfoDispatch } from "../context/userInfoContext";
 import { router } from "expo-router";
+import { appSignUp } from "../store";
 
 export default function HomePage() {
-  const { user } = useAuthentication();
   const dispatchUserInfo = useUserInfoDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      let userCredential: UserCredential = await signUp(email, password);
+      const userCredential = await appSignUp(email, password);
+
       if (dispatchUserInfo) {
         dispatchUserInfo({
           type: "setUserId",
-          payload: userCredential.user.uid,
+          payload: userCredential.user?.uid!,
         });
       }
+
       router.push("/workShift");
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   };
