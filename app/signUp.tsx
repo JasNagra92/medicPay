@@ -7,18 +7,27 @@ import MainPageInput from "../components/MainPageInput";
 const image = require("../assets/images/bgImage.png");
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import { signUp } from "../utils/hooks/useSignUp";
+import { UserCredential } from "firebase/auth";
+import { useUserInfoDispatch } from "../context/userInfoContext";
+import { router } from "expo-router";
 
 export default function HomePage() {
   const { user } = useAuthentication();
+  const dispatchUserInfo = useUserInfoDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSignUp = async () => {
     try {
-      let testUser = await signUp(email, password);
-      //   console.log(testUser);
-      console.log(user);
-    } catch (error) {
+      let userCredential: UserCredential = await signUp(email, password);
+      if (dispatchUserInfo) {
+        dispatchUserInfo({
+          type: "setUserId",
+          payload: userCredential.user.uid,
+        });
+      }
+      router.push("/workShift");
+    } catch (error: any) {
       console.log(error);
     }
   };

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthentication } from "../../utils/hooks/useAuthentication";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
-import { Stack, Link, router, Redirect } from "expo-router";
+import { Stack, Link, router } from "expo-router";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserInfo } from "../../context/userInfoContext";
@@ -20,15 +20,16 @@ import {
 
 export default function Dashboard() {
   const { user } = useAuthentication();
-  // if (!user) {
-  //   Redirect({ href: "/login" });
-  // }
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
+
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
   // payDaysInDisplayedMonth will hold the actual data returned from the server
   const [indexInMonth, setIndexInMonth] = useState(0);
-  const [netIncome, setNextIncome] = useState();
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -62,9 +63,9 @@ export default function Dashboard() {
     gross: number,
     incomeLessLevelling: number,
     stiipHours: number,
-    baseHoursWorkedInPayPeriod: number,
     OTOnePointFive: number,
-    OTDoubleTime: number
+    OTDoubleTime: number,
+    OTStatReg: number
   ) => {
     try {
       let response = await axiosInstance.post("/getDeductions", {
@@ -77,6 +78,7 @@ export default function Dashboard() {
           OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
         OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
         payDay: DateTime.fromISO(payPeriod![indexInMonth].payDay).toISODate(),
+        OTStatReg,
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
@@ -175,7 +177,6 @@ export default function Dashboard() {
       let levelledWage = (80 - level) * parseFloat(userInfo?.hourlyWage!);
 
       let incomeLessLevelling = gross - levelledWage - 8.29;
-      console.log(incomeLessLevelling + " test levelling");
 
       setGrossIncome(gross);
 
@@ -183,9 +184,9 @@ export default function Dashboard() {
         gross,
         incomeLessLevelling,
         stiipHours,
-        baseHoursWorkedInPayPeriod,
         OTOnePointFive,
-        OTDoubleTime
+        OTDoubleTime,
+        OTStatReg
       );
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);

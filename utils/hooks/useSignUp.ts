@@ -6,6 +6,6 @@ export const signUp = async (email: string, password: string) => {
     let user = await createUserWithEmailAndPassword(auth, email, password);
     return user;
   } catch (error: any) {
-    return { errorCode: error.code, errorMessage: error.message };
+    throw { errorCode: error.code, errorMessage: error.message };
   }
 };

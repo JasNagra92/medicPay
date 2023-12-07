@@ -8,6 +8,9 @@ export default function userInfoReducer(
     case "setHourlyWage":
       draft.hourlyWage = action.payload;
       break;
+    case "setUserId":
+      draft.id = action.payload;
+      break;
     case "setPaydayToDisplay":
       draft.payDayToDisplay = action.payload;
       break;

@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import {
   initializeAuth,
   getAuth,
+  Auth,
   connectAuthEmulator,
   getReactNativePersistence,
 } from "firebase/auth";
@@ -26,7 +27,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // Initialize Firebase Auth
-let auth;
+let auth: Auth;
 if (__DEV__) {
   // Configure Firebase Auth for Emulator Suite
   auth = getAuth(app);

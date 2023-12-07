@@ -51,6 +51,7 @@ export interface IUserInfo {
 
 export type UserInfoAction =
   | { type: "setHourlyWage"; payload: string }
+  | { type: "setUserId"; payload: string }
   | { type: "setPaydayToDisplay"; payload: string }
   | { type: "setPayMonthAndYearToDisplay"; payload: string }
   | { type: "setShiftPattern"; payload: string }

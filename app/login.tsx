@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +8,8 @@ const image = require("../assets/images/bgImage.png");
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 
 export default function Login() {
+  const { user } = useAuthentication();
+
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
       <SafeAreaView
