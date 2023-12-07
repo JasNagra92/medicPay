@@ -11,12 +11,6 @@ registerTranslation("en", en);
 const image = require("../../assets/images/bgImage.png");
 
 export default function WorkShift() {
-  const user = useUserInfo();
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
-
   return (
     <SafeAreaProvider>
       <PaperProvider>

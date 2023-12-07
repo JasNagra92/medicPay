@@ -19,11 +19,9 @@ import {
 import { AuthStore } from "../../store";
 
 export default function Dashboard() {
-  const { initialized, isLoggedIn, user } = AuthStore.useState();
+  const { initialized, isLoggedIn } = AuthStore.useState();
 
-  if (initialized && isLoggedIn) {
-    console.log(user);
-  } else if (initialized && !isLoggedIn) {
+  if (initialized && !isLoggedIn) {
     Redirect({ href: "/login" });
   }
 

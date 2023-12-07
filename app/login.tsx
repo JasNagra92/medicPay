@@ -21,7 +21,6 @@ export default function Login() {
           type: "setUserId",
           payload: userCredential.user?.uid!,
         });
-        console.log(userCredential.user.uid + " Test");
       }
       router.push("/workShift");
     } catch (error: any) {

@@ -13,7 +13,7 @@ export default function HomePage() {
     Redirect({ href: "/login" });
   }
   if (initialized && isLoggedIn) {
-    Redirect({ href: "/dashboard" });
+    Redirect({ href: "/(app)/dashboard" });
   }
 
   return (

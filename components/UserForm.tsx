@@ -1,15 +1,28 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
+import { router } from "expo-router";
 import UserInputField from "./UserInputField";
 import UserButtonInput from "./UserButtonInput";
 import UserRadioInput from "./UserRadioInput";
 import UserShiftTimeInput from "./UserShiftTimeInput";
-import { useUserInfo } from "../context/userInfoContext";
-import UserPaydayInput from "./UserPaydayInput";
-import { Link } from "expo-router";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import axiosInstance from "../utils/helpers/axiosInstance";
 
 export default function UserForm() {
   const userInfo = useUserInfo();
+  const dispatch = useUserInfoDispatch();
+
+  const handleSubmit = async () => {
+    try {
+      let resp = await axiosInstance.post("/users/saveUser", {
+        user: userInfo,
+      });
+      console.log(resp.data);
+      router.push("/(app)/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <View
       style={{
@@ -36,11 +49,13 @@ export default function UserForm() {
       ) : null}
       <UserShiftTimeInput text={"Day"} />
       <UserShiftTimeInput text={"Night"} />
-      <Link href="/dashboard" asChild>
-        <TouchableOpacity className="mx-3 rounded-lg bg-[#379D9F] p-3">
-          <Text className="font-bold text-white text-center">Submit</Text>
-        </TouchableOpacity>
-      </Link>
+
+      <TouchableOpacity
+        className="mx-3 rounded-lg bg-[#379D9F] p-3"
+        onPress={handleSubmit}
+      >
+        <Text className="font-bold text-white text-center">Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 }
