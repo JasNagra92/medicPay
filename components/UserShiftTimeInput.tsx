@@ -21,19 +21,23 @@ export default function UserShiftTimeInput({ text }: IUserShiftTimeInputProps) {
     { label: "0600", value: 600 },
     { label: "0630", value: 630 },
     { label: "0700", value: 700 },
+    { label: "0900", value: 900 },
   ]);
 
   const [dayShiftEndTimes, setDayShiftEndTimes] = useState([
     { label: "1800", value: 1800 },
     { label: "1830", value: 1830 },
     { label: "1900", value: 1900 },
+    { label: "2000", value: 2000 },
   ]);
   const [nightShiftStartTimes, setNightShiftStartTimes] = useState([
     { label: "1800", value: 1800 },
     { label: "1830", value: 1830 },
     { label: "1900", value: 1900 },
+    { label: "1400", value: 1400 },
   ]);
   const [nightShiftEndTimes, setNightShiftEndTimes] = useState([
+    { label: "0100", value: 100 },
     { label: "0600", value: 600 },
     { label: "0630", value: 630 },
     { label: "0700", value: 700 },

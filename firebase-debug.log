@@ -1,39 +1,43 @@
-[debug] [2023-12-03T19:18:49.294Z] ----------------------------------------------------------------------
-[debug] [2023-12-03T19:18:49.295Z] Command:       /Users/jasnagra/.nvm/versions/node/v18.18.0/bin/node /Users/jasnagra/.nvm/versions/node/v18.18.0/bin/firebase emulators:start --only auth
-[debug] [2023-12-03T19:18:49.295Z] CLI Version:   12.9.1
-[debug] [2023-12-03T19:18:49.295Z] Platform:      darwin
-[debug] [2023-12-03T19:18:49.295Z] Node Version:  v18.18.0
-[debug] [2023-12-03T19:18:49.296Z] Time:          Sun Dec 03 2023 11:18:49 GMT-0800 (Pacific Standard Time)
-[debug] [2023-12-03T19:18:49.296Z] ----------------------------------------------------------------------
+[debug] [2024-01-04T03:33:57.842Z] ----------------------------------------------------------------------
+[debug] [2024-01-04T03:33:57.843Z] Command:       /Users/jasnagra/.nvm/versions/node/v18.18.0/bin/node /Users/jasnagra/.nvm/versions/node/v18.18.0/bin/firebase emulators:start --only auth
+[debug] [2024-01-04T03:33:57.843Z] CLI Version:   13.0.2
+[debug] [2024-01-04T03:33:57.843Z] Platform:      darwin
+[debug] [2024-01-04T03:33:57.843Z] Node Version:  v18.18.0
+[debug] [2024-01-04T03:33:57.844Z] Time:          Wed Jan 03 2024 19:33:57 GMT-0800 (Pacific Standard Time)
+[debug] [2024-01-04T03:33:57.844Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2023-12-03T19:18:49.352Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2023-12-03T19:18:49.353Z] > authorizing via signed-in user (jaynagz92@gmail.com)
+[debug] [2024-01-04T03:33:57.900Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-01-04T03:33:57.900Z] > authorizing via signed-in user (jaynagz92@gmail.com)
 [info] i  emulators: Starting emulators: auth {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth"}}
-[debug] [2023-12-03T19:18:49.645Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2023-12-03T19:18:49.645Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2023-12-03T19:18:49.645Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2023-12-03T19:18:49.649Z] [hub] writing locator at /var/folders/q1/13fr2xf5323gpzqzlr82zwc40000gn/T/hub-medicpay-a8230.json
-[debug] [2023-12-03T19:18:52.526Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2023-12-03T19:18:52.527Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
-[debug] [2023-12-03T19:18:52.527Z] Starting Emulator UI with command {"binary":"node","args":["/Users/jasnagra/.cache/firebase/emulators/ui-v1.11.7/server/server.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/jasnagra/.cache/firebase/emulators/ui-v1.11.7/server/server.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
+[debug] [2024-01-04T03:33:58.337Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] ⚠  hub: emulator hub unable to start on port 4400, starting on 4401 instead. {"metadata":{"emulator":{"name":"hub"},"message":"emulator hub unable to start on port 4400, starting on 4401 instead."}}
+[warn] ⚠  logging: Logging Emulator unable to start on port 4500, starting on 4501 instead. {"metadata":{"emulator":{"name":"logging"},"message":"Logging Emulator unable to start on port 4500, starting on 4501 instead."}}
+[debug] [2024-01-04T03:33:58.337Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] ⚠  ui: Emulator UI unable to start on port 4000, starting on 4001 instead. {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI unable to start on port 4000, starting on 4001 instead."}}
+[debug] [2024-01-04T03:33:58.338Z] assigned listening specs for emulators {"user":{"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4401},{"address":"::1","family":"IPv6","port":4401}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4501}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4001},{"address":"::1","family":"IPv6","port":4001}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[warn] ⚠  emulators: It seems that you are running multiple instances of the emulator suite for project medicpay-a8230. This may result in unexpected behavior. 
+[debug] [2024-01-04T03:33:58.341Z] [hub] writing locator at /var/folders/q1/13fr2xf5323gpzqzlr82zwc40000gn/T/hub-medicpay-a8230.json
+[debug] [2024-01-04T03:34:01.733Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2024-01-04T03:34:01.734Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"ui"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2024-01-04T03:34:01.734Z] Starting Emulator UI with command {"binary":"node","args":["/Users/jasnagra/.cache/firebase/emulators/ui-v1.11.7/server/server.js"],"optionalArgs":[],"joinArgs":false} {"metadata":{"emulator":{"name":"ui"},"message":"Starting Emulator UI with command {\"binary\":\"node\",\"args\":[\"/Users/jasnagra/.cache/firebase/emulators/ui-v1.11.7/server/server.js\"],\"optionalArgs\":[],\"joinArgs\":false}"}}
 [info] i  ui: Emulator UI logging to ui-debug.log {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI logging to \u001b[1mui-debug.log\u001b[22m"}}
-[debug] [2023-12-03T19:18:52.583Z] Web / API server started at 127.0.0.1:4000
- {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4000\n"}}
-[debug] [2023-12-03T19:18:52.583Z] Web / API server started at ::1:4000
- {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4000\n"}}
+[debug] [2024-01-04T03:34:01.789Z] Web / API server started at 127.0.0.1:4001
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at 127.0.0.1:4001\n"}}
+[debug] [2024-01-04T03:34:01.790Z] Web / API server started at ::1:4001
+ {"metadata":{"emulator":{"name":"ui"},"message":"Web / API server started at ::1:4001\n"}}
 [info] 
 ┌─────────────────────────────────────────────────────────────┐
 │ ✔  All emulators ready! It is now safe to connect your app. │
-│ i  View Emulator UI at http://127.0.0.1:4000/               │
+│ i  View Emulator UI at http://127.0.0.1:4001/               │
 └─────────────────────────────────────────────────────────────┘
 
 ┌────────────────┬────────────────┬────────────────────────────┐
 │ Emulator       │ Host:Port      │ View in Emulator UI        │
 ├────────────────┼────────────────┼────────────────────────────┤
-│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth │
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4001/auth │
 └────────────────┴────────────────┴────────────────────────────┘
-  Emulator Hub running at 127.0.0.1:4400
-  Other reserved ports: 4500
+  Emulator Hub running at 127.0.0.1:4401
+  Other reserved ports: 4501
 
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  

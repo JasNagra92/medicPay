@@ -73,7 +73,6 @@ export default function Dashboard() {
         grossIncome: gross,
         stiipHours,
         incomeLessLevelling,
-
         OTOnePointFive:
           OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
         OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
@@ -82,7 +81,7 @@ export default function Dashboard() {
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
-      console.log(response.data.data);
+      // console.log(response.data.data);
       if (payPeriodDispatch) {
         payPeriodDispatch({
           type: "updateDeductions",
@@ -120,6 +119,7 @@ export default function Dashboard() {
         (total, day) => total + day.baseHoursWorked,
         0
       );
+
       let stiipHours = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
         (total, day) => total + (day.stiipHours ? day.stiipHours : 0),
         0
@@ -152,16 +152,13 @@ export default function Dashboard() {
       );
       let OTStatReg = 0;
       if (statDayInPeriod) {
-        OTStatReg = payPeriod[indexInMonth].workDaysInPayPeriod.reduce(
-          (total, day) => total + day.OTStatReg!,
-          0
-        );
+        OTStatReg = statDayInPeriod.OTStatReg!;
       }
 
       gross =
         // add 8.29 due to the uniform allowance every pay period and send it to the backend, backend calculations automatically minus 8.29 in the calculations and users Pay Stubs will include this 8.29 figure in the gross totals
         gross +
-        (80 -
+        ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
           (baseHoursWorkedInPayPeriod +
             stiipHours +
             (RDayInPeriod ? 12 : 0) +
@@ -174,7 +171,9 @@ export default function Dashboard() {
         stiipHours +
         (statDayInPeriod ? OTStatReg : 0);
 
-      let levelledWage = (80 - level) * parseFloat(userInfo?.hourlyWage!);
+      let levelledWage =
+        ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) - level) *
+        parseFloat(userInfo?.hourlyWage!);
 
       let incomeLessLevelling = gross - levelledWage - 8.29;
 

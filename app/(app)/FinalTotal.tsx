@@ -70,16 +70,13 @@ export default function FinalTotal() {
 
   let OTStatReg = 0;
   if (statDayInPeriod) {
-    OTStatReg = workDaysInPayPeriod.reduce(
-      (total, day) => total + day.OTStatReg!,
-      0
-    );
+    OTStatReg = statDayInPeriod.OTStatReg!;
   }
 
   // biweekly earnings includes the 8.29 uniform allowance and levelling
   biWeeklyEarnings =
     biWeeklyEarnings +
-    (80 -
+    ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
       (baseHoursWorkedInPayPeriod +
         stiipHours +
         (RDayInPeriod ? 12 : 0) +
@@ -128,14 +125,14 @@ export default function FinalTotal() {
             <TotalLine
               premiumType="Levelling"
               hoursTotal={
-                80 -
+                (userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                 (baseHoursWorkedInPayPeriod +
                   stiipHours +
                   (statDayInPeriod ? OTStatReg : 0))
               }
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={(
-                (80 -
+                ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                   (baseHoursWorkedInPayPeriod +
                     stiipHours +
                     (statDayInPeriod ? OTStatReg : 0))) *
@@ -156,7 +153,9 @@ export default function FinalTotal() {
 
             <TotalLine
               premiumType="Alpha P"
-              hoursTotal={nightHoursWorked}
+              hoursTotal={
+                userInfo?.shiftPattern === "Alpha" ? nightHoursWorked : 0
+              }
               premiumRate="3.60"
               premiumTotal={alphaTotal.toFixed(2)}
             />
