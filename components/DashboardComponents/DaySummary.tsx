@@ -137,7 +137,7 @@ export default function DaySummary({
             </Text>
           </View>
         )}
-        {OTOnePointFive && (
+        {OTOnePointFive !== undefined && OTOnePointFive > 0 && (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">OT 1.5</Text>
             <Text className="flex-2">
@@ -154,7 +154,7 @@ export default function DaySummary({
             </Text>
           </View>
         )}
-        {OTDoubleTime && (
+        {OTDoubleTime !== undefined && OTDoubleTime > 0 && (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">OT 2.0</Text>
             <Text className="flex-2">
