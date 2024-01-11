@@ -73,6 +73,15 @@ export default function FinalTotal() {
     OTStatReg = statDayInPeriod.OTStatReg!;
   }
 
+  let superStatDayInPeriod = payPeriod![
+    parseInt(indexInMonth as string)
+  ].workDaysInPayPeriod.find((day) => day.OTSuperStat! > 0);
+
+  let OTSuperStat = 0;
+  if (superStatDayInPeriod) {
+    OTSuperStat = superStatDayInPeriod.OTSuperStat!;
+  }
+
   // biweekly earnings includes the 8.29 uniform allowance and levelling
   biWeeklyEarnings =
     biWeeklyEarnings +
@@ -80,7 +89,8 @@ export default function FinalTotal() {
       (baseHoursWorkedInPayPeriod +
         stiipHours +
         (RDayInPeriod ? 12 : 0) +
-        (statDayInPeriod ? OTStatReg : 0))) *
+        (statDayInPeriod ? OTStatReg : 0) +
+        (superStatDayInPeriod ? OTSuperStat : 0))) *
       parseFloat(userInfo?.hourlyWage!) +
     8.29;
 
@@ -128,14 +138,16 @@ export default function FinalTotal() {
                 (userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                 (baseHoursWorkedInPayPeriod +
                   stiipHours +
-                  (statDayInPeriod ? OTStatReg : 0))
+                  (statDayInPeriod ? OTStatReg : 0) +
+                  (superStatDayInPeriod ? OTSuperStat : 0))
               }
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={(
                 ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                   (baseHoursWorkedInPayPeriod +
                     stiipHours +
-                    (statDayInPeriod ? OTStatReg : 0))) *
+                    (statDayInPeriod ? OTStatReg : 0) +
+                    (superStatDayInPeriod ? OTSuperStat : 0))) *
                 parseFloat(userInfo?.hourlyWage!)
               ).toFixed(2)}
             />
@@ -216,6 +228,24 @@ export default function FinalTotal() {
                 bgColor="gray"
               />
             )}
+            {superStatDayInPeriod?.OTSuperStat &&
+              superStatDayInPeriod.OTSuperStat > 0 && (
+                <TotalLine
+                  premiumType="OTSuperStat"
+                  hoursTotal={OTSuperStat}
+                  premiumRate={(parseInt(userInfo?.hourlyWage!) * 2.5).toFixed(
+                    2
+                  )}
+                  premiumTotal={
+                    superStatDayInPeriod.OTSuperStat > 0
+                      ? (
+                          OTSuperStat *
+                          (parseFloat(userInfo?.hourlyWage!) * 2.5)
+                        ).toFixed(2)
+                      : "0.00"
+                  }
+                />
+              )}
 
             <View>
               <View

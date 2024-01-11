@@ -65,7 +65,8 @@ export default function Dashboard() {
     stiipHours: number,
     OTOnePointFive: number,
     OTDoubleTime: number,
-    OTStatReg: number
+    OTStatReg: number,
+    OTSuperStat: number
   ) => {
     try {
       let response = await axiosInstance.post("/getDeductions", {
@@ -73,15 +74,17 @@ export default function Dashboard() {
         grossIncome: gross,
         stiipHours,
         incomeLessLevelling,
-        OTOnePointFive:
+        OTOnePointFiveAmount:
           OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
-        OTDoubleTime: OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
+        OTDoubleTimeAmount:
+          OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
         payDay: DateTime.fromISO(payPeriod![indexInMonth].payDay).toISODate(),
         OTStatReg,
+        OTSuperStat,
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
-      // console.log(response.data.data);
+      console.log(response.data.data);
       if (payPeriodDispatch) {
         payPeriodDispatch({
           type: "updateDeductions",
@@ -133,13 +136,14 @@ export default function Dashboard() {
       let OTOnePointFive: number = payPeriod[
         indexInMonth
       ].workDaysInPayPeriod.reduce(
-        (total, day) => total + (day.OTOnePointFive ? OTOnePointFive : 0),
+        (total, day) => total + (day.OTOnePointFive ? day.OTOnePointFive : 0),
         0
       );
+
       let OTDoubleTime: number = payPeriod[
         indexInMonth
       ].workDaysInPayPeriod.reduce(
-        (total, day) => total + (day.OTDoubleTime ? OTDoubleTime : 0),
+        (total, day) => total + (day.OTDoubleTime ? day.OTDoubleTime : 0),
         0
       );
 
@@ -150,9 +154,19 @@ export default function Dashboard() {
       let statDayInPeriod = payPeriod[indexInMonth].workDaysInPayPeriod.find(
         (day) => day.OTStatReg! > 0
       );
+
+      let superStatDayInPeriod = payPeriod[
+        indexInMonth
+      ].workDaysInPayPeriod.find((day) => day.OTSuperStat! > 0);
+
       let OTStatReg = 0;
       if (statDayInPeriod) {
         OTStatReg = statDayInPeriod.OTStatReg!;
+      }
+
+      let OTSuperStat = 0;
+      if (superStatDayInPeriod) {
+        OTSuperStat = superStatDayInPeriod.OTSuperStat!;
       }
 
       gross =
@@ -162,14 +176,16 @@ export default function Dashboard() {
           (baseHoursWorkedInPayPeriod +
             stiipHours +
             (RDayInPeriod ? 12 : 0) +
-            (statDayInPeriod ? OTStatReg : 0))) *
+            (statDayInPeriod ? OTStatReg : 0) +
+            (superStatDayInPeriod ? OTSuperStat : 0))) *
           parseFloat(userInfo?.hourlyWage!) +
         8.29;
 
       let level =
         baseHoursWorkedInPayPeriod +
         stiipHours +
-        (statDayInPeriod ? OTStatReg : 0);
+        (statDayInPeriod ? OTStatReg : 0) +
+        (superStatDayInPeriod ? OTSuperStat : 0);
 
       let levelledWage =
         ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) - level) *
@@ -185,7 +201,8 @@ export default function Dashboard() {
         stiipHours,
         OTOnePointFive,
         OTDoubleTime,
-        OTStatReg
+        OTStatReg,
+        OTSuperStat
       );
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);

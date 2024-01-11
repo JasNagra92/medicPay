@@ -114,6 +114,7 @@ export default function OvertimeModal() {
           updatedShiftEnd: updatedShiftEnd!.toISOString(),
           originalShiftEnd: shiftEnd,
         });
+
         data = response.data.data;
       } catch (error) {
         console.log(error);
@@ -142,7 +143,6 @@ export default function OvertimeModal() {
             OTAlphaShift,
           }
         );
-        console.log(response.data.data);
         data = response.data.data;
       } catch (error) {
         console.log(error + "adding regular OT");
