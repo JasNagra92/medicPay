@@ -88,7 +88,7 @@ export default function DaySummary({
             ${baseWageEarnings.toFixed(2)}
           </Text>
         </View>
-        {userInfo?.shiftPattern === "Alpha" ? (
+        {alphaNightsEarnings > 0 ? (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
             <Text className="flex-2">

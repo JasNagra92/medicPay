@@ -19,11 +19,11 @@ import {
 import { AuthStore } from "../../store";
 
 export default function Dashboard() {
-  const { initialized, isLoggedIn } = AuthStore.useState();
+  // const { initialized, isLoggedIn } = AuthStore.useState();
 
-  if (initialized && !isLoggedIn) {
-    Redirect({ href: "/login" });
-  }
+  // if (initialized && !isLoggedIn) {
+  //   Redirect({ href: "/login" });
+  // }
 
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed

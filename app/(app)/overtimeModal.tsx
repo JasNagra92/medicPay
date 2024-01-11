@@ -15,6 +15,7 @@ import {
 
 export default function OvertimeModal() {
   const [selected, setSelected] = useState("");
+  const [OTAlphaShift, setOTAlphaShift] = useState("");
   const [startOrEndTime, setStartOrEndTime] = useState("");
   const [open, setOpen] = useState(false);
   const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>();
@@ -138,8 +139,10 @@ export default function OvertimeModal() {
               year: "numeric",
             }),
             rotation,
+            OTAlphaShift,
           }
         );
+        console.log(response.data.data);
         data = response.data.data;
       } catch (error) {
         console.log(error + "adding regular OT");
@@ -168,6 +171,7 @@ export default function OvertimeModal() {
               payPeriod![parseInt(indexInMonth as string)].workDaysInPayPeriod[
                 parseInt(index as string)
               ].rotation,
+            OTAlphaShift,
           }
         );
         data = response.data.data;
@@ -195,6 +199,34 @@ export default function OvertimeModal() {
   return (
     <View className="p-3 flex flex-col flex-1 justify-evenly">
       <Text className="font-bold text-2xl text-center">Overtime</Text>
+
+      {(selected === "Holiday Recall" || selected === "Regular OT") && (
+        <View>
+          <View
+            className="flex flex-row justify-center"
+            style={{ alignItems: "center" }}
+          >
+            <RadioButton.Android
+              value="Alpha"
+              onPress={() => {
+                OTAlphaShift === "Alpha"
+                  ? setOTAlphaShift("")
+                  : setOTAlphaShift("Alpha");
+              }}
+              status={OTAlphaShift === "Alpha" ? "checked" : "unchecked"}
+              color="#379D9F"
+            />
+            <Text className="text-lg text-center text-slate-500">
+              Alpha Shift?
+            </Text>
+          </View>
+          <View>
+            <Text className="text-center font-semibold">
+              Only Alpha shifts on OT accrue Alpha Premium
+            </Text>
+          </View>
+        </View>
+      )}
       <View className="flex flex-row justify-center">
         {/* don't render end of shift OT option if toggle switch is being rendered in a day off component instead render the regular OT option */}
         {rotation !== "day off" &&
@@ -212,21 +244,18 @@ export default function OvertimeModal() {
               <Text className=" text-slate-500 text-lg">End of Shift OT</Text>
             </View>
           )}
-
-        {rotation === "day off" ||
-          (rotation === "R Day" && (
-            <View className="flex flex-row" style={{ alignItems: "center" }}>
-              <RadioButton.Android
-                value="Regular OT"
-                onPress={() => setSelected("Regular OT")}
-                status={selected === "Regular OT" ? "checked" : "unchecked"}
-                color="#379D9F"
-              />
-              <Text className=" text-slate-500 text-lg">Regular OT</Text>
-            </View>
-          ))}
-
-        {rotation === "Vacation" || rotation === "day off" ? (
+        {(rotation === "day off" || rotation === "R Day") && (
+          <View className="flex flex-row" style={{ alignItems: "center" }}>
+            <RadioButton.Android
+              value="Regular OT"
+              onPress={() => setSelected("Regular OT")}
+              status={selected === "Regular OT" ? "checked" : "unchecked"}
+              color="#379D9F"
+            />
+            <Text className="text-slate-500 text-lg">Regular OT</Text>
+          </View>
+        )}
+        {(rotation === "Vacation" || rotation === "day off") && (
           <View className="flex flex-row" style={{ alignItems: "center" }}>
             <RadioButton.Android
               value="Holiday Recall"
@@ -234,9 +263,9 @@ export default function OvertimeModal() {
               status={selected === "Holiday recall" ? "checked" : "unchecked"}
               color="#379D9F"
             />
-            <Text className=" text-slate-500 text-lg">Holiday Recall</Text>
+            <Text className="text-slate-500 text-lg">Holiday Recall</Text>
           </View>
-        ) : null}
+        )}
       </View>
       <View>
         {selected === "End of Shift OT" && (

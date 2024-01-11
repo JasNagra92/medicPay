@@ -7,14 +7,14 @@ import { AuthStore } from "../../store";
 const image = require("../../assets/images/bgImage.png");
 
 export default function HomePage() {
-  const { initialized, isLoggedIn, user } = AuthStore.useState();
+  // const { initialized, isLoggedIn, user } = AuthStore.useState();
 
-  if (initialized && !isLoggedIn) {
-    Redirect({ href: "/login" });
-  }
-  if (initialized && isLoggedIn) {
-    Redirect({ href: "/(app)/dashboard" });
-  }
+  // if (initialized && !isLoggedIn) {
+  //   Redirect({ href: "/login" });
+  // }
+  // if (initialized && isLoggedIn) {
+  //   Redirect({ href: "/(app)/dashboard" });
+  // }
 
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
@@ -33,7 +33,7 @@ export default function HomePage() {
           }}
           className="rounded-2xl bg-white shadow-sm w-5/6 border-0 pt-3 pb-3 flex flex-col justify-center mt-10"
         >
-          <Link href="/dashboard" asChild>
+          <Link href="/workShift" asChild>
             <TouchableOpacity>
               <Text>Press me</Text>
             </TouchableOpacity>

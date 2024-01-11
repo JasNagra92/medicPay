@@ -153,9 +153,7 @@ export default function FinalTotal() {
 
             <TotalLine
               premiumType="Alpha P"
-              hoursTotal={
-                userInfo?.shiftPattern === "Alpha" ? nightHoursWorked : 0
-              }
+              hoursTotal={alphaTotal > 0 ? alphaTotal / 3.6 : 0}
               premiumRate="3.60"
               premiumTotal={alphaTotal.toFixed(2)}
             />
