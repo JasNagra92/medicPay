@@ -35,7 +35,10 @@ export default function ToggleSwitch({
 
   const handleStiipSelect = async () => {
     // if stiip hours already exists in the single days data, user must be depressing the button to cancel the stiip, hit api to get default day back
-    if (payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours) {
+    if (
+      payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
+      payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
+    ) {
       try {
         let response = await axiosInstance.post("/getPayData/getDefaultDay", {
           userInfo,
@@ -82,11 +85,9 @@ export default function ToggleSwitch({
   };
 
   const handleOTSelect = async () => {
-    // if OT hours already exists in the single days data, user must be depressing the button to cancel the OT, hit api to get default day back
-    if (
-      payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime ||
-      payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive
-    ) {
+    // if rotation is reg ot or recall, user already logged overtime, so hit the api to get default day back and delete the ot
+    if (rotation === "Reg OT" || rotation === "Recall") {
+      console.log(rotation);
       try {
         // info being sent is so server can delete document from the database
         let response = await axiosInstance.post("/getPayData/getDefaultDay", {
@@ -135,7 +136,8 @@ export default function ToggleSwitch({
   };
 
   useEffect(() => {
-    payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+    payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
+    payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
       ? setSelected("Stiip")
       : "";
   }, []);
@@ -199,9 +201,14 @@ export default function ToggleSwitch({
       {!payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime &&
       !payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive ? (
         <TouchableOpacity
-          style={rotation === "Vacation" ? { display: "none" } : null}
+          style={
+            rotation === "Vacation" || rotation === "Reg OT"
+              ? { display: "none" }
+              : null
+          }
           className={`rounded-2xl m-0.5 px-3 py-1 ${
-            payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+            payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
+            payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
               ? "bg-[#379D9F]"
               : "white"
           }`}
@@ -211,7 +218,8 @@ export default function ToggleSwitch({
         >
           <Text
             className={`${
-              payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours
+              payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
+              payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
                 ? "text-white"
                 : "text-[#379D9F]"
             }`}
@@ -224,7 +232,9 @@ export default function ToggleSwitch({
         <TouchableOpacity
           className={`rounded-2xl m-0.5 px-4 py-1 ${
             payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime ||
-            payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive
+            payPeriod![indexInMonth].workDaysInPayPeriod[index]
+              .OTOnePointFive ||
+            rotation === "Reg OT"
               ? "bg-[#379D9F]"
               : "white"
           }`}
@@ -236,7 +246,9 @@ export default function ToggleSwitch({
             className={`${
               payPeriod![indexInMonth].workDaysInPayPeriod[index]
                 .OTDoubleTime ||
-              payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive
+              payPeriod![indexInMonth].workDaysInPayPeriod[index]
+                .OTOnePointFive ||
+              rotation === "Reg OT"
                 ? "text-white"
                 : "text-[#379D9F]"
             }`}
