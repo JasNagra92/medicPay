@@ -155,9 +155,9 @@ export default function Dashboard() {
         (day) => day.OTStatReg! > 0
       );
 
-      let superStatDayInPeriod = payPeriod[
+      let superStatDaysInPeriod = payPeriod[
         indexInMonth
-      ].workDaysInPayPeriod.find((day) => day.OTSuperStat! > 0);
+      ].workDaysInPayPeriod.filter((day) => day.OTSuperStat! > 0);
 
       let OTStatReg = 0;
       if (statDayInPeriod) {
@@ -165,8 +165,24 @@ export default function Dashboard() {
       }
 
       let OTSuperStat = 0;
-      if (superStatDayInPeriod) {
-        OTSuperStat = superStatDayInPeriod.OTSuperStat!;
+      if (superStatDaysInPeriod) {
+        OTSuperStat = superStatDaysInPeriod.reduce(
+          (total, day) => total + day.OTSuperStat!,
+          0
+        );
+      }
+
+      let sickPaidHours = 0;
+      let fullPaidSickDaysInPeriod = payPeriod[
+        indexInMonth
+      ].workDaysInPayPeriod.filter(
+        (day) => day.sickPaidHours && day.sickPaidHours > 0
+      );
+      if (fullPaidSickDaysInPeriod) {
+        sickPaidHours = fullPaidSickDaysInPeriod.reduce(
+          (total, day) => total + day.sickPaidHours!,
+          0
+        );
       }
 
       gross =
@@ -175,17 +191,19 @@ export default function Dashboard() {
         ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
           (baseHoursWorkedInPayPeriod +
             stiipHours +
+            sickPaidHours +
             (RDayInPeriod ? 12 : 0) +
             (statDayInPeriod ? OTStatReg : 0) +
-            (superStatDayInPeriod ? OTSuperStat : 0))) *
+            (superStatDaysInPeriod ? OTSuperStat : 0))) *
           parseFloat(userInfo?.hourlyWage!) +
         8.29;
 
       let level =
         baseHoursWorkedInPayPeriod +
         stiipHours +
+        sickPaidHours +
         (statDayInPeriod ? OTStatReg : 0) +
-        (superStatDayInPeriod ? OTSuperStat : 0);
+        (superStatDaysInPeriod ? OTSuperStat : 0);
 
       let levelledWage =
         ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) - level) *

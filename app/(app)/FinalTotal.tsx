@@ -18,6 +18,45 @@ export default function FinalTotal() {
   let workDaysInPayPeriod =
     payPeriod![parseInt(indexInMonth as string)].workDaysInPayPeriod;
 
+  let premiumTypes = [
+    { type: "Base Pay", key: "baseHoursWorked", rateMultiplier: 1 },
+    { type: "STIIP", key: "stiipHours", rateMultiplier: 0.75 },
+    { type: "SKPD", key: "sickPaidHours", rateMultiplier: 1 },
+    { type: "OT 1.5", key: "OTOnePointFive", rateMultiplier: 1.5 },
+    { type: "OT 2.0", key: "OTDoubleTime", rateMultiplier: 2.0 },
+    { type: "OTStatReg", key: "OTStatReg", rateMultiplier: 2.0 },
+    { type: "OTSPRStat", key: "OTSuperStat", rateMultiplier: 2.5 },
+  ];
+
+  const totalLines = premiumTypes.map((premium, index) => {
+    const hoursTotal = workDaysInPayPeriod.reduce(
+      (total, day) =>
+        total + (day[premium.key] ? (day[premium.key] as number) : 0),
+      0
+    );
+    const premiumRate = (
+      parseFloat(userInfo?.hourlyWage!) * premium.rateMultiplier
+    ).toFixed(2);
+    const premiumTotal =
+      hoursTotal > 0
+        ? (
+            parseFloat(userInfo?.hourlyWage!) *
+            premium.rateMultiplier *
+            hoursTotal
+          ).toFixed(2)
+        : "0.00";
+
+    const bgColor = index % 2 === 0 ? "grey" : undefined;
+
+    return {
+      premiumType: premium.type,
+      hoursTotal: hoursTotal > 0 ? hoursTotal : 0,
+      premiumRate: premiumRate,
+      premiumTotal: premiumTotal,
+      bgColor: bgColor,
+    };
+  });
+
   let baseHoursWorkedInPayPeriod = workDaysInPayPeriod.reduce(
     (total, day) => total + day.baseHoursWorked,
     0
@@ -73,13 +112,29 @@ export default function FinalTotal() {
     OTStatReg = statDayInPeriod.OTStatReg!;
   }
 
-  let superStatDayInPeriod = payPeriod![
+  let superStatDaysInPeriod = payPeriod![
     parseInt(indexInMonth as string)
-  ].workDaysInPayPeriod.find((day) => day.OTSuperStat! > 0);
+  ].workDaysInPayPeriod.filter((day) => day.OTSuperStat! > 0);
 
   let OTSuperStat = 0;
-  if (superStatDayInPeriod) {
-    OTSuperStat = superStatDayInPeriod.OTSuperStat!;
+  if (superStatDaysInPeriod) {
+    OTSuperStat = superStatDaysInPeriod.reduce(
+      (total, day) => total + day.OTSuperStat!,
+      0
+    );
+  }
+
+  let sickPaidHours = 0;
+  let fullPaidSickDaysInPeriod = payPeriod![
+    parseInt(indexInMonth as string)
+  ].workDaysInPayPeriod.filter(
+    (day) => day.sickPaidHours && day.sickPaidHours > 0
+  );
+  if (fullPaidSickDaysInPeriod) {
+    sickPaidHours = fullPaidSickDaysInPeriod.reduce(
+      (total, day) => total + day.sickPaidHours!,
+      0
+    );
   }
 
   // biweekly earnings includes the 8.29 uniform allowance and levelling
@@ -88,9 +143,10 @@ export default function FinalTotal() {
     ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
       (baseHoursWorkedInPayPeriod +
         stiipHours +
+        sickPaidHours +
         (RDayInPeriod ? 12 : 0) +
         (statDayInPeriod ? OTStatReg : 0) +
-        (superStatDayInPeriod ? OTSuperStat : 0))) *
+        (superStatDaysInPeriod ? OTSuperStat : 0))) *
       parseFloat(userInfo?.hourlyWage!) +
     8.29;
 
@@ -123,7 +179,20 @@ export default function FinalTotal() {
                 Final Total
               </Text>
             </View>
-            <TotalLine
+            {totalLines.map(
+              (totalLine, index) =>
+                totalLine.hoursTotal > 0 && (
+                  <TotalLine
+                    key={index}
+                    premiumType={totalLine.premiumType}
+                    hoursTotal={totalLine.hoursTotal}
+                    premiumRate={totalLine.premiumRate}
+                    premiumTotal={totalLine.premiumTotal}
+                    bgColor={totalLine.bgColor}
+                  />
+                )
+            )}
+            {/* <TotalLine
               premiumType="Base Pay"
               hoursTotal={baseHoursWorkedInPayPeriod}
               premiumRate={userInfo?.hourlyWage!}
@@ -131,27 +200,29 @@ export default function FinalTotal() {
                 baseHoursWorkedInPayPeriod * parseFloat(userInfo?.hourlyWage!)
               ).toFixed(2)}
               bgColor="gray"
-            />
+            /> */}
             <TotalLine
               premiumType="Levelling"
               hoursTotal={
                 (userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                 (baseHoursWorkedInPayPeriod +
                   stiipHours +
+                  sickPaidHours +
                   (statDayInPeriod ? OTStatReg : 0) +
-                  (superStatDayInPeriod ? OTSuperStat : 0))
+                  (superStatDaysInPeriod ? OTSuperStat : 0))
               }
               premiumRate={userInfo?.hourlyWage!}
               premiumTotal={(
                 ((userInfo?.shiftPattern === "Alpha" ? 80 : 77) -
                   (baseHoursWorkedInPayPeriod +
                     stiipHours +
+                    sickPaidHours +
                     (statDayInPeriod ? OTStatReg : 0) +
-                    (superStatDayInPeriod ? OTSuperStat : 0))) *
+                    (superStatDaysInPeriod ? OTSuperStat : 0))) *
                 parseFloat(userInfo?.hourlyWage!)
               ).toFixed(2)}
             />
-            <TotalLine
+            {/* <TotalLine
               premiumType="STIIP"
               hoursTotal={stiipHours > 0 ? stiipHours : 0}
               premiumRate={(parseInt(userInfo?.hourlyWage!) * 0.75).toFixed(2)}
@@ -161,7 +232,7 @@ export default function FinalTotal() {
                   : "0.00"
               }
               bgColor="grey"
-            />
+            /> */}
 
             <TotalLine
               premiumType="Alpha P"
@@ -171,7 +242,7 @@ export default function FinalTotal() {
             />
             <TotalLine
               premiumType="Night Shift"
-              hoursTotal={nightHoursWorked}
+              hoursTotal={parseFloat(nightHoursWorked.toFixed(2))}
               premiumRate="2.00"
               premiumTotal={nightEarnings.toFixed(2)}
               bgColor="gray"
@@ -183,7 +254,7 @@ export default function FinalTotal() {
               premiumTotal={weekendTotal.toFixed(2)}
             />
 
-            <TotalLine
+            {/* <TotalLine
               premiumType="OT 1.5"
               hoursTotal={OTOnePointFiveHours > 0 ? OTOnePointFiveHours : 0}
               premiumRate={(parseFloat(userInfo?.hourlyWage!) * 1.5).toFixed(2)}
@@ -228,24 +299,21 @@ export default function FinalTotal() {
                 bgColor="gray"
               />
             )}
-            {superStatDayInPeriod?.OTSuperStat &&
-              superStatDayInPeriod.OTSuperStat > 0 && (
-                <TotalLine
-                  premiumType="OTSuperStat"
-                  hoursTotal={OTSuperStat}
-                  premiumRate={(parseInt(userInfo?.hourlyWage!) * 2.5).toFixed(
-                    2
-                  )}
-                  premiumTotal={
-                    superStatDayInPeriod.OTSuperStat > 0
-                      ? (
-                          OTSuperStat *
-                          (parseFloat(userInfo?.hourlyWage!) * 2.5)
-                        ).toFixed(2)
-                      : "0.00"
-                  }
-                />
-              )}
+            {superStatDaysInPeriod && OTSuperStat > 0 && (
+              <TotalLine
+                premiumType="OTSPRStat"
+                hoursTotal={OTSuperStat}
+                premiumRate={(parseInt(userInfo?.hourlyWage!) * 2.5).toFixed(2)}
+                premiumTotal={
+                  OTSuperStat > 0
+                    ? (
+                        OTSuperStat *
+                        (parseFloat(userInfo?.hourlyWage!) * 2.5)
+                      ).toFixed(2)
+                    : "0.00"
+                }
+              />
+            )} */}
 
             <View>
               <View

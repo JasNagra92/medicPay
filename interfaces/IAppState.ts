@@ -21,6 +21,7 @@ export interface ISingleDaysPayData {
   stiipHours?: number;
   OTOnePointFive?: number;
   OTDoubleTime?: number;
+  sickPaidHours?: number;
   [key: string]: number | Date | string | undefined;
 }
 
