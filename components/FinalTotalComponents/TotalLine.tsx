@@ -6,7 +6,7 @@ interface ITotalLineProps {
   hoursTotal: number;
   premiumRate: string;
   premiumTotal: string;
-  bgColor?: string;
+  bgColor: number;
 }
 
 export default function TotalLine({
@@ -17,7 +17,11 @@ export default function TotalLine({
   bgColor,
 }: ITotalLineProps) {
   return (
-    <View className={`flex flex-row p-4 ${bgColor ? "bg-slate-100" : null}`}>
+    <View
+      className={`flex flex-row p-4 ${
+        bgColor % 2 === 0 ? "bg-slate-100" : null
+      }`}
+    >
       <Text className="flex-1">{premiumType}</Text>
       <Text className="flex-2 font-semibold">
         {hoursTotal} Hrs x ${premiumRate}

@@ -32,6 +32,7 @@ export default function DaySummary({
   OTSuperStat,
   index,
   indexInMonth,
+  sickPaidHours,
 }: ISingleDaysPayDataWithIndex) {
   const userInfo = useUserInfo();
   return (
@@ -202,6 +203,19 @@ export default function DaySummary({
                 OTSuperStat *
                 (2.5 * parseFloat(userInfo?.hourlyWage!))
               ).toFixed(2)}
+            </Text>
+          </View>
+        )}
+        {sickPaidHours !== undefined && sickPaidHours > 0 && (
+          <View className="flex flex-row px-3">
+            <Text className="opacity-30 flex-1">SKPD</Text>
+            <Text className="flex-2">
+              {sickPaidHours.toFixed(2)} Hrs x $
+              {parseFloat(userInfo?.hourlyWage!)}
+            </Text>
+            <Text className="flex-1 text-right">
+              {" "}
+              ${(sickPaidHours * parseFloat(userInfo?.hourlyWage!)).toFixed(2)}
             </Text>
           </View>
         )}

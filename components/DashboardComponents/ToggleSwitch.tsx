@@ -33,6 +33,9 @@ export default function ToggleSwitch({
   const userInfo = useUserInfo();
   const payPeriodDispatch = usePayPeriodDispatch();
 
+  const { stiipHours, sickPaidHours, OTOnePointFive, OTDoubleTime } =
+    payPeriod![indexInMonth].workDaysInPayPeriod[index];
+
   const handleStiipSelect = async () => {
     // if stiip hours already exists in the single days data, user must be depressing the button to cancel the stiip, hit api to get default day back
     if (
@@ -85,9 +88,8 @@ export default function ToggleSwitch({
   };
 
   const handleOTSelect = async () => {
-    // if rotation is reg ot or recall, user already logged overtime, so hit the api to get default day back and delete the ot
-    if (rotation === "Reg OT" || rotation === "Recall") {
-      console.log(rotation);
+    // if OT hours exist, user already logged overtime, so hit the api to get default day back and delete the ot
+    if (OTOnePointFive || OTDoubleTime || rotation === "Reg OT") {
       try {
         // info being sent is so server can delete document from the database
         let response = await axiosInstance.post("/getPayData/getDefaultDay", {
@@ -136,16 +138,10 @@ export default function ToggleSwitch({
   };
 
   useEffect(() => {
-    payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
-    payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
-      ? setSelected("Stiip")
-      : "";
+    stiipHours || sickPaidHours ? setSelected("Stiip") : "";
   }, []);
   useEffect(() => {
-    payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive ||
-    payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime
-      ? setSelected("OT")
-      : "";
+    OTOnePointFive || OTDoubleTime ? setSelected("OT") : "";
   }, []);
   if (rotation === "day off" || rotation === "R Day") {
     return (
@@ -198,8 +194,7 @@ export default function ToggleSwitch({
         <VacationToggle index={index} indexInMonth={indexInMonth} />
       ) : null}
 
-      {!payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime &&
-      !payPeriod![indexInMonth].workDaysInPayPeriod[index].OTOnePointFive ? (
+      {!OTDoubleTime && !OTOnePointFive ? (
         <TouchableOpacity
           style={
             rotation === "Vacation" || rotation === "Reg OT"
@@ -207,10 +202,7 @@ export default function ToggleSwitch({
               : null
           }
           className={`rounded-2xl m-0.5 px-3 py-1 ${
-            payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
-            payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
-              ? "bg-[#379D9F]"
-              : "white"
+            stiipHours || sickPaidHours ? "bg-[#379D9F]" : "white"
           }`}
           onPress={() => {
             handleStiipSelect();
@@ -218,23 +210,17 @@ export default function ToggleSwitch({
         >
           <Text
             className={`${
-              payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours ||
-              payPeriod![indexInMonth].workDaysInPayPeriod[index].sickPaidHours
-                ? "text-white"
-                : "text-[#379D9F]"
+              stiipHours || sickPaidHours ? "text-white" : "text-[#379D9F]"
             }`}
           >
             Stiip
           </Text>
         </TouchableOpacity>
       ) : null}
-      {!payPeriod![indexInMonth].workDaysInPayPeriod[index].stiipHours && (
+      {!stiipHours && !sickPaidHours && (
         <TouchableOpacity
           className={`rounded-2xl m-0.5 px-4 py-1 ${
-            payPeriod![indexInMonth].workDaysInPayPeriod[index].OTDoubleTime ||
-            payPeriod![indexInMonth].workDaysInPayPeriod[index]
-              .OTOnePointFive ||
-            rotation === "Reg OT"
+            OTDoubleTime || OTOnePointFive || rotation === "Reg OT"
               ? "bg-[#379D9F]"
               : "white"
           }`}
@@ -244,11 +230,7 @@ export default function ToggleSwitch({
         >
           <Text
             className={`${
-              payPeriod![indexInMonth].workDaysInPayPeriod[index]
-                .OTDoubleTime ||
-              payPeriod![indexInMonth].workDaysInPayPeriod[index]
-                .OTOnePointFive ||
-              rotation === "Reg OT"
+              OTDoubleTime || OTOnePointFive || rotation === "Reg OT"
                 ? "text-white"
                 : "text-[#379D9F]"
             }`}
