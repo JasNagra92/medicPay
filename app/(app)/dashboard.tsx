@@ -107,7 +107,7 @@ export default function Dashboard() {
   // hook to make api call and fetch current months pay data for user
   useEffect(() => {
     if (userInfo && payPeriodDispatch) {
-      const today = DateTime.fromISO("2024-01-01");
+      const today = DateTime.now();
 
       getPayDaysFromServer(userInfo, today.month, today.year);
     }
@@ -342,7 +342,10 @@ export default function Dashboard() {
         </ScrollView>
         <View className="flex flex-row justify-center">
           <Link
-            href={{ pathname: "/FinalTotal", params: { indexInMonth } }}
+            href={{
+              pathname: "/FinalTotal",
+              params: { indexInMonth },
+            }}
             asChild
           >
             <TouchableOpacity className="rounded-2xl px-3 py-2 justify-between bg-[#379D9F] flex flex-row shadow-lg w-5/6">

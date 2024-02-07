@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ImageBackground, View, Text, TouchableOpacity } from "react-native";
 import { useUserInfo } from "../../context/userInfoContext";
@@ -140,7 +140,7 @@ export default function FinalTotal() {
 
   let levellingEntry = {
     premiumType: "Levelling",
-    hoursTotal: levellingHoursTotal > 0 ? levellingHoursTotal : 0,
+    hoursTotal: levellingHoursTotal !== 0 ? levellingHoursTotal : 0,
     premiumRate: levellingPremiumRate,
     premiumTotal: levellingPremiumTotal,
   };
@@ -183,6 +183,13 @@ export default function FinalTotal() {
       parseFloat(userInfo?.hourlyWage!) +
     8.29;
 
+  const handleDeduction = () => {
+    router.push({
+      pathname: "/deductionsModal",
+      params: { indexInMonth },
+    });
+  };
+
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
       <SafeAreaView
@@ -213,7 +220,7 @@ export default function FinalTotal() {
               </Text>
             </View>
             {totalLines
-              .filter((totalLine) => totalLine.hoursTotal > 0)
+              .filter((totalLine) => totalLine.hoursTotal !== 0)
               .map((totalLine, index) => (
                 <TotalLine
                   key={index}
@@ -235,11 +242,13 @@ export default function FinalTotal() {
             </View>
           </View>
 
-          <Link href={"/deductionsModal"} asChild>
-            <TouchableOpacity className="border bg-white rounded-2xl w-1/2 self-center shadow-lg border-rose-300 p-2">
-              <Text className="text-center text-red-500">Deductions</Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            className="border bg-white rounded-2xl w-1/2 self-center shadow-lg border-rose-300 p-2"
+            onPress={handleDeduction}
+          >
+            <Text className="text-center text-red-500">Deductions</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             className="bg-white rounded-2xl w-3/4 self-center shadow-lg p-2 border border-[#379D9F]"
             onPress={() =>
