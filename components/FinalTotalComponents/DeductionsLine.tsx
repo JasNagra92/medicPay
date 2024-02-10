@@ -15,11 +15,23 @@ export default function DeductionsLine({
 }: IDeductionLineProps & { index: number }) {
   return (
     <View
-      className={`flex flex-row p-4 ${index % 2 === 0 ? "bg-slate-100" : ""}`}
+      className={`flex flex-row p-2 border-b-2 ${
+        index % 2 === 0 ? "bg-slate-100" : ""
+      }`}
     >
-      <Text className="flex-1">{deductionType}</Text>
+      <Text
+        className={`flex-1 ${
+          deductionType === "Total Deductions" ? "font-extrabold" : null
+        } `}
+      >
+        {deductionType}
+      </Text>
       {/* Parse deductionTotal to float and use toFixed method */}
-      <Text className="font-bold flex-1 text-right">
+      <Text
+        className={`flex-1 font-bold text-right ${
+          deductionType === "Total Deductions" ? "font-extrabold" : null
+        } `}
+      >
         ${parseFloat(deductionTotal).toFixed(2)}
       </Text>
     </View>

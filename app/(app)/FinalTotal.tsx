@@ -18,6 +18,11 @@ export default function FinalTotal() {
   // variable to decide between rendering gross or netpay
   const [display, setDisplay] = useState("net");
 
+  const { cpp, incomeTax, pserp, unionDues, ei } =
+    payPeriod![parseInt(indexInMonth as string)];
+
+  let deductionsTotal = cpp + incomeTax + pserp + unionDues + ei;
+
   let workDaysInPayPeriod =
     payPeriod![parseInt(indexInMonth as string)].workDaysInPayPeriod;
 
@@ -246,7 +251,9 @@ export default function FinalTotal() {
             className="border bg-white rounded-2xl w-1/2 self-center shadow-lg border-rose-300 p-2"
             onPress={handleDeduction}
           >
-            <Text className="text-center text-red-500">Deductions</Text>
+            <Text className="text-center text-red-500">
+              Deductions - ${deductionsTotal.toFixed(2)}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity

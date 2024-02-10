@@ -5,19 +5,36 @@ import UserInputField from "./UserInputField";
 import UserButtonInput from "./UserButtonInput";
 import UserRadioInput from "./UserRadioInput";
 import UserShiftTimeInput from "./UserShiftTimeInput";
-import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
+import { useUserInfo } from "../context/userInfoContext";
 import axiosInstance from "../utils/helpers/axiosInstance";
+import {
+  EmptyShiftPattern,
+  EmptyShiftTimes,
+  showErrorToast,
+} from "../utils/helpers/validation";
 
 export default function UserForm() {
   const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
 
   const handleSubmit = async () => {
+    if (EmptyShiftTimes(userInfo!)) {
+      showErrorToast("Shift Times");
+      return;
+    }
+    if (EmptyShiftPattern(userInfo!)) {
+      {
+        showErrorToast("Shift Pattern");
+        return;
+      }
+    }
+    if (userInfo?.shiftPattern === "Alpha" && !userInfo.rotation) {
+      showErrorToast("Rotation");
+      return;
+    }
     try {
       let resp = await axiosInstance.post("/users/saveUser", {
         user: userInfo,
       });
-      console.log(resp.data);
       router.push("/(app)/dashboard");
     } catch (error) {
       console.log(error);

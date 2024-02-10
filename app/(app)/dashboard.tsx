@@ -84,7 +84,7 @@ export default function Dashboard() {
       });
       const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
         response.data.data;
-      console.log(response.data.data);
+
       if (payPeriodDispatch) {
         payPeriodDispatch({
           type: "updateDeductions",

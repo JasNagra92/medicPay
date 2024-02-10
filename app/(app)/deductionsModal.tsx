@@ -23,9 +23,12 @@ export default function DeductionsModal() {
     deductionTotal: unionDues.toFixed(2),
   });
   deductions.push({ deductionType: "EI", deductionTotal: ei.toFixed(2) });
-  console.log(deductions);
+  deductions.push({
+    deductionType: "Total Deductions",
+    deductionTotal: cpp + incomeTax + pserp + unionDues + ei,
+  });
   return (
-    <View>
+    <View className="p-4 divide-y divide-solid">
       {deductions.map(({ deductionType, deductionTotal }, index) => (
         <DeductionsLine
           deductionType={deductionType}

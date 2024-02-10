@@ -95,10 +95,11 @@ export default function HomeLayout() {
         options={{
           presentation: "modal",
           contentStyle: {
-            marginTop: "80%",
+            marginTop: "90%",
             overflow: "hidden",
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
+            backgroundColor: "white",
           },
         }}
       />
