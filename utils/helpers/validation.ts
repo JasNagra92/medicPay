@@ -23,8 +23,7 @@ export function EmptyShiftTimes(userInfo: IUserInfo) {
   if (
     userInfo.dayShiftStartTime.hours === 0 ||
     userInfo.dayShiftEndTime.hours === 0 ||
-    userInfo.nightShiftStartTime.hours === 0 ||
-    userInfo.nightShiftEndTime.hours === 0
+    userInfo.nightShiftStartTime.hours === 0
   ) {
     return true;
   } else {

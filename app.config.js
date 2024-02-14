@@ -23,6 +23,7 @@ export default {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
+      package: "com.yourcompany.medicPay",
     },
     web: {
       favicon: "./assets/favicon.png",
@@ -36,6 +37,9 @@ export default {
       firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.FIREBASE_APP_ID,
       firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID,
+      eas: {
+        projectId: "86931160-22a8-4971-8b8d-f5c975fc4e69",
+      },
     },
   },
 };

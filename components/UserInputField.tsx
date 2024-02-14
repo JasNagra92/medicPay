@@ -1,18 +1,9 @@
-import React, { useState, RefObject } from "react";
+import React from "react";
 import { View, Text, TextInput } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 
-const UserInputField = ({ inputRef, hourlyWage, setHourlyWage }) => {
-  const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
-
+const UserInputField = ({ inputRef, hourlyWage, setHourlyWage }: any) => {
   const handleChange = (newValue: string) => {
     setHourlyWage(newValue);
-    // const numericInput = newValue.replace(/[^0-9.]/g, "");
-    // if (dispatch) {
-    //   dispatch({ type: "setHourlyWage", payload: numericInput });
-    // }
   };
 
   return (

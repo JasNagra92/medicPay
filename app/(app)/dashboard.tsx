@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
-import { Stack, Link, router, Redirect } from "expo-router";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { Stack, Link } from "expo-router";
+import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUserInfo } from "../../context/userInfoContext";
 import { DateTime } from "luxon";
 import axiosInstance from "../../utils/helpers/axiosInstance";
-
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
@@ -16,15 +15,9 @@ import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
-import { AuthStore } from "../../store";
+import HeaderGear from "../../components/DashboardComponents/HeaderGear";
 
 export default function Dashboard() {
-  // const { initialized, isLoggedIn } = AuthStore.useState();
-
-  // if (initialized && !isLoggedIn) {
-  //   Redirect({ href: "/login" });
-  // }
-
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
@@ -266,14 +259,7 @@ export default function Dashboard() {
           },
           headerBackVisible: false,
           headerRight: () => {
-            return (
-              <MaterialIcons
-                name="settings"
-                onPress={() => router.back()}
-                size={24}
-                color={"white"}
-              />
-            );
+            return <HeaderGear />;
           },
         }}
       />

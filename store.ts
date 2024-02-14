@@ -37,8 +37,10 @@ export const appSignIn = async (email: string, password: string) => {
       store.isLoggedIn = resp.user ? true : false;
     });
     return { user: resp.user };
-  } catch (error) {
-    throw { error };
+  } catch (error: any) {
+    if (error.code === "auth/invalid-email") {
+      throw { message: "Email address is invalid" };
+    }
   }
 };
 
@@ -52,8 +54,8 @@ export const appSignUp = async (email: string, password: string) => {
     });
 
     return { user: auth.currentUser };
-  } catch (error) {
-    throw { error };
+  } catch (error: any) {
+    throw { message: error.code };
   }
 };
 

@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "react-native";
-import MainPageInput from "../components/MainPageInput";
+import MainPageInput from "../components/LoginSignUpInput";
 import { appSignIn } from "../store";
+import Toast from "react-native-toast-message";
 import { useUserInfoDispatch } from "../context/userInfoContext";
 const image = require("../assets/images/bgImage.png");
 
@@ -16,7 +17,7 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const userCredential = await appSignIn(email, password);
-      if (dispatch) {
+      if (dispatch && userCredential) {
         dispatch({
           type: "setUserId",
           payload: userCredential.user?.uid!,
@@ -24,7 +25,12 @@ export default function Login() {
       }
       router.push("/workShift");
     } catch (error: any) {
-      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `${error.message}`,
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -53,12 +59,12 @@ export default function Login() {
         >
           <MainPageInput
             icon="mail"
-            placeholder="email"
+            placeholder="Email"
             handleChange={setEmail}
           />
           <MainPageInput
             icon="lock"
-            placeholder="password"
+            placeholder="Password"
             handleChange={setPassword}
           />
 
@@ -79,6 +85,13 @@ export default function Login() {
                 </Text>
               </TouchableOpacity>
             </Link>
+            {__DEV__ ? (
+              <Link href="/(app)/workShift" asChild>
+                <TouchableOpacity className="p-4 mx-3 rounded-xl flex-1 bg-[#379D9F]">
+                  <Text className="text-white text-center font-bold">Dev</Text>
+                </TouchableOpacity>
+              </Link>
+            ) : null}
           </View>
         </View>
       </SafeAreaView>

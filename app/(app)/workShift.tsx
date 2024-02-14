@@ -5,7 +5,6 @@ import { ImageBackground } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { PaperProvider } from "react-native-paper";
 import { en, registerTranslation } from "react-native-paper-dates";
-import { useUserInfo } from "../../context/userInfoContext";
 registerTranslation("en", en);
 
 const image = require("../../assets/images/bgImage.png");
@@ -21,7 +20,6 @@ export default function WorkShift() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              rowGap: 30,
             }}
           >
             <UserForm />

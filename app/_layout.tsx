@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import { Slot } from "expo-router";
 import { UserInfoProvider } from "../context/userInfoContext";
 import { PayPeriodProvider } from "../context/payPeriodDataContext";

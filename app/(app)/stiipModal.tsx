@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { RadioButton } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
@@ -18,6 +18,7 @@ export default function StiipModal() {
   const [open, setOpen] = React.useState(false);
   const [endTime, setEndTime] = useState("8:30 pm");
   const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>();
+  const [loading, setLoading] = useState(false);
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
@@ -66,6 +67,7 @@ export default function StiipModal() {
   );
 
   const handleSubmitStiip = async () => {
+    setLoading(true);
     if (selected === "wholeShift" && payPeriodDataDispatch) {
       try {
         let response = await axiosInstance.post("/getPayData/addStiip", {
@@ -119,6 +121,7 @@ export default function StiipModal() {
         console.log(error);
       }
     }
+    setLoading(false);
     router.back();
   };
 
@@ -184,7 +187,10 @@ export default function StiipModal() {
           className="p-4 mx-3 rounded-xl flex-1 bg-[#379D9F]"
           onPress={handleSubmitStiip}
         >
-          <Text className="text-white text-center font-bold">Ok</Text>
+          <Text className="text-white text-center font-bold">
+            {" "}
+            {loading ? <ActivityIndicator size={"small"} /> : "OK"}
+          </Text>
         </TouchableOpacity>
       </View>
       <StatusBar style="light" />

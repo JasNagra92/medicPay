@@ -6,6 +6,9 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import UserInputField from "./UserInputField";
@@ -20,17 +23,12 @@ import {
   showErrorToast,
   showWageErrorToast,
 } from "../utils/helpers/validation";
-import DisclaimerModal from "./DisclaimerModal";
 
 export default function UserForm() {
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
   const [hourlyWage, setHourlyWage] = useState(""); // State to hold hourly wage value
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
+  const [loading, setLoading] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
 
@@ -74,11 +72,11 @@ export default function UserForm() {
       return;
     }
     try {
+      setLoading(true);
       let resp = await axiosInstance.post("/users/saveUser", {
         user: userInfo,
       });
-      toggleModal();
-
+      setLoading(false);
       router.push("/(app)/dashboard");
     } catch (error) {
       console.log(error);
@@ -86,7 +84,7 @@ export default function UserForm() {
   };
   return (
     <TouchableWithoutFeedback onPress={handlePressOutside}>
-      <View
+      <KeyboardAvoidingView
         style={{
           shadowColor: "rgba(0, 0, 0, 0.25)",
           shadowOffset: {
@@ -97,32 +95,41 @@ export default function UserForm() {
           shadowOpacity: 1,
           elevation: 10,
         }}
-        className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 pt-3 pb-3 flex flex-col justify-around"
+        className="rounded-2xl bg-white shadow-sm h-5/6 w-5/6 border-0 pb-3 flex flex-col"
+        behavior={`${Platform.OS == "ios" ? "padding" : "height"}`}
       >
-        <UserInputField
-          inputRef={inputRef}
-          hourlyWage={hourlyWage}
-          setHourlyWage={setHourlyWage}
-        />
-        <UserButtonInput
-          text="Shift Pattern"
-          button={{ key1: "Alpha", key2: "Bravo/Charlie" }}
-          extraStyle="px-4"
-        />
-        <UserRadioInput label={"Select Platoon"} />
-        {userInfo?.shiftPattern === "Alpha" ? (
-          <UserRadioInput label={"Select Rotation"} />
-        ) : null}
-        <UserShiftTimeInput text={"Day"} />
-        <UserShiftTimeInput text={"Night"} />
-        <TouchableOpacity
-          className="mx-3 rounded-lg bg-[#379D9F] p-3"
-          onPress={handleSubmit}
+        <View
+          style={{
+            flexGrow: 1,
+            justifyContent: "space-evenly",
+          }}
         >
-          <Text className="font-bold text-white text-center">Submit</Text>
-        </TouchableOpacity>
-        <DisclaimerModal visible={modalVisible} onClose={toggleModal} />
-      </View>
+          <UserInputField
+            inputRef={inputRef}
+            hourlyWage={hourlyWage}
+            setHourlyWage={setHourlyWage}
+          />
+          <UserButtonInput
+            text="Shift Pattern"
+            button={{ key1: "Alpha", key2: "Bravo/Charlie" }}
+            extraStyle="px-4"
+          />
+          <UserRadioInput label={"Select Platoon"} />
+          {userInfo?.shiftPattern === "Alpha" ? (
+            <UserRadioInput label={"Select Rotation"} />
+          ) : null}
+          <UserShiftTimeInput text={"Day"} />
+          <UserShiftTimeInput text={"Night"} />
+          <TouchableOpacity
+            className="mx-3 rounded-lg bg-[#379D9F] p-3"
+            onPress={handleSubmit}
+          >
+            <Text className="font-bold text-white text-center">
+              {loading ? <ActivityIndicator size={"small"} /> : "Submit"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }

@@ -22,8 +22,8 @@ const DisclaimerModal = ({ visible, onClose }) => {
         >
           <Text style={{ fontSize: 18, marginBottom: 10 }}>Disclaimer</Text>
           <Text>
-            This is a disclaimer message. Pay cheque estimates are just
-            estimates and may have errors.
+            Pay cheque estimates are just estimates and accuracy is not
+            guaranteed
           </Text>
           <TouchableOpacity onPress={onClose} style={{ marginTop: 20 }}>
             <Text style={{ color: "blue", fontSize: 16 }}>Close</Text>

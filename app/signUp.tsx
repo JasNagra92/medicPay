@@ -3,11 +3,12 @@ import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "react-native";
 import { useState } from "react";
-import MainPageInput from "../components/MainPageInput";
+import MainPageInput from "../components/LoginSignUpInput";
 const image = require("../assets/images/bgImage.png");
 import { useUserInfoDispatch } from "../context/userInfoContext";
 import { router } from "expo-router";
 import { appSignUp } from "../store";
+import Toast from "react-native-toast-message";
 
 export default function HomePage() {
   const dispatchUserInfo = useUserInfoDispatch();
@@ -26,8 +27,13 @@ export default function HomePage() {
       }
 
       router.push("/workShift");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `${error.message}`,
+        visibilityTime: 3000,
+      });
     }
   };
 
@@ -50,17 +56,20 @@ export default function HomePage() {
         >
           <MainPageInput
             icon="mail"
-            placeholder="email"
+            placeholder="Email"
             handleChange={setEmail}
           />
           <MainPageInput
             icon="lock"
-            placeholder="password"
+            placeholder="Password"
             handleChange={setPassword}
           />
 
           <View className="flex flex-row justify-center p-3">
-            <TouchableOpacity className="p-4 mx-3 rounded-xl flex-1 bg-[#c6e4e5]">
+            <TouchableOpacity
+              className="p-4 mx-3 rounded-xl flex-1 bg-[#c6e4e5]"
+              onPress={() => router.back()}
+            >
               <Text className="text-[#379D9F] text-center font-bold">
                 Cancel
               </Text>

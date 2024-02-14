@@ -30,7 +30,9 @@ const app = initializeApp(firebaseConfig);
 let auth: Auth;
 if (__DEV__) {
   // Configure Firebase Auth for Emulator Suite
-  auth = getAuth(app);
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
   connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
 } else {
   // For production or non-development environments

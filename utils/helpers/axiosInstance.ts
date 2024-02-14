@@ -1,9 +1,14 @@
 // axiosInstance.js
 import axios from "axios";
+import { Platform } from "react-native";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8000",
-  timeout: 10000,
+  baseURL: __DEV__
+    ? Platform.OS === "android"
+      ? "http://10.0.2.2:8000"
+      : "http://localhost:8000"
+    : "https://medic-pay-backend-743722187410.herokuapp.com/",
+  timeout: 60000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

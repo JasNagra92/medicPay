@@ -13,18 +13,19 @@ export default function MainPageInput({
 }) {
   return (
     <View>
-      <Text className=" font-bold pl-5 pb-2 text-lg">{placeholder}</Text>
+      <Text className=" font-bold pl-5 pb-2 text-md">{placeholder}</Text>
       <View className="flex flex-row" style={{ alignItems: "center" }}>
         <MaterialIcons
           style={{ position: "absolute", left: 25 }}
           name={icon as any}
           size={24}
-          color="black"
+          color={"#c6e4e5"}
         />
         <TextInput
           className="flex-1 border rounded mx-5 py-2 pl-9 text-gray-700   focus:border-dotted focus:border-blue-500"
           placeholder={placeholder}
           onChangeText={handleChange}
+          secureTextEntry={placeholder === "Password" ? true : false}
         />
       </View>
     </View>

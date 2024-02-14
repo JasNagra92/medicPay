@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
-import { useUserInfoDispatch } from "../context/userInfoContext";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 
 import DropDownPicker from "react-native-dropdown-picker";
 
@@ -10,6 +10,7 @@ interface IUserShiftTimeInputProps {
 
 export default function UserShiftTimeInput({ text }: IUserShiftTimeInputProps) {
   const dispatch = useUserInfoDispatch();
+  const userInfo = useUserInfo();
   const [openStartTime, setOpenStartTime] = useState(false);
   const [openEndTime, setOpenEndTime] = useState(false);
   const [dayShiftStartValue, setDayShiftStartValue] = useState(0);
@@ -102,47 +103,91 @@ export default function UserShiftTimeInput({ text }: IUserShiftTimeInputProps) {
     }
   }, [nightShiftEndValue]);
 
+  useEffect(() => {
+    if (userInfo?.shiftPattern === "Alpha") {
+      setDayShiftStartTimes([
+        { label: "0600", value: 600 },
+        { label: "0630", value: 630 },
+        { label: "0700", value: 700 },
+      ]);
+      setDayShiftEndTimes([
+        { label: "1800", value: 1800 },
+        { label: "1830", value: 1830 },
+        { label: "1900", value: 1900 },
+      ]);
+      setNightShiftStartTimes([
+        { label: "1800", value: 1800 },
+        { label: "1830", value: 1830 },
+        { label: "1900", value: 1900 },
+      ]);
+      setNightShiftEndTimes([
+        { label: "0600", value: 600 },
+        { label: "0630", value: 630 },
+        { label: "0700", value: 700 },
+      ]);
+    } else if (userInfo?.shiftPattern === "Bravo/Charlie") {
+      setDayShiftStartTimes([
+        { label: "0700", value: 700 },
+        { label: "0900", value: 900 },
+        { label: "1000", value: 1000 },
+      ]);
+      setDayShiftEndTimes([
+        { label: "1800", value: 1800 },
+        { label: "2000", value: 2000 },
+        { label: "2100", value: 2100 },
+      ]);
+      setNightShiftStartTimes([
+        { label: "1300", value: 1300 },
+        { label: "1400", value: 1400 },
+        { label: "1500", value: 1500 },
+      ]);
+      setNightShiftEndTimes([
+        { label: "0000", value: 0 },
+        { label: "0100", value: 100 },
+        { label: "0200", value: 200 },
+      ]);
+    }
+  }, [userInfo?.shiftPattern]);
+
   return (
     <View className="flex flex-col">
       <Text className="font-bold ml-3 mb-1">{`${text} Shift Hours`}</Text>
-      <View className="flex flex-row">
-        <View className="flex flex-row ml-3 mr-1">
-          <DropDownPicker
-            open={openStartTime}
-            value={text === "Day" ? dayShiftStartValue : nightShiftStartValue}
-            items={text === "Day" ? dayShiftStartTimes : nightShiftStartTimes}
-            setOpen={setOpenStartTime}
-            setValue={
-              text === "Day" ? setDayShiftStartValue : setNightShiftStartValue
-            }
-            setItems={
-              text === "Day" ? setDayShiftStartTimes : setNightShiftStartTimes
-            }
-            containerStyle={{
-              width: 150,
-            }}
-            dropDownDirection="TOP"
-            placeholder="Start Time"
-          />
-        </View>
+      <View className="flex flex-row justify-center">
+        <DropDownPicker
+          open={openStartTime}
+          value={text === "Day" ? dayShiftStartValue : nightShiftStartValue}
+          items={text === "Day" ? dayShiftStartTimes : nightShiftStartTimes}
+          setOpen={setOpenStartTime}
+          setValue={
+            text === "Day" ? setDayShiftStartValue : setNightShiftStartValue
+          }
+          setItems={
+            text === "Day" ? setDayShiftStartTimes : setNightShiftStartTimes
+          }
+          dropDownDirection="TOP"
+          placeholder="Start Time"
+          containerStyle={{
+            width: 150,
+          }}
+        />
 
-        <View className="flex flex-row">
-          <DropDownPicker
-            open={openEndTime}
-            value={text === "Day" ? dayShiftEndValue : nightShiftEndValue}
-            items={text === "Day" ? dayShiftEndTimes : nightShiftEndTimes}
-            setOpen={setOpenEndTime}
-            setValue={
-              text === "Day" ? setDayShiftEndValue : setNightShiftEndValue
-            }
-            setItems={
-              text === "Day" ? setDayShiftEndTimes : setNightShiftEndTimes
-            }
-            containerStyle={{ width: 150 }}
-            placeholder="End Time"
-            dropDownDirection="TOP"
-          />
-        </View>
+        <DropDownPicker
+          open={openEndTime}
+          value={text === "Day" ? dayShiftEndValue : nightShiftEndValue}
+          items={text === "Day" ? dayShiftEndTimes : nightShiftEndTimes}
+          setOpen={setOpenEndTime}
+          setValue={
+            text === "Day" ? setDayShiftEndValue : setNightShiftEndValue
+          }
+          setItems={
+            text === "Day" ? setDayShiftEndTimes : setNightShiftEndTimes
+          }
+          placeholder="End Time"
+          dropDownDirection="TOP"
+          containerStyle={{
+            width: 150,
+          }}
+        />
       </View>
     </View>
   );

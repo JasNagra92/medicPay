@@ -1,20 +1,23 @@
 import { Link, Redirect } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "react-native";
 import { AuthStore } from "../../store";
+import { router } from "expo-router";
 const image = require("../../assets/images/bgImage.png");
 
 export default function HomePage() {
-  // const { initialized, isLoggedIn, user } = AuthStore.useState();
+  const { initialized, isLoggedIn, user } = AuthStore.useState();
 
-  // if (initialized && !isLoggedIn) {
-  //   Redirect({ href: "/login" });
-  // }
-  // if (initialized && isLoggedIn) {
-  //   Redirect({ href: "/(app)/dashboard" });
-  // }
+  // useEffect(() => {
+  //   if (initialized && !isLoggedIn) {
+  //     router.replace("/login");
+  //   }
+  //   if (initialized && isLoggedIn) {
+  //     router.replace("/(app)/dashboard");
+  //   }
+  // }, [initialized, isLoggedIn]);
 
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
@@ -33,7 +36,7 @@ export default function HomePage() {
           }}
           className="rounded-2xl bg-white shadow-sm w-5/6 border-0 pt-3 pb-3 flex flex-col justify-center mt-10"
         >
-          <Link href="/workShift" asChild>
+          <Link href="/profile" asChild>
             <TouchableOpacity>
               <Text>Press me</Text>
             </TouchableOpacity>

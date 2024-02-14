@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { RadioButton } from "react-native-paper";
 import { StatusBar } from "expo-status-bar";
@@ -19,6 +19,7 @@ export default function OvertimeModal() {
   const [startOrEndTime, setStartOrEndTime] = useState("");
   const [open, setOpen] = useState(false);
   const [updatedShiftEnd, setUpdatedShiftEnd] = useState<Date>();
+  const [loading, setLoading] = useState(false);
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
   const payPeriodDataDispatch = usePayPeriodDispatch();
@@ -99,6 +100,7 @@ export default function OvertimeModal() {
       alert("must select times");
       return;
     }
+    setLoading(true);
     if (selected === "End of Shift OT" && payPeriodDataDispatch) {
       try {
         let response = await axiosInstance.post("/getPayData/addOvertime", {
@@ -189,6 +191,7 @@ export default function OvertimeModal() {
         },
       });
     }
+    setLoading(false);
     router.back();
   };
 
@@ -333,7 +336,9 @@ export default function OvertimeModal() {
           className="p-4 mx-3 rounded-xl flex-1 bg-[#379D9F]"
           onPress={handleSubmitOT}
         >
-          <Text className="text-white text-center font-bold">Ok</Text>
+          <Text className="text-white text-center font-bold">
+            {loading ? <ActivityIndicator size={"small"} /> : "OK"}
+          </Text>
         </TouchableOpacity>
       </View>
       <TimePickerModal

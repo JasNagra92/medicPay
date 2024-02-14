@@ -1,7 +1,6 @@
-import { Stack } from "expo-router";
-import { UserInfoProvider } from "../../context/userInfoContext";
-import { PayPeriodProvider } from "../../context/payPeriodDataContext";
+import { Stack, router } from "expo-router";
 import { OpenSans_800ExtraBold, useFonts } from "@expo-google-fonts/open-sans";
+import { Button } from "react-native-paper";
 
 export default function HomeLayout() {
   let [fontsLoaded, fontError] = useFonts({
@@ -42,6 +41,7 @@ export default function HomeLayout() {
             color: "white",
           },
           headerTransparent: true,
+          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -58,6 +58,18 @@ export default function HomeLayout() {
           headerShown: true,
           headerTitle: "",
           headerTransparent: true,
+          headerLeft: () => {
+            return (
+              <Button
+                icon={"arrow-left"}
+                textColor="white"
+                onPress={() => router.back()}
+              >
+                {" "}
+                Back{" "}
+              </Button>
+            );
+          },
         }}
       />
       <Stack.Screen
@@ -103,6 +115,7 @@ export default function HomeLayout() {
           },
         }}
       />
+      <Stack.Screen name="profile" />
     </Stack>
   );
 }

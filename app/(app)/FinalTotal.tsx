@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, router } from "expo-router";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { ImageBackground, View, Text, TouchableOpacity } from "react-native";
 import { useUserInfo } from "../../context/userInfoContext";
 import TotalLine from "../../components/FinalTotalComponents/TotalLine";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { usePayPeriod } from "../../context/payPeriodDataContext";
+import DisclaimerModal from "../../components/DisclaimerModal";
 
 const image = require("../../assets/images/bgImage.png");
 
@@ -17,6 +18,11 @@ export default function FinalTotal() {
   const payPeriod = usePayPeriod();
   // variable to decide between rendering gross or netpay
   const [display, setDisplay] = useState("net");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   const { cpp, incomeTax, pserp, unionDues, ei } =
     payPeriod![parseInt(indexInMonth as string)];
@@ -195,6 +201,10 @@ export default function FinalTotal() {
     });
   };
 
+  useEffect(() => {
+    toggleModal();
+  }, []);
+
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>
       <SafeAreaView
@@ -294,6 +304,7 @@ export default function FinalTotal() {
             </View>
           </TouchableOpacity>
         </View>
+        <DisclaimerModal visible={modalVisible} onClose={toggleModal} />
       </SafeAreaView>
     </ImageBackground>
   );
