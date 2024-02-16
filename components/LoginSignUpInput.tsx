@@ -12,18 +12,20 @@ export default function MainPageInput({
   handleChange: Dispatch<SetStateAction<string>>;
 }) {
   return (
-    <View>
-      <Text className=" font-bold pl-5 pb-2 text-md">{placeholder}</Text>
+    <View className="mb-3">
+      <Text className=" font-bold pl-5 pb-2 text-lg">{placeholder} *</Text>
       <View className="flex flex-row" style={{ alignItems: "center" }}>
         <MaterialIcons
-          style={{ position: "absolute", left: 25 }}
+          style={{ position: "absolute", right: 35 }}
           name={icon as any}
           size={24}
-          color={"#c6e4e5"}
+          color={"black"}
         />
         <TextInput
-          className="flex-1 border rounded mx-5 py-2 pl-9 text-gray-700   focus:border-dotted focus:border-blue-500"
-          placeholder={placeholder}
+          className="flex-1 border rounded mx-5 p-4 pl-3 text-gray-700   focus:border-dotted focus:border-blue-500"
+          placeholder={
+            placeholder === "Email" ? `Enter your ${placeholder}` : "*****"
+          }
           onChangeText={handleChange}
           secureTextEntry={placeholder === "Password" ? true : false}
         />

@@ -5,6 +5,7 @@ import {
   useUserInfo,
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface IMonthDisplayProps {
   monthAndYear: string;
@@ -13,6 +14,14 @@ interface IMonthDisplayProps {
 export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
+
+  const storeMonthAndYearData = async (value: string) => {
+    try {
+      await AsyncStorage.setItem("monthAndYear", value);
+    } catch (e) {
+      console.log("error storing month and year in storage");
+    }
+  };
   return (
     <TouchableOpacity
       style={{
@@ -32,6 +41,7 @@ export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
             type: "setPayMonthAndYearToDisplay",
             payload: monthAndYear,
           });
+          storeMonthAndYearData(monthAndYear);
           router.back();
         }
       }}

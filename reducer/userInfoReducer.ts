@@ -5,6 +5,42 @@ export default function userInfoReducer(
   action: UserInfoAction
 ) {
   switch (action.type) {
+    case "setUser":
+      // Update multiple properties of the draft object
+      const { payload } = action;
+      // Destructure payload and assign to draft
+      const {
+        id,
+        email,
+        shiftPattern,
+        platoon,
+        dayShiftStartTime,
+        dayShiftEndTime,
+        nightShiftStartTime,
+        nightShiftEndTime,
+        rotation,
+        hourlyWage,
+        payDayToDisplay,
+        payMonthAndYearToDisplay,
+      } = payload;
+      Object.assign(draft, {
+        id,
+        email,
+        shiftPattern,
+        platoon,
+        dayShiftStartTime,
+        dayShiftEndTime,
+        nightShiftStartTime,
+        nightShiftEndTime,
+        rotation,
+        hourlyWage,
+        payDayToDisplay,
+        payMonthAndYearToDisplay,
+      });
+      break;
+    case "setEmail":
+      draft.email = action.payload;
+      break;
     case "setHourlyWage":
       draft.hourlyWage = action.payload;
       break;

@@ -5,11 +5,15 @@ import { ImageBackground } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { PaperProvider } from "react-native-paper";
 import { en, registerTranslation } from "react-native-paper-dates";
+import { useLocalSearchParams } from "expo-router";
 registerTranslation("en", en);
 
 const image = require("../../assets/images/bgImage.png");
 
 export default function WorkShift() {
+  const { isEditing } = useLocalSearchParams();
+  const isEditingBoolean =
+    typeof isEditing === "string" ? isEditing === "true" : !!isEditing;
   return (
     <SafeAreaProvider>
       <PaperProvider>
@@ -22,7 +26,7 @@ export default function WorkShift() {
               justifyContent: "center",
             }}
           >
-            <UserForm />
+            <UserForm isEditing={isEditingBoolean} />
             <StatusBar style="auto" />
           </SafeAreaView>
         </ImageBackground>

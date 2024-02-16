@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
 import { format } from "date-fns";
-import { Stack, Link } from "expo-router";
+import { Stack, Link, useFocusEffect } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserInfo } from "../../context/userInfoContext";
+import {
+  useUserInfo,
+  useUserInfoDispatch,
+} from "../../context/userInfoContext";
 import { DateTime } from "luxon";
-import axiosInstance from "../../utils/helpers/axiosInstance";
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
-import { IUserInfo } from "../../interfaces/IAppState";
 import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
 import HeaderGear from "../../components/DashboardComponents/HeaderGear";
+import getPayDaysFromServer, {
+  getDeductionsFromServer,
+} from "../../utils/helpers/serverCalls";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Dashboard() {
   const [grossIncome, setGrossIncome] = useState(0);
@@ -26,85 +31,41 @@ export default function Dashboard() {
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
+  const userInfoDispatch = useUserInfoDispatch();
   const payPeriodDispatch = usePayPeriodDispatch();
 
-  const getPayDaysFromServer = async (
-    userInfo: IUserInfo,
-    month: number,
-    year: number
-  ) => {
+  const getMonthAndyearData = async () => {
     try {
-      // get the paydays for the current month and year and set them in state for the buttons to display correctly
-      let response = await axiosInstance.post("/getPayData", {
-        userInfo,
-        month,
-        year,
-      });
-      if (payPeriodDispatch) {
-        payPeriodDispatch({
-          type: "setPayPeriod",
-          payload: response.data.data,
-        });
-        setPayDay(response.data.data[0].payDay);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getDeductionsFromServer = async (
-    gross: number,
-    incomeLessLevelling: number,
-    stiipHours: number,
-    OTOnePointFive: number,
-    OTDoubleTime: number,
-    OTStatReg: number,
-    OTSuperStat: number
-  ) => {
-    try {
-      let response = await axiosInstance.post("/getDeductions", {
-        userInfo,
-        grossIncome: gross,
-        stiipHours,
-        incomeLessLevelling,
-        OTOnePointFiveAmount:
-          OTOnePointFive * (parseFloat(userInfo?.hourlyWage!) * 1.5),
-        OTDoubleTimeAmount:
-          OTDoubleTime * (parseFloat(userInfo?.hourlyWage!) * 2.0),
-        payDay: DateTime.fromISO(payPeriod![indexInMonth].payDay).toISODate(),
-        OTStatReg,
-        OTSuperStat,
-      });
-      const { ei, incomeTax, cpp, pserp, unionDues, netIncome } =
-        response.data.data;
-
-      if (payPeriodDispatch) {
-        payPeriodDispatch({
-          type: "updateDeductions",
-          payload: {
-            indexInMonth,
-            ei,
-            incomeTax,
-            cpp,
-            pserp,
-            unionDues,
-            netIncome,
-          },
+      const value = await AsyncStorage.getItem("monthAndYear");
+      if (value !== null && userInfoDispatch) {
+        userInfoDispatch({
+          type: "setPayMonthAndYearToDisplay",
+          payload: value,
         });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log("error reading month and year from storage");
     }
   };
 
   // hook to make api call and fetch current months pay data for user
   useEffect(() => {
-    if (userInfo && payPeriodDispatch) {
-      const today = DateTime.now();
+    const fetchData = () => {
+      if (userInfo && payPeriodDispatch) {
+        const today = DateTime.now();
+        getPayDaysFromServer(
+          userInfo,
+          today.month,
+          today.year,
+          payPeriodDispatch
+        );
+      }
+    };
 
-      getPayDaysFromServer(userInfo, today.month, today.year);
-    }
-  }, []);
+    // get the paydays and also get the last month and year that was displayed and update it
+    fetchData();
+    getMonthAndyearData();
+  }, [userInfo?.hourlyWage]); // Hourly wage only changes if user edits their data through the profile link
 
   // hook to update the gross income and the net income whenever the payday data in context changes
   useEffect(() => {
@@ -213,7 +174,11 @@ export default function Dashboard() {
         OTOnePointFive,
         OTDoubleTime,
         OTStatReg,
-        OTSuperStat
+        OTSuperStat,
+        userInfo!,
+        payPeriod,
+        indexInMonth,
+        payPeriodDispatch!
       );
     }
   }, [payDay, payPeriod![indexInMonth].workDaysInPayPeriod]);
@@ -241,10 +206,25 @@ export default function Dashboard() {
       const monthNumber = monthNames.indexOf(requestedMonthName!) + 1;
       const requestedYear = userInfo.payMonthAndYearToDisplay?.split(" ")[1];
 
-      getPayDaysFromServer(userInfo, monthNumber, parseInt(requestedYear!));
+      getPayDaysFromServer(
+        userInfo,
+        monthNumber,
+        parseInt(requestedYear!),
+        payPeriodDispatch
+      );
       setIndexInMonth(0);
     }
   }, [userInfo?.payMonthAndYearToDisplay]);
+
+  useEffect(() => {
+    if (payPeriod![indexInMonth].payDay !== payDay) {
+      setPayDay(payPeriod![0].payDay);
+    }
+  }, [payPeriod]);
+
+  useEffect(() => {
+    getMonthAndyearData();
+  }, []);
 
   return (
     <SafeAreaView

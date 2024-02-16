@@ -10,14 +10,14 @@ const image = require("../../assets/images/bgImage.png");
 export default function HomePage() {
   const { initialized, isLoggedIn, user } = AuthStore.useState();
 
-  // useEffect(() => {
-  //   if (initialized && !isLoggedIn) {
-  //     router.replace("/login");
-  //   }
-  //   if (initialized && isLoggedIn) {
-  //     router.replace("/(app)/dashboard");
-  //   }
-  // }, [initialized, isLoggedIn]);
+  useEffect(() => {
+    if (initialized && !isLoggedIn) {
+      router.replace("/homeScreen");
+    }
+    if (initialized && isLoggedIn) {
+      router.replace("/(app)/dashboard");
+    }
+  }, [initialized, isLoggedIn]);
 
   return (
     <ImageBackground source={image} style={{ flex: 1 }}>

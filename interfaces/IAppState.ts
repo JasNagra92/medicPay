@@ -34,6 +34,7 @@ export interface IPayPeriodData {
   pserp: number;
   unionDues: number;
   netIncome: number;
+  [key: string]: any;
 }
 
 export interface IUserInfo {
@@ -53,6 +54,7 @@ export interface IUserInfo {
 
 export type UserInfoAction =
   | { type: "setHourlyWage"; payload: string }
+  | { type: "setEmail"; payload: string }
   | { type: "setUserId"; payload: string }
   | { type: "setPaydayToDisplay"; payload: string }
   | { type: "setPayMonthAndYearToDisplay"; payload: string }
@@ -62,7 +64,8 @@ export type UserInfoAction =
   | { type: "setDayShiftStart"; payload: IShiftTime }
   | { type: "setDayShiftEnd"; payload: IShiftTime }
   | { type: "setNightShiftStart"; payload: IShiftTime }
-  | { type: "setNightShiftEnd"; payload: IShiftTime };
+  | { type: "setNightShiftEnd"; payload: IShiftTime }
+  | { type: "setUser"; payload: IUserInfo };
 
 export type PayPeriodAction =
   | {

@@ -87,10 +87,10 @@ export default function DaySummary({
           </Text>
           <Text className="flex-1 text-right">
             {" "}
-            ${baseWageEarnings.toFixed(2)}
+            ${baseWageEarnings && baseWageEarnings.toFixed(2)}
           </Text>
         </View>
-        {alphaNightsEarnings > 0 ? (
+        {alphaNightsEarnings && alphaNightsEarnings > 0 ? (
           <View className="flex flex-row px-3">
             <Text className="opacity-30 flex-1">Alpha P</Text>
             <Text className="flex-2">

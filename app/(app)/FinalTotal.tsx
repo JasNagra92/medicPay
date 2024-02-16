@@ -7,8 +7,12 @@ import { useUserInfo } from "../../context/userInfoContext";
 import TotalLine from "../../components/FinalTotalComponents/TotalLine";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
-import { usePayPeriod } from "../../context/payPeriodDataContext";
+import {
+  usePayPeriod,
+  usePayPeriodDispatch,
+} from "../../context/payPeriodDataContext";
 import DisclaimerModal from "../../components/DisclaimerModal";
+import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
 
 const image = require("../../assets/images/bgImage.png");
 
@@ -16,6 +20,7 @@ export default function FinalTotal() {
   const { indexInMonth } = useLocalSearchParams();
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
+  const payPeriodDispatch = usePayPeriodDispatch();
   // variable to decide between rendering gross or netpay
   const [display, setDisplay] = useState("net");
   const [modalVisible, setModalVisible] = useState(false);
@@ -298,8 +303,8 @@ export default function FinalTotal() {
               <Text className="text-3xl font-extrabold">
                 $
                 {display === "net"
-                  ? netIncome.toFixed(2)
-                  : biWeeklyEarnings.toFixed(2)}
+                  ? netIncome && netIncome.toFixed(2)
+                  : biWeeklyEarnings && biWeeklyEarnings.toFixed(2)}
               </Text>
             </View>
           </TouchableOpacity>

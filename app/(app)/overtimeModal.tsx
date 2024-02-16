@@ -96,7 +96,7 @@ export default function OvertimeModal() {
 
   const handleSubmitOT = async () => {
     let data = [];
-    if (!updatedShiftEnd && !startTime) {
+    if (!updatedShiftEnd || !startTime) {
       alert("must select times");
       return;
     }

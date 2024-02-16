@@ -38,9 +38,7 @@ export const appSignIn = async (email: string, password: string) => {
     });
     return { user: resp.user };
   } catch (error: any) {
-    if (error.code === "auth/invalid-email") {
-      throw { message: "Email address is invalid" };
-    }
+    throw new Error(error.message);
   }
 };
 
@@ -55,7 +53,7 @@ export const appSignUp = async (email: string, password: string) => {
 
     return { user: auth.currentUser };
   } catch (error: any) {
-    throw { message: error.code };
+    throw new Error(error.message);
   }
 };
 

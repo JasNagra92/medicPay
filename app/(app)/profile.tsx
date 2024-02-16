@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ScrollView,
   View,
@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button, Icon } from "react-native-paper";
 import { appSignOut } from "../../store";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
 import { Stack } from "expo-router";
 import axiosInstance from "../../utils/helpers/axiosInstance";
@@ -24,17 +24,27 @@ export default function Profile() {
   const userInfo = useUserInfo();
   const [YTDEarnings, setYTDEarnings] = useState("");
   const [totalSickHours, setTotalSickHours] = useState("");
+  const [OTHours, setOTHours] = useState("");
+  const [lateCallhours, setLateCallHours] = useState("");
+
+  const [recallHours, setRecallHours] = useState("");
+
   const [dataForTable, setDataForTable] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
 
   const signOut = async () => {
     try {
       await appSignOut();
-      router.push("/login");
+      router.push("/homeScreen");
     } catch (error: any) {
       console.log(error);
     }
   };
+
+  const hourlyWage = parseFloat(userInfo?.hourlyWage || "0");
+  const sickHours = parseFloat(totalSickHours || "0");
+
+  const wagesLost = sickHours * hourlyWage * 0.25;
 
   const data = {
     labels: [
@@ -63,8 +73,7 @@ export default function Profile() {
       let response = await axiosInstance.post("/getDeductions/getYTD", {
         userInfo,
       });
-      let { months, YTDIncome } = response.data;
-      setYTDEarnings(YTDIncome);
+      let { months } = response.data;
 
       const monthlyIncome: number[] = new Array(12).fill(0);
 
@@ -81,6 +90,9 @@ export default function Profile() {
         sum += monthlyIncome[i]; // Add the current value to the sum
         cumulativeSumResult.push(parseFloat(sum.toFixed(2))); // Push the updated sum to the result array
       }
+      setYTDEarnings(
+        cumulativeSumResult[cumulativeSumResult.length - 1].toFixed(2)
+      );
       setDataForTable(cumulativeSumResult);
     } catch (error) {
       console.log(error);
@@ -92,22 +104,37 @@ export default function Profile() {
       let response = await axiosInstance.post("/getDeductions/getSickHours", {
         userInfo,
       });
-      let { totalHours } = response.data.totalHours;
+      let { totalHours } = response.data;
       setTotalSickHours(totalHours);
     } catch (error) {
       console.log(error);
     }
   };
+  const getOTHours = async () => {
+    try {
+      let response = await axiosInstance.post("/getDeductions/getOTHours", {
+        userInfo,
+      });
+      let { totalOTHours, totalRecallHours, totalLateCallHours } =
+        response.data.data;
+      setOTHours(totalOTHours);
+      setRecallHours(totalRecallHours);
+      setLateCallHours(totalLateCallHours);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const hourlyWage = parseFloat(userInfo?.hourlyWage || "0");
-  const sickHours = parseFloat(totalSickHours || "0");
-
-  const wagesLost = sickHours * hourlyWage * 0.25;
-
-  useEffect(() => {
-    getYTD();
-    getSickHours();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        await getYTD();
+        await getSickHours();
+        await getOTHours();
+      };
+      fetchData();
+    }, [])
+  );
 
   const chartConfig = {
     color: () => `rgba(1, 1, 1, 1)`,
@@ -163,7 +190,9 @@ export default function Profile() {
             }}
           >
             <View className="w-5/6">
-              <Text className="text-2xl text-center">At A Glance</Text>
+              <Text className="text-2xl text-center">
+                Profile - {userInfo?.email}
+              </Text>
               <View
                 className="flex flex-row items-center bg-white rounded-md p-3 my-2 shadow-lg"
                 style={shadowStyle}
@@ -209,8 +238,63 @@ export default function Profile() {
                   <Icon source={"clock-plus"} size={40} color="green" />
                 </View>
                 <View className="flex flex-col">
-                  <Text>Overtime Hours</Text>
-                  <Text className="text-lg">90 Hours</Text>
+                  <Text>Regular OT Hours</Text>
+                  <Text className="text-lg">{OTHours} Hours</Text>
+                  <Text className="text-md text-green-600">
+                    OT Earnings{" "}
+                    {(
+                      parseFloat(OTHours) *
+                      (parseFloat(userInfo?.hourlyWage!) * 1.5)
+                    ).toLocaleString("en-us", {
+                      currency: "USD",
+                      style: "currency",
+                    })}
+                  </Text>
+                </View>
+              </View>
+              <View
+                className="flex flex-row items-center bg-white rounded-md p-3 my-2 shadow-lg"
+                style={shadowStyle}
+              >
+                <View className="p-1 bg-gray-300 rounded-md mr-3">
+                  <Icon source={"clock-plus"} size={40} color="green" />
+                </View>
+                <View className="flex flex-col">
+                  <Text>Recall Hours</Text>
+                  <Text className="text-lg">{recallHours} Hours</Text>
+                  <Text className="text-md text-green-600">
+                    Holiday Recall Earnings{" "}
+                    {(
+                      parseFloat(recallHours) *
+                      (parseFloat(userInfo?.hourlyWage!) * 2.0)
+                    ).toLocaleString("en-us", {
+                      currency: "USD",
+                      style: "currency",
+                    })}
+                  </Text>
+                </View>
+              </View>
+              <View
+                className="flex flex-row items-center bg-white rounded-md p-3 my-2 shadow-lg"
+                style={shadowStyle}
+              >
+                <View className="p-1 bg-gray-300 rounded-md mr-3">
+                  <Icon source={"clock-plus"} size={40} color="green" />
+                </View>
+                <View className="flex flex-col">
+                  <Text>Late Call Hours</Text>
+                  <Text className="text-lg">{lateCallhours} Hours</Text>
+                  <Text className="text-md text-green-600">
+                    Late Call Earnings{" "}
+                    {(
+                      parseFloat(lateCallhours) *
+                      (parseFloat(userInfo?.hourlyWage!) *
+                        (userInfo?.shiftPattern === "Alpha" ? 2.0 : 1.5))
+                    ).toLocaleString("en-us", {
+                      currency: "USD",
+                      style: "currency",
+                    })}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -234,7 +318,12 @@ export default function Profile() {
               <Button
                 icon="account-edit"
                 mode="elevated"
-                onPress={() => router.push("/workShift")}
+                onPress={() =>
+                  router.push({
+                    pathname: "/workShift",
+                    params: { isEditing: true },
+                  })
+                }
                 textColor="black"
               >
                 Edit Info

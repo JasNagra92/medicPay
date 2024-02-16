@@ -23,9 +23,13 @@ import {
   showErrorToast,
   showWageErrorToast,
 } from "../utils/helpers/validation";
+import { DateTime } from "luxon";
+import getPayDaysFromServer from "../utils/helpers/serverCalls";
+import { usePayPeriodDispatch } from "../context/payPeriodDataContext";
 
-export default function UserForm() {
+export default function UserForm({ isEditing }: { isEditing: boolean }) {
   const userInfo = useUserInfo();
+  const payPeriodDispatch = usePayPeriodDispatch();
   const dispatch = useUserInfoDispatch();
   const [hourlyWage, setHourlyWage] = useState(""); // State to hold hourly wage value
   const [loading, setLoading] = useState(false);
@@ -55,7 +59,6 @@ export default function UserForm() {
       // You can handle invalid input here, for example, show an error message
       showWageErrorToast();
       return;
-      3;
     }
     if (EmptyShiftTimes(userInfo!)) {
       showErrorToast("Shift Times");
@@ -74,8 +77,18 @@ export default function UserForm() {
     try {
       setLoading(true);
       let resp = await axiosInstance.post("/users/saveUser", {
-        user: userInfo,
+        user: { ...userInfo, hourlyWage },
       });
+      if (isEditing) {
+        let response = await axiosInstance.post(
+          "/getDeductions/resetDeductions",
+          {
+            userInfo: { ...userInfo, hourlyWage },
+          }
+        );
+        console.log(response.data);
+      }
+
       setLoading(false);
       router.push("/(app)/dashboard");
     } catch (error) {
