@@ -6,6 +6,9 @@ import {
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { usePayPeriodDispatch } from "../../context/payPeriodDataContext";
+import getPayDaysFromServer from "../../utils/helpers/serverCalls";
+import { monthNames } from "../../utils/helpers/constants";
 
 interface IMonthDisplayProps {
   monthAndYear: string;
@@ -14,6 +17,11 @@ interface IMonthDisplayProps {
 export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
   const userInfo = useUserInfo();
   const dispatch = useUserInfoDispatch();
+  const payPeriodDispatch = usePayPeriodDispatch();
+
+  const requestedMonthName = monthAndYear.split(" ")[0];
+  const monthNumber = monthNames.indexOf(requestedMonthName!) + 1;
+  const requestedYear = monthAndYear.split(" ")[1];
 
   const storeMonthAndYearData = async (value: string) => {
     try {
@@ -36,6 +44,12 @@ export default function MonthDisplay({ monthAndYear }: IMonthDisplayProps) {
       }}
       className="rounded-2xl bg-white border-0 p-4 w-5/6"
       onPress={() => {
+        getPayDaysFromServer(
+          userInfo!,
+          monthNumber,
+          parseInt(requestedYear!),
+          payPeriodDispatch!
+        );
         if (dispatch) {
           dispatch({
             type: "setPayMonthAndYearToDisplay",

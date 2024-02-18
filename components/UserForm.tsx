@@ -26,9 +26,12 @@ import {
 import { DateTime } from "luxon";
 import getPayDaysFromServer from "../utils/helpers/serverCalls";
 import { usePayPeriodDispatch } from "../context/payPeriodDataContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { monthNames } from "../utils/helpers/constants";
 
 export default function UserForm({ isEditing }: { isEditing: boolean }) {
   const userInfo = useUserInfo();
+  const userInfoDispatch = useUserInfoDispatch();
   const payPeriodDispatch = usePayPeriodDispatch();
   const dispatch = useUserInfoDispatch();
   const [hourlyWage, setHourlyWage] = useState(""); // State to hold hourly wage value
@@ -76,9 +79,6 @@ export default function UserForm({ isEditing }: { isEditing: boolean }) {
     }
     try {
       setLoading(true);
-      let resp = await axiosInstance.post("/users/saveUser", {
-        user: { ...userInfo, hourlyWage },
-      });
       if (isEditing) {
         let response = await axiosInstance.post(
           "/getDeductions/resetDeductions",
@@ -87,9 +87,45 @@ export default function UserForm({ isEditing }: { isEditing: boolean }) {
           }
         );
         console.log(response.data);
+
+        // in this branch the user is editing their information through the profile page so when fetching data from the server, first check storage to see what that last pay period that was being rendered was, and fetch pay period data for the same pay period just with the updated user Info
+        try {
+          const value = await AsyncStorage.getItem("monthAndYear");
+          if (value !== null && userInfoDispatch) {
+            userInfoDispatch({
+              type: "setPayMonthAndYearToDisplay",
+              payload: value,
+            });
+            const requestedMonthName = value.split(" ")[0];
+            const monthNumber = monthNames.indexOf(requestedMonthName!) + 1;
+            const requestedYear = value.split(" ")[1];
+
+            getPayDaysFromServer(
+              { ...userInfo!, hourlyWage },
+              monthNumber,
+              parseInt(requestedYear!),
+              payPeriodDispatch!
+            );
+          }
+        } catch (e) {
+          console.log("error reading month and year from storage");
+        }
+      } else {
+        let resp = await axiosInstance.post("/users/saveUser", {
+          user: { ...userInfo, hourlyWage },
+        });
+
+        let today = DateTime.now();
+        getPayDaysFromServer(
+          { ...userInfo!, hourlyWage },
+          today.month,
+          today.year,
+          payPeriodDispatch!
+        );
       }
 
       setLoading(false);
+
       router.push("/(app)/dashboard");
     } catch (error) {
       console.log(error);

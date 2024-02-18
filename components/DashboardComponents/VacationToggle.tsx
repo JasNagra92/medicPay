@@ -23,6 +23,8 @@ export default function VacationToggle({
     // if payperiod day is already set to a vacation, user is deselecting the option so remove the vacation and fetch default days data. Will need to check if the deselected vacation block all falls within 1 pay period, or spans multiple to know what to update with the default days
     if (currentDay.rotation === "Vacation") {
       if (index <= 10) {
+        // initialize an empty array to store the 4 vacation days
+        let vacationDates = [];
         for (let i = index; i < index + 4; i++) {
           try {
             let response = await axiosInstance.post(
@@ -44,18 +46,19 @@ export default function VacationToggle({
                 payDay: payPeriod![indexInMonth].payDay,
               }
             );
-            if (payPeriodDispatch) {
-              payPeriodDispatch({
-                type: "updateSingleDay",
-                payload: {
-                  indexInMonth,
-                  indexInWorkDays: i,
-                  updatedSingleDay: response.data.data,
-                },
-              });
-            }
+            vacationDates.push(response.data.data);
           } catch (error) {
             console.log(error);
+          }
+          if (payPeriodDispatch) {
+            payPeriodDispatch({
+              type: "addHolidayBlock",
+              payload: {
+                index,
+                indexInMonth,
+                vacationDates,
+              },
+            });
           }
         }
       } else if (index > 10 && indexInMonth < payPeriod!.length - 1) {

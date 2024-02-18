@@ -96,12 +96,12 @@ export default function OvertimeModal() {
 
   const handleSubmitOT = async () => {
     let data = [];
-    if (!updatedShiftEnd || !startTime) {
-      alert("must select times");
-      return;
-    }
     setLoading(true);
     if (selected === "End of Shift OT" && payPeriodDataDispatch) {
+      if (!updatedShiftEnd) {
+        alert("must select time");
+        return;
+      }
       try {
         let response = await axiosInstance.post("/getPayData/addOvertime", {
           userInfo,
@@ -122,6 +122,10 @@ export default function OvertimeModal() {
         console.log(error);
       }
     } else if (selected === "Regular OT" && payPeriodDataDispatch) {
+      if (!updatedShiftEnd || !startTime) {
+        alert("must select time");
+        return;
+      }
       try {
         let response = await axiosInstance.post(
           "/getPayData/addRegularOvertime",
@@ -150,6 +154,10 @@ export default function OvertimeModal() {
         console.log(error + "adding regular OT");
       }
     } else if (selected === "Holiday recall" && payPeriodDataDispatch) {
+      if (!updatedShiftEnd || !startTime) {
+        alert("must select time");
+        return;
+      }
       try {
         let response = await axiosInstance.post(
           "/getPayData/addRecallOvertime",

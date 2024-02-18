@@ -116,7 +116,7 @@ export default function Profile() {
         userInfo,
       });
       let { totalOTHours, totalRecallHours, totalLateCallHours } =
-        response.data.data;
+        response.data;
       setOTHours(totalOTHours);
       setRecallHours(totalRecallHours);
       setLateCallHours(totalLateCallHours);

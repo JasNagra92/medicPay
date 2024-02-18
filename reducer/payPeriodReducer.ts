@@ -13,6 +13,13 @@ export default function payPeriodDataReducer(
         action.payload.indexInWorkDays
       ] = action.payload.updatedSingleDay;
       break;
+    case "addHolidayBlock":
+      for (const [index, day] of action.payload.vacationDates.entries()) {
+        draft[action.payload.indexInMonth].workDaysInPayPeriod[
+          action.payload.index + index
+        ] = day;
+      }
+      break;
     case "updateHolidayBlock":
       // check if the day 1 the user used to toggle the vacation block is less than 4 days away from the end of the payPeriod it was selected in, which means all 4 days can be updated in the same 2 week pay period, if it is less than 10, then all 4 updated vacation days can go in the same pay period
       let { indexInWorkDays, indexInMonth, updatedDays } = action.payload;

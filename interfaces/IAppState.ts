@@ -99,4 +99,12 @@ export type PayPeriodAction =
         unionDues: number;
         pserp: number;
       };
+    }
+  | {
+      type: "addHolidayBlock";
+      payload: {
+        index: number;
+        indexInMonth: number;
+        vacationDates: ISingleDaysPayData[];
+      };
     };
