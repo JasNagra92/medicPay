@@ -5,7 +5,7 @@ import { useUserInfo } from "../../context/userInfoContext";
 import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
 import { ISingleDaysPayData } from "../../interfaces/IAppState";
-import VacationToggle from "./VacationToggle";
+import { DateTime } from "luxon";
 
 export interface ISingleDaysPayDataWithIndex extends ISingleDaysPayData {
   index: number;
@@ -64,7 +64,12 @@ export default function DaySummary({
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
           <Text className="font-bold mt-2">
-            {new Date(date).toDateString()}
+            {DateTime.fromISO(date).toLocaleString({
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              year: "2-digit",
+            })}
           </Text>
           {
             <ToggleSwitch

@@ -2,13 +2,11 @@
 import { initializeApp } from "firebase/app";
 import {
   initializeAuth,
-  getAuth,
   Auth,
   connectAuthEmulator,
   getReactNativePersistence,
 } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
