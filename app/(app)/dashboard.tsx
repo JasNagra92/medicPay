@@ -9,7 +9,6 @@ import {
   useUserInfo,
   useUserInfoDispatch,
 } from "../../context/userInfoContext";
-import { DateTime } from "luxon";
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
@@ -18,10 +17,7 @@ import {
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
 import HeaderGear from "../../components/DashboardComponents/HeaderGear";
-import getPayDaysFromServer, {
-  getDeductionsFromServer,
-} from "../../utils/helpers/serverCalls";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
 
 export default function Dashboard() {
   const [grossIncome, setGrossIncome] = useState(0);
@@ -34,23 +30,6 @@ export default function Dashboard() {
   const payPeriod = usePayPeriod();
   const userInfoDispatch = useUserInfoDispatch();
   const payPeriodDispatch = usePayPeriodDispatch();
-
-  useEffect(() => {
-    const getMonthAndyearData = async () => {
-      try {
-        const value = await AsyncStorage.getItem("monthAndYear");
-        if (value !== null && userInfoDispatch) {
-          userInfoDispatch({
-            type: "setPayMonthAndYearToDisplay",
-            payload: value,
-          });
-        }
-      } catch (e) {
-        console.log("error reading month and year from storage");
-      }
-    };
-    getMonthAndyearData();
-  }, []);
 
   // hook to update the gross income and the net income whenever the payday data in context changes
   useEffect(() => {
@@ -67,21 +46,19 @@ export default function Dashboard() {
 
       setGrossIncome(gross);
 
-      if (!payPeriod[indexInMonth].netIncome) {
-        getDeductionsFromServer(
-          gross,
-          incomeLessLevelling,
-          stiipHours,
-          OTOnePointFive,
-          OTDoubleTime,
-          OTStatReg,
-          OTSuperStat,
-          userInfo!,
-          payPeriod,
-          indexInMonth,
-          payPeriodDispatch!
-        );
-      }
+      getDeductionsFromServer(
+        gross,
+        incomeLessLevelling,
+        stiipHours,
+        OTOnePointFive,
+        OTDoubleTime,
+        OTStatReg,
+        OTSuperStat,
+        userInfo!,
+        payPeriod,
+        indexInMonth,
+        payPeriodDispatch!
+      );
     }
   }, [payPeriod, indexInMonth]);
 

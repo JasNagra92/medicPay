@@ -15,7 +15,6 @@ import { router, useFocusEffect } from "expo-router";
 import { BarChart } from "react-native-chart-kit";
 import { Stack } from "expo-router";
 import axiosInstance from "../../utils/helpers/axiosInstance";
-import { useEffect } from "react";
 import { useUserInfo } from "../../context/userInfoContext";
 
 const image = require("../../assets/images/bgImage.png");
@@ -116,7 +115,7 @@ export default function Profile() {
         userInfo,
       });
       let { totalOTHours, totalRecallHours, totalLateCallHours } =
-        response.data;
+        response.data.data;
       setOTHours(totalOTHours);
       setRecallHours(totalRecallHours);
       setLateCallHours(totalLateCallHours);

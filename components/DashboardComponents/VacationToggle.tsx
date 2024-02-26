@@ -4,8 +4,7 @@ import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
-import { TouchableOpacity, View, Text } from "react-native";
-import { DateTime } from "luxon";
+import { TouchableOpacity, Text } from "react-native";
 
 export default function VacationToggle({
   index,
@@ -50,16 +49,16 @@ export default function VacationToggle({
           } catch (error) {
             console.log(error);
           }
-          if (payPeriodDispatch) {
-            payPeriodDispatch({
-              type: "addHolidayBlock",
-              payload: {
-                index,
-                indexInMonth,
-                vacationDates,
-              },
-            });
-          }
+        }
+        if (payPeriodDispatch) {
+          payPeriodDispatch({
+            type: "addHolidayBlock",
+            payload: {
+              index,
+              indexInMonth,
+              vacationDates,
+            },
+          });
         }
       } else if (index > 10 && indexInMonth < payPeriod!.length - 1) {
         // loop from current index to end of pay period and fetch default days

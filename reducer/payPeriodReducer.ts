@@ -46,6 +46,7 @@ export default function payPeriodDataReducer(
       draft[action.payload.indexInMonth].pserp = action.payload.pserp;
       draft[action.payload.indexInMonth].unionDues = action.payload.unionDues;
       break;
+
     default:
       return draft;
   }

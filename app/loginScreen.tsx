@@ -6,14 +6,21 @@ import { ImageBackground } from "react-native";
 import MainPageInput from "../components/LoginSignUpInput";
 import { appSignIn } from "../store";
 import Toast from "react-native-toast-message";
-import { useUserInfoDispatch } from "../context/userInfoContext";
+import { useUserInfo, useUserInfoDispatch } from "../context/userInfoContext";
 import { Image } from "expo-image";
 import axiosInstance from "../utils/helpers/axiosInstance";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { monthNames } from "../utils/helpers/constants";
+import getPayDaysFromServer from "../utils/helpers/serverCalls";
+import { usePayPeriodDispatch } from "../context/payPeriodDataContext";
+import { DateTime } from "luxon";
 
 const logo = require("../assets/images/logo.jpeg");
 
 export default function Login() {
-  const dispatchUserInfo = useUserInfoDispatch();
+  const userInfoDispatch = useUserInfoDispatch();
+  const payPeriodDispatch = usePayPeriodDispatch();
+  const userInfo = useUserInfo();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,8 +28,8 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       const userCredential = await appSignIn(email, password);
-      if (dispatchUserInfo && userCredential) {
-        dispatchUserInfo({
+      if (userInfoDispatch && userCredential) {
+        userInfoDispatch({
           type: "setUserId",
           payload: userCredential.user?.uid!,
         });
@@ -31,11 +38,40 @@ export default function Login() {
       const response = await axiosInstance.post("/users/getUser", {
         id: userCredential.user.uid,
       });
-      if (dispatchUserInfo && userCredential) {
-        dispatchUserInfo({
+      if (userInfoDispatch && userCredential) {
+        userInfoDispatch({
           type: "setUser",
           payload: response.data.data,
         });
+
+        try {
+          const value = await AsyncStorage.getItem("monthAndYear");
+          if (value !== null && userInfoDispatch) {
+            userInfoDispatch({
+              type: "setPayMonthAndYearToDisplay",
+              payload: value,
+            });
+            const requestedMonthName = value.split(" ")[0];
+            const monthNumber = monthNames.indexOf(requestedMonthName!) + 1;
+            const requestedYear = value.split(" ")[1];
+
+            getPayDaysFromServer(
+              userInfo!,
+              monthNumber,
+              parseInt(requestedYear!),
+              payPeriodDispatch!
+            );
+          }
+        } catch (e) {
+          console.log("error reading month and year from storage");
+          let today = DateTime.now();
+          getPayDaysFromServer(
+            userInfo!,
+            today.month,
+            today.year,
+            payPeriodDispatch!
+          );
+        }
       }
 
       router.push("/dashboard");
