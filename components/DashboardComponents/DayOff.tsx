@@ -1,7 +1,5 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { format } from "date-fns";
 import ToggleSwitch from "./ToggleSwitch";
 import { ISingleDaysPayDataWithIndex } from "./DaySummary";
 
@@ -10,15 +8,6 @@ export default function DayOff({
   rotation, //Day 1, Day 2, Night 1 //
   shiftStart,
   shiftEnd,
-  baseHoursWorked,
-  baseWageEarnings,
-  nightHoursWorked,
-  alphaNightsEarnings,
-  nightEarnings,
-  weekendHoursWorked,
-  weekendEarnings,
-  dayTotal,
-  stiipHours,
   index,
   indexInMonth,
 }: ISingleDaysPayDataWithIndex) {

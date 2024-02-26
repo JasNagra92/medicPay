@@ -1,7 +1,13 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 
-const DisclaimerModal = ({ visible, onClose }) => {
+const DisclaimerModal = ({
+  visible,
+  onClose,
+}: {
+  visible: any;
+  onClose: any;
+}) => {
   return (
     <Modal
       visible={visible}

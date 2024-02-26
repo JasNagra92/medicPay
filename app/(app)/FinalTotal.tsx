@@ -6,13 +6,12 @@ import { ImageBackground, View, Text, TouchableOpacity } from "react-native";
 import { useUserInfo } from "../../context/userInfoContext";
 import TotalLine from "../../components/FinalTotalComponents/TotalLine";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { format } from "date-fns";
 import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
 import DisclaimerModal from "../../components/DisclaimerModal";
-import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
+import { DateTime } from "luxon";
 
 const image = require("../../assets/images/bgImage.png");
 
@@ -290,13 +289,11 @@ export default function FinalTotal() {
                 color="#379D9F"
               />
               <Text className="text-[#379D9F]">
-                {format(
-                  new Date(
-                    payPeriod![parseInt(indexInMonth as string)]
-                      .payDay as string
-                  ),
-                  "PP"
-                )}{" "}
+                {DateTime.fromISO(
+                  payPeriod![parseInt(indexInMonth as string)].payDay
+                )
+                  .setZone("UTC")
+                  .toFormat("DD")}{" "}
               </Text>
             </View>
             <View className="flex flex-row justify-center py-2">

@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
-import { format } from "date-fns";
 import { Stack, Link } from "expo-router";
 import { calculatePayData } from "../../utils/helpers/dashboardHelpers";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useUserInfo,
-  useUserInfoDispatch,
-} from "../../context/userInfoContext";
+import { useUserInfo } from "../../context/userInfoContext";
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
@@ -18,6 +14,7 @@ import {
 } from "../../context/payPeriodDataContext";
 import HeaderGear from "../../components/DashboardComponents/HeaderGear";
 import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
+import { DateTime } from "luxon";
 
 export default function Dashboard() {
   const [grossIncome, setGrossIncome] = useState(0);
@@ -28,7 +25,6 @@ export default function Dashboard() {
 
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
-  const userInfoDispatch = useUserInfoDispatch();
   const payPeriodDispatch = usePayPeriodDispatch();
 
   // hook to update the gross income and the net income whenever the payday data in context changes
@@ -107,7 +103,7 @@ export default function Dashboard() {
                         p.payDay === payDay ? " text-[#379D9F]" : "text-white"
                       }`}
                     >
-                      {format(new Date(p.payDay), "PP")}
+                      {DateTime.fromISO(p.payDay).setZone("UTC").toFormat("DD")}
                     </Text>
                   </TouchableOpacity>
                 );

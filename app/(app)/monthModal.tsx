@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
 import { ScrollView, ImageBackground, Text, View } from "react-native";
-import { router } from "expo-router";
 import MonthDisplay from "../../components/MonthModalComponents/MonthDisplay";
 import { StatusBar } from "expo-status-bar";
-import {
-  useUserInfo,
-  useUserInfoDispatch,
-} from "../../context/userInfoContext";
 import DropDownPicker from "react-native-dropdown-picker";
 const image = require("../../assets/images/bgImage.png");
 
@@ -18,9 +13,6 @@ export default function MonthModal() {
     { label: "2025", value: 2025 },
   ]);
   const [monthAndYearArray, setMonthAndYearArray] = useState<string[]>([]);
-
-  const userInfo = useUserInfo();
-  const dispatch = useUserInfoDispatch();
 
   const generateMonthYearArray = (selectedYear: number) => {
     const months = Array.from({ length: 12 }, (_, i) => i); // Creates an array [0, 1, ..., 11]

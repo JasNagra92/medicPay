@@ -1,10 +1,8 @@
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ImageBackground } from "react-native";
 import MainPageInput from "../components/LoginSignUpInput";
-import { appSignIn } from "../store";
 import Toast from "react-native-toast-message";
 import { useUserInfoDispatch } from "../context/userInfoContext";
 import { Image } from "expo-image";

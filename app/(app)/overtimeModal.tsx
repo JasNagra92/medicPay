@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { RadioButton } from "react-native-paper";

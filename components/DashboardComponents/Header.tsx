@@ -11,7 +11,6 @@ import { usePayPeriod } from "../../context/payPeriodDataContext";
 export default function Header({ indexInMonth }: { indexInMonth: number }) {
   const [month, setMonth] = useState("");
   const userInfo = useUserInfo();
-  const userInfoDispatch = useUserInfoDispatch();
   const payPeriod = usePayPeriod();
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import UserForm from "../../components/UserForm";
 import { StatusBar } from "expo-status-bar";
 import { ImageBackground } from "react-native";
