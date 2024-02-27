@@ -55,7 +55,7 @@ export default function Login() {
             const requestedYear = value.split(" ")[1];
 
             getPayDaysFromServer(
-              userInfo!,
+              response.data.data,
               monthNumber,
               parseInt(requestedYear!),
               payPeriodDispatch!
@@ -65,7 +65,7 @@ export default function Login() {
           console.log("error reading month and year from storage");
           let today = DateTime.now();
           getPayDaysFromServer(
-            userInfo!,
+            response.data.data,
             today.month,
             today.year,
             payPeriodDispatch!

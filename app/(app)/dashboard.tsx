@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, ScrollView, TouchableOpacity, Text } from "react-native";
-import { Stack, Link } from "expo-router";
+import { Stack, Link, router } from "expo-router";
 import { calculatePayData } from "../../utils/helpers/dashboardHelpers";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,8 +15,15 @@ import {
 import HeaderGear from "../../components/DashboardComponents/HeaderGear";
 import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
 import { DateTime } from "luxon";
+import { AuthStore } from "../../store";
 
 export default function Dashboard() {
+  const { initialized, user } = AuthStore.useState();
+
+  if (initialized && !user) {
+    router.replace("/homeScreen");
+  }
+
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");

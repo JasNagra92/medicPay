@@ -15,7 +15,7 @@ export default function HomePage() {
       router.replace("/homeScreen");
     }
     if (initialized && isLoggedIn) {
-      router.replace("/(app)/dashboard");
+      router.push("/(app)/dashboard");
     }
   }, [initialized, isLoggedIn]);
 
