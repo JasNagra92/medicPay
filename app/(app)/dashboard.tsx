@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView, TouchableOpacity, Text } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  AppState,
+} from "react-native";
 import { Stack, Link, router } from "expo-router";
 import { calculatePayData } from "../../utils/helpers/dashboardHelpers";
 import { AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useUserInfo } from "../../context/userInfoContext";
+import {
+  useUserInfo,
+  useUserInfoDispatch,
+} from "../../context/userInfoContext";
 import DaySummary from "../../components/DashboardComponents/DaySummary";
 import Header from "../../components/DashboardComponents/Header";
 import DayOff from "../../components/DashboardComponents/DayOff";
@@ -13,9 +22,17 @@ import {
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
 import HeaderGear from "../../components/DashboardComponents/HeaderGear";
-import { getDeductionsFromServer } from "../../utils/helpers/serverCalls";
+import getPayDaysFromServer, {
+  getDeductionsFromServer,
+} from "../../utils/helpers/serverCalls";
 import { DateTime } from "luxon";
 import { AuthStore } from "../../store";
+import {
+  fetchPayPeriodData,
+  fetchUserData,
+  handleSavePayPeriodData,
+  handleSaveUserData,
+} from "../../utils/helpers/asyncStorage";
 
 export default function Dashboard() {
   const { initialized, user } = AuthStore.useState();
@@ -23,7 +40,8 @@ export default function Dashboard() {
   if (initialized && !user) {
     router.replace("/homeScreen");
   }
-
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [grossIncome, setGrossIncome] = useState(0);
   // payDay will be used for render button text as well as tracking which payday in the month is being displayed
   const [payDay, setPayDay] = useState("");
@@ -33,6 +51,36 @@ export default function Dashboard() {
   const userInfo = useUserInfo();
   const payPeriod = usePayPeriod();
   const payPeriodDispatch = usePayPeriodDispatch();
+  const userInfoDispatch = useUserInfoDispatch();
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("App has come to the foreground!");
+        fetchPayPeriodData(payPeriodDispatch);
+        fetchUserData(userInfoDispatch);
+      }
+      // if the payperiod has workday data in it and the app is being passed to the background or inactive state, store the payperiod in asyncstorage
+      if (payPeriod && userInfo && payPeriod[0].workDaysInPayPeriod) {
+        handleSavePayPeriodData(payPeriod);
+        handleSaveUserData(userInfo);
+      }
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log("AppState", appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [payPeriod, userInfo]);
+
+  useEffect(() => {
+    fetchPayPeriodData(payPeriodDispatch);
+    fetchUserData(userInfoDispatch);
+  }, []);
 
   // hook to update the gross income and the net income whenever the payday data in context changes
   useEffect(() => {
