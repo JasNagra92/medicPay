@@ -56,25 +56,22 @@ export default function DaySummary({
                 {rotation}
               </Text>
             </View>
-            <Text className=" p-1.5 font-bold">{`${DateTime.fromISO(
-              shiftStart as any
-            )
-              .setZone("UTC")
-              .toFormat("HH:mm")} - ${DateTime.fromISO(shiftEnd as any)
-              .setZone("UTC")
-              .toFormat("HH:mm")}`}</Text>
+            <Text className=" p-1.5 font-bold">
+              {`${DateTime.fromISO(shiftStart as any).toLocaleString(
+                DateTime.TIME_SIMPLE
+              )} - ${DateTime.fromISO(shiftEnd as any).toLocaleString(
+                DateTime.TIME_SIMPLE
+              )}`}
+            </Text>
           </View>
         </View>
         <View className="flex-1/3 py-0.5 flex-row justify-between">
           <Text className="font-bold mt-2">
-            {DateTime.fromISO(date as any)
-              .setZone("UTC")
-              .toLocaleString({
-                weekday: "short",
-                day: "2-digit",
-                month: "short",
-                year: "2-digit",
-              })}
+            {DateTime.fromISO(date as any).toLocaleString({
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+            })}
           </Text>
           {
             <ToggleSwitch

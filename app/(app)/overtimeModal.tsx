@@ -12,6 +12,7 @@ import {
   usePayPeriod,
   usePayPeriodDispatch,
 } from "../../context/payPeriodDataContext";
+import { DateTime } from "luxon";
 
 export default function OvertimeModal() {
   const [selected, setSelected] = useState("");
@@ -54,7 +55,6 @@ export default function OvertimeModal() {
         //   users selection must be between the scheduled end time and 4 hours later, which is the max allowed OT due to WorkSafeBC
         let endTimePlus4Hours = new Date(scheduledEndOfShift);
         endTimePlus4Hours.setHours(endTimePlus4Hours.getHours() + 4);
-
         // Check if overtimeEndTime is within the interval
         let isValid = isWithinInterval(overtimeEndTime, {
           start: scheduledEndOfShift,
@@ -210,7 +210,6 @@ export default function OvertimeModal() {
   return (
     <View className="p-3 flex flex-col flex-1 justify-evenly">
       <Text className="font-bold text-2xl text-center">Overtime</Text>
-
       {(selected === "Holiday Recall" || selected === "Regular OT") && (
         <View>
           <View

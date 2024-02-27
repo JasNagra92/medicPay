@@ -103,7 +103,7 @@ export default function Dashboard() {
                         p.payDay === payDay ? " text-[#379D9F]" : "text-white"
                       }`}
                     >
-                      {DateTime.fromISO(p.payDay).setZone("UTC").toFormat("DD")}
+                      {DateTime.fromISO(p.payDay).toFormat("DD")}
                     </Text>
                   </TouchableOpacity>
                 );
